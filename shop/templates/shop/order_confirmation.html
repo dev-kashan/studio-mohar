@@ -1,0 +1,753 @@
+{% extends 'shop/base.html' %}
+ {% load static %}
+
+
+{% block body %}
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    {% comment %} <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script> {% endcomment %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jStorage/0.4.12/jstorage.min.js"></script>
+    <script src="{% static 'shop/js/cesta-feira.js'%}"></script>
+    <script src="{% static 'shop/js/cesta-feira.min.js'%}"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <!-- jquery -->
+    {% comment %}
+    <script src="{% static 'shop/js/jquery.min.js'%}"></script>
+    {% endcomment %}
+    <script src="{% static 'shop/js/jquery-migrate-3.0.0.js'%}"></script>
+    <script src="{% static 'shop/js/jquery-ui.min.js'%}"></script>
+    <script src="{% static 'shop/js/popper.min.js'%}"></script>
+    <script src="{% static 'shop/js/bootstrap.min.js'%}"></script>
+    <script src="{% static 'shop/js/colors.js'%}"></script>
+    <script src="{% static 'shop/js/slicknav.min.js'%}"></script>
+    <script src="{% static 'shop/js/owl-carousel.js'%}"></script>
+    <script src="{% static 'shop/js/magnific-popup.js'%}"></script>
+    <script src="{% static 'shop/js/waypoints.min.js'%}"></script>
+    <script src="{% static 'shop/js/finalcountdown.min.js'%}"></script>
+    <script src="{% static 'shop/js/nicesellect.js'%}"></script>
+    <script src="{% static 'shop/js/flex-slider.js'%}"></script>
+    <script src="{% static 'shop/js/scrollup.js'%}"></script>
+    <script src="{% static 'shop/js/onepage-nav.min.js'%}"></script>
+    <script src="{% static 'shop/js/easing.js'%}"></script>
+    <script src="{% static 'shop/js/active.js'%}"></script>
+<link href="{% static 'shop/css/style4.css'%}" rel="stylesheet" type="text/css" media="all">
+    <link href="{% static 'shop/css/bootstrap.css'%}" rel="stylesheet" type="text/css" media="all">
+    <link href="{% static 'shop/css/style.css'%}" rel="stylesheet" type="text/css" media="all">
+    <link rel="stylesheet" href="{% static 'shop/css/slider.css'%}">
+    <link rel="stylesheet" href="{% static 'shop/css/magnific-popup.min.css'%}">
+    <link rel="stylesheet" href="{% static 'shop/css/font-awesome.css'%}">
+    <link rel="stylesheet" href="{% static 'shop/css/themify-icons.css'%}">
+    <link rel="stylesheet" href="{% static 'shop/css/niceselect.css'%}">
+    <link rel="stylesheet" href="{% static 'shop/css/animate.css'%}">
+    <link rel="stylesheet" href="{% static 'shop/css/flex-slider.min.css'%}">
+    <link rel="stylesheet" href="{% static 'shop/css/owl-carousel.css'%}">
+    <link rel="stylesheet" href="{% static 'shop/css/slicknav.min.css'%}">
+    <link rel="stylesheet" href="{% static 'shop/css/slicknav.min.css'%}">
+    <link rel="stylesheet" href="{% static 'shop/css/reset.css'%}">
+    <link rel="stylesheet" href="{% static 'shop/css/responsive.css'%}">
+    <link rel="stylesheet" href="{% static 'shop/css/toast.css'%}">
+    
+
+<style>
+
+
+table.m-mt {
+    margin-top: 58px;
+}
+
+#invoice img{
+    max-width:initial !important;
+}
+
+
+.modal_bg {
+    background: #000000a3;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    right: 0px;
+    top: 0;
+    z-index: 100;
+    display: none;
+}
+
+
+.order_success_modal{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: white;
+    z-index: 102;
+    padding: 5px 24px;
+    border-radius: 12px;
+    transition: all .25s linear;
+    width: 313px;
+
+}
+
+
+
+.order_success_modal-header {
+    height: 62px;
+}
+
+
+.order_success_modal-footer {
+    text-align: center;
+    margin: 17px 0px;
+}
+
+
+.order_id{
+    float: right;
+    font-size: 17px;
+    color: #ff1800;
+    font-family: 'Poppins';
+    margin-top: 19px;
+
+}
+
+.table_600{
+    width:860px;
+    margin:auto;
+}
+
+
+.table_560{
+    width:560px;
+    margin:auto;
+}
+
+
+.left_width{
+    width:55%;
+}
+
+
+
+.fade-scale {
+  transform: scale(0);
+  opacity: 0;
+  -webkit-transition: all .25s linear;
+  -o-transition: all .25s linear;
+  transition: all .25s linear;
+}
+
+.fade-scale.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+
+.order_invoice_download{
+    background: #549be3;
+    color: white !important;
+    padding: 10px 14px;
+    border: none;
+    cursor: pointer;
+}
+
+.order_invoice_download_btn{
+    background: #549be3;
+    color: white !important;
+    padding: 7px 25px;
+    border: none;
+    cursor: pointer;
+}
+
+
+
+.hydri-btn {
+    background: #ff6400;
+    color: white !important;
+    padding: 10px 33px;
+    margin: 0px 11px 0px 0px;
+    border: none;
+    cursor: pointer;
+}
+
+.scissorsline{
+    display: flex;
+    align-items: center;
+}
+
+.line {
+    border: 1px #000000 dashed;
+    width: 100%;
+    background: none;
+        height: 0px;
+}
+
+.dow_btn{
+    display:none;
+}
+
+#undefined-sticky-wrapper{
+    height:61px !important;;
+}
+
+
+.btn-table-body{
+    text-align: right;
+} 
+
+a.view_order {
+    border: 2px solid #bac5ff;
+    padding: 2px 11px;
+    border-radius: 7px;
+}
+
+
+a.continue_shopping {
+    background: #000000;
+    color: white;
+    padding: 13px 38px;
+    font-size: 18px;
+}
+
+.section-head{
+	font-size: 22px;
+    color: #424242;
+
+}
+
+
+@media (min-width: 1200px){
+
+    .container-988 {
+        max-width: 988px;
+    }
+}
+
+.all-cart {
+    margin: 0px 4px 18px 4px;
+    transition: 0.4s;
+    background: white;
+    flex: 0 0 30%;
+    max-width: 19.1%;
+    }
+    
+    .all-cart:hover{
+    box-shadow: 0px 1px 5px -1px #8e8e8e;
+    
+    
+    }
+    
+    
+    @media screen and (max-width: 1200px) {
+    .all-cart{
+    -ms-flex: 0 0 50%;
+    flex: 0 0 30%;
+    max-width: 24.1%;
+    }
+    
+    
+    }
+    
+    
+    
+    @media screen and (max-width: 770px) {
+    .all-cart{
+    -ms-flex: 0 0 50%;
+    flex: 0 0 44%;
+    max-width: 31%;
+    
+    }
+    
+
+
+    
+    }
+    
+    
+    
+    
+    
+    @media screen and (max-width: 414px) {
+    .all-cart{
+    flex: 0 0 47.6%;
+    max-width: 56%;
+    margin: 0px 0px 13px 6px;
+    }
+    
+    
+    
+    .single-product img{
+    height: 166px;
+    margin: 0px 0px 7px 0px;
+    
+    
+    }
+    
+    }
+    
+    
+    @media screen and (max-width: 361px) {
+    
+    .single-product img{
+    
+    height: 150px;
+    height: 166px;
+    
+    
+    
+    }
+    
+    
+    }
+    
+    @media screen and (max-width: 320px) {
+    .all-cart{
+    -ms-flex: 0 0 50%;
+    flex: 0 0 46%;
+    max-width: 48%;
+    margin: 0px 3px 20px 3px;
+    }
+    
+    .single-product img{
+    
+    height: 150px;
+    height: 166px;
+    
+    
+    
+    }
+    
+    
+    }
+    
+    
+    
+    .img-cart{
+        height: 188px;
+        transition: 0.4s;
+        object-fit: cover;
+    }
+    
+    
+    
+    .desc{
+    font-size:12px;
+    }
+    
+    .proname{
+    font-size: 14px;
+    line-height: 18px;
+    color: black;
+    
+    }
+    
+
+
+
+
+@media screen and (max-width:990px){
+
+    table.m-mt {
+        margin-top: 3px;
+    }
+
+    .table_600 {
+        width: 100%;
+        margin:auto;
+    }
+
+    .table_560 {
+        width: 97%;
+        margin:auto;
+    }
+
+}
+
+
+
+@media screen and (max-width:500px){
+
+    
+
+    .btn-table-body{
+        text-align: center;
+    }
+
+    
+
+    .left_width{
+        width:24%;
+    }
+
+
+}
+
+
+#outlook a {padding:0;}
+            
+</style>
+        <table  class='m-mt mb-5' width="100%" cellpadding="0" cellspacing="0" border="0" class="backgroundTable main-temp">
+            <tbody>
+<!-- 
+                <tr>
+                    <td>
+                    <table  class="table_600" align="center" cellpadding="15" cellspacing="0" border="0" class="devicewidth" style="background-color: #ffffff;">
+                    <tbody class="btn-table-body">
+                    <tr>
+                        <td class="pt-4 pb-2">
+                            <a class="hydri-btn" href="/buyer-dashboard/">Dashboard</a>
+                            <a href="#" class="gen_btn order_invoice_download" onclick="takeshot()">Download Invoice</a>
+                            <a href="#"  class="dow_btn " id="download" download="Order-Invoice.png" onclick="download()">
+                                <button type="button" class="order_invoice_download_btn"  onclick="download()"><i class="fa fa-download" aria-hidden="true"></i> Download</button>
+                            </a>
+                        </td>
+                    </tr>  
+                    <tr>
+                        <td class="p-0">
+                            <div class="scissorsline px-2">
+                                <i class="fa fa-scissors" aria-hidden="true"></i>
+                                <hr class="line">
+                              </div>
+                        </td>
+                    </tr> 
+                    </tbody>
+                    </table>
+                    </td>
+                </tr> -->
+
+                <tr>
+                    <td>
+                        <table  class="table_600" align="center" cellpadding="15" cellspacing="0" border="0" class="devicewidth" style="background-color: #ffffff;">
+                            <tbody id="invoice">
+                                <!-- Start header Section -->
+                                <tr>
+                                    <td class="text-center">
+                                        <h2 style="margin-top: 32px; color: #51bb63;">Thank you for your purchase!</h2>
+                                        <p style="color: black;margin-bottom: 43px;">Your order number is <span style="display: block;
+                                            font-size: 26px;
+                                            background: #54b1001f;
+                                            padding: 10px;
+                                            color: #51bb63 !important;
+                                            width: max-content;
+                                            margin: 8px auto;
+                                            border-radius: 90px;
+                                            font-weight: bold;">{{order.Order_number}}</span></p>
+
+                                        <!-- <p style="color: black;">Thanks for the shopping Your total Amount is:</p>
+                                        <p style="    font-size: 28px;
+                                        color: #000000;
+                                        font-weight: bold;
+                                        margin-bottom: 15px;">${{order.total}}</p> -->
+                                        <p style="color: black;">Estimated Delivery Time</p>
+                                        <p style="    font-size: 28px;
+                                        color: #000000;
+                                        font-weight: bold;
+                                        margin-bottom: 15px;">{{order.estimated_delivery_time}}</p>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td class="text-center">
+                                        <div style="width: 100%;
+    margin: auto;
+    text-align: left;
+    max-width: 578px;
+    padding: 10px 10px;">
+
+                                            <p><i class="fa fa-check-circle" style="color: #059669;"></i> Your order’s in!</p> 
+                                            
+                                            <p>Our designers will begin reviewing it now. If they’ve got any questions, they’ll reach out. You’ll get a ping once it’s pressed, packed, and on the way.</p> 
+
+                                            <p>Till then, relax! We’re ironing out the details. <i class="fa fa-smile" style="color: #fbbf24;"></i> <i class="fa fa-fire" style="color: #ef4444;"></i>.</p>
+                                            
+                                            <p>If you have any questions please contact us at <a href="orders@studiomohar.ca">orders@studiomohar.ca</a> with your order number and full name.</p>
+                                        </div>
+
+                                    </td>
+                                </tr>
+
+                               
+                                
+                               
+                                
+                                <!-- Start product Section -->
+                                {% for i in order_items %}
+                               
+                                 <tr>
+                                    <td style="padding-top: 0;">
+                                        <table class="table_560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="border-bottom: 1px solid #eeeeee; border: 1px solid lightgrey;">
+                                            <tbody>
+                                                <tr>
+                                                    <td rowspan="4" style="padding-right: 10px; padding-bottom: 10px;">
+                                                    
+                                                    <img class="pl-2" style="height: 80px; width: 69px; object-fit: scale-down;" src="{{i.image}}" alt="{{i.order_item.product_name}}" />
+                                                  
+                                                    </td>
+                                                    <td colspan="2" style="font-size: 14px; font-weight: bold; color: #666666; padding-bottom: 5px;">
+                                                        {{i.order_item.product_name|slice:':30'}}...
+                                                    </td>
+                                                </tr>
+                                                <!-- <tr>
+                                                    <td style="font-size: 14px; line-height: 18px; color: #757575; width: 440px;">
+                                                        Quantity: 
+                                                        
+                                                        {% for cart_item in i.sizes.all %}
+                                                            <p>{{ cart_item.size }} ({{ cart_item.quantity }})</p>
+                                                        {% empty %}
+                                                            <p>No sizes added</p>
+                                                        {% endfor %}
+                                                    </td>
+                                                    <td style="width: 130px;"></td>
+                                                </tr> -->
+                                                <tr>
+                                                    {% if i.color == "undefined" or i.color == "None" or i.color == None or i.color == '' %}
+                                                    <td style="font-size: 14px; line-height: 18px; color: #757575;">
+                                                        
+                                                    </td>
+                                                    {% else %}
+                                                    <td style="font-size: 14px; line-height: 18px; color: #757575;">
+                                                        Color: {{i.color}}
+                                                    </td>
+                                                    {% endif %}
+                                                   
+
+                                                    <!-- <td style="font-size: 14px; line-height: 18px; color: #757575; text-align: right;width: 30%;padding: 0px 6px;">
+                                                        C${{i.unity_price}} Per Unit
+                                                    </td> -->
+                                                </tr>
+                                                <tr>
+                                                    
+                                                    <td style="font-size: 14px; line-height: 18px; color: #757575; padding-bottom: 10px;vertical-align: initial;">
+                                                        Size: 
+                                                        {% for cart_item in i.sizes.all %}
+                                                            <p>{{ cart_item.size }} ({{ cart_item.quantity }}) x C${{ cart_item.unit_price }} = C${{ cart_item.total_price }}</p>
+                                                        {% empty %}
+                                                            <p>No sizes added</p>
+                                                        {% endfor %}
+                                                    </td>
+                                                    
+                                                   
+                                                  
+                                                    <td style="font-size: 14px; line-height: 18px; color: #757575; text-align: right; padding-bottom: 10px;width: 30%;padding: 0px 6px;  ">
+                                                        <b style="color: #666666;">C${{i.item_total}}</b> Total
+                                                    </td>
+                                                </tr>
+
+                                                
+                                            </tbody>
+                                        </table>
+
+                                        
+                                        
+                                    </td>
+                                </tr>
+                       
+                               {% endfor %}
+                                <!-- End product Section -->
+
+                                <tr>
+                                    <td>
+                                        <table class="table_560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+                                            <tbody>
+                                                <tr>
+                                                    <td style="    border: 1px solid #e9e9e9;    padding: 11px;   color: #000000;">
+                                                        <i class="fa fa-envelope"></i> We’ve sent a confirmation email to <b style="color: black;">{{order.email}}</b> with the order details.
+                                                    </td>
+                                                </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+
+
+                                <!-- <tr>
+                                    <td class="pt-0">
+                                        <table class="table_560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+                                            <tbody>
+                                               
+                                                <tr>
+                                                    <td style="    border: 1px solid #e9e9e9;    padding: 11px;   color: #000000;">
+                                                        <i class="fa fa-mobile-alt"></i> We’ve order confirmation call on your phone number <b style="color: black;">{{order.phone}}</b> 
+                                                    </td>
+                                                </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr> -->
+                                
+                                <!-- Start calculation Section -->
+                                <tr>
+                                    <td style="padding-top: 0;">
+                                        <table class="table_560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="background: #e9e9e9; margin-top: -5px;">
+                                            <tbody>
+                                                <tr>
+                                                    <td rowspan="5" class="left_width"></td>
+                                                    <td style="font-size: 14px; line-height: 18px; color: #666666;padding: 11px 5px 5px 5px;">
+                                                        Sub-Total:
+                                                    </td>
+                                                    <td style="font-size: 14px; line-height: 18px; color: #666666; width: 130px; text-align: right;padding: 11px 5px 5px 5px;">
+                                                        C${{order.SubTotal|floatformat:"2"}}
+                                                    </td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                    <td style="font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px; border-bottom: 1px solid #eeeeee;padding: 5px;">
+                                                        Tax
+                                                    </td>
+                                                    <td style="font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px; border-bottom: 1px solid #eeeeee; text-align: right;padding: 5px;">
+                                                        C${{order.tax|floatformat:"2"}}
+                                                        <!-- {% if Delivery > 0 %}
+                                                        ${{order.Delivery}}....
+                                                        {% else %}
+                                                            Free 
+                                                        {% endif %} -->
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px; border-bottom: 1px solid #eeeeee;padding: 5px;">
+                                                        (+) Delivery Charge:
+                                                    </td>
+                                                    <td style="font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px; border-bottom: 1px solid #eeeeee; text-align: right;padding: 5px;">
+                                                        C${{order.Delivery|floatformat:"2"}}
+                                                        <!-- {% if Delivery > 0 %}
+                                                        ${{order.Delivery}}....
+                                                        {% else %}
+                                                            Free 
+                                                        {% endif %} -->
+                                                    </td>
+                                                </tr>
+                                                {% if order.discount_amount != '0' %}
+                                                <tr>
+                                                    <td style="font-size: 14px; line-height: 18px; color: #be8c8c; padding-bottom: 10px; border-bottom: 1px solid #eeeeee;padding: 5px;">
+                                                        (-) Discount:
+                                                    </td>
+                                                    <td style="font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px; border-bottom: 1px solid #eeeeee; text-align: right;padding: 5px;">
+                                             
+                                                        -C${{order.discount_amount}}
+                                                       
+                                                    </td>
+                                                </tr>
+                                                {% endif %}
+
+
+                                                <tr>
+                                                    <td style="font-size: 14px; font-weight: bold; line-height: 18px; color: #666666; padding-top: 5px;padding: 10px;">
+                                                        Order Total
+                                                    </td>
+                                                    <td style="font-size: 26px; font-weight: bold; line-height: 18px; color: #666666; padding-top: 10px; text-align: right;padding: 5px;">
+                                                        C${{order.total|floatformat:"2"}}
+                                                    </td>
+                                                </tr>
+                                                
+                                                
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <!-- End calculation Section -->
+                                
+                                
+                                <!-- Start payment method Section -->
+                                <!-- <tr>
+                                    <td style="padding: 0 10px;">
+                                        <table class="table_560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="2" style="font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 5px;">
+                                                        Payment Method
+                                                    </td>
+                                                </tr>
+                                                <tr >
+                                                    <td style="width: 55%; font-size: 14px; line-height: 18px; color: #f50000; ">
+                                                        {{order.Payment_method}}
+                                                    </td>
+                                                    
+                                                </tr>
+                                                
+                                                {% comment %} <tr>
+                                                    <td colspan="2" style="width: 100%; text-align: center; font-style: italic; font-size: 13px; font-weight: 600; color: #666666; padding: 15px 0; border-top: 1px solid #eeeeee;">
+                                                        <b style="font-size: 14px; color: black;">Note:</b> 24 Hour Return Policy 
+                                                    </td>
+                                                </tr> {% endcomment %}
+
+                                                <tr>
+                                                    <td class="text-center">
+                                                        <div style="margin: 36px;">
+                                                            <a href="/" class="continue_shopping">Continue Shopping</a>
+
+                                                        </div>
+                                                       
+                                                    </td>
+                                                </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr> -->
+
+                                
+
+
+                                <!-- End payment method Section -->
+
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+
+
+
+
+
+
+    <div class="modal_bg" id="modal_bg"></div>
+  <!-- Modal -->
+  <div class="order_success_modal" id="order_success_modal">
+    <div class="order_success_modal-dialog">
+      <div class="order_success_modal-content">
+        <div class="order_success_modal-header">
+            <div style="width: 100%;text-align: center;position: relative;bottom: 75px;">
+                <img src="{% static 'shop/img/success.gif' %}" alt="success images" width="137px">
+            </div>
+         
+        </div>
+        <div class="order_success_modal-body">
+            
+            <div>
+                <h3 class="text-center text-success">Order Success</h3>
+                <p class="text-center mb-0">Order Confirmation call on this number <br> <span style="font-weight: bold; color: black;">{{order.phone}}</span></p>
+            </div>
+        </div>
+        <div class="order_success_modal-footer">
+          <button type="button" class="btn btn-success order_success_modal_done_btn" style="background: #49cc85;padding: 7px 40px;" data-dismiss="modal">Done</button>
+         
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+{% endblock body %}
+
+{% block js %}
+
+<script>
+    localStorage.clear()
+    $('#modal_bg').css({'display':'block'})
+    $('#order_success_modal').css({'transform':'translate(-50%, -50%) scale(1)'})
+    $(".order_success_modal_done_btn").click(function(){
+        $('#modal_bg').css({'display':'none'})
+    $('#order_success_modal').css({'transform':'translate(-50%, -50%) scale(0)'})
+    })
+</script>
+
+
+{% endblock js %}

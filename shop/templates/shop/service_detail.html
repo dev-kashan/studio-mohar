@@ -1,0 +1,1092 @@
+{% extends 'shop/base.html' %}
+{% block head %}
+    <title>{{service.meta_title}}</title>
+    <meta name="description" content="{{service.meta_description}}">
+{% endblock head %}
+{% block body %}
+     <style>
+        .foil-hero-section {
+            background-color: #f8f9fa;
+            padding: 60px 0;
+        }
+        
+        .foil-main-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #7e9479;
+            margin-bottom: 20px;
+        }
+        
+        .foil-subtitle-text {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        
+        .foil-hero-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .foil-info-section {
+            padding: 80px 0;
+            background-color: #fff;
+        }
+        
+        .foil-info-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #7e9479;
+            margin-bottom: 20px;
+        }
+        
+        .foil-info-text {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .foil-learn-btn {
+            background-color: #7e9479;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+        }
+        
+        .foil-learn-btn:hover {
+            background-color: #555;
+            color: white;
+        }
+        
+        .foil-info-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .foil-gallery-section {
+            padding: 60px 0;
+            background-color: #f8f9fa;
+        }
+        
+        /* Added carousel styles for gallery */
+        .foil-gallery-carousel {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .foil-gallery-slide {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .foil-gallery-item {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        
+        .carousel-indicators {
+            bottom: -40px;
+        }
+        
+        .carousel-indicators [data-bs-target] {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ccc;
+            border: none;
+        }
+        
+        .carousel-indicators .active {
+            background-color: #7e9479;
+        }
+        
+        .foil-pricing-section {
+            padding: 80px 0;
+            background-color: #fff;
+        }
+        
+        .foil-pricing-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #7e9479;
+            margin-bottom: 40px;
+        }
+        
+        .foil-pricing-table {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .foil-pricing-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .foil-pricing-item {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .foil-pricing-cost {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .foil-care-section {
+            padding: 80px 0;
+            background-color: #f8f9fa;
+        }
+        
+        .foil-care-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #7e9479;
+            margin-bottom: 20px;
+        }
+        
+        .foil-care-text {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .foil-care-image {
+            width: 100%;
+            /* height: 400px; */
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .foil-comparison-section {
+            padding: 80px 0;
+            background-color: #fff;
+        }
+        
+        .foil-comparison-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #7e9479;
+            margin-bottom: 20px;
+        }
+        
+        .foil-comparison-text {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .foil-comparison-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .foil-faq-section {
+            padding: 80px 0;
+            background-color: #f8f9fa;
+        }
+        
+        .foil-faq-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 15px;
+        }
+        
+        .foil-faq-text {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .foil-faq-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        /* Added accordion styles for FAQ */
+        .foil-accordion {
+            background: none;
+            border: none;
+        }
+        
+        .foil-accordion .accordion-item {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #eee;
+            border-radius: 0;
+        }
+        
+        .foil-accordion .accordion-button {
+            background: transparent;
+            border: none;
+            padding: 15px 0;
+            font-weight: 500;
+            color: #333;
+            box-shadow: none;
+        }
+        
+        .foil-accordion .accordion-button:not(.collapsed) {
+            background: transparent;
+            color: #7e9479;
+            box-shadow: none;
+        }
+        
+        .foil-accordion .accordion-button:focus {
+            box-shadow: none;
+        }
+        
+        .foil-accordion .accordion-body {
+            padding: 0 0 15px 0;
+            color: #666;
+        }
+        
+        .foil-cta-section {
+            padding: 60px 0;
+            background-color: #fff;
+        }
+        
+        .foil-cta-card {
+            background-color: #7e9479;
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            height: 100%;
+        }
+        
+        .foil-cta-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .foil-cta-text {
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .foil-cta-btn {
+            background-color: white;
+            color: #7e9479;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+        }
+        
+        .foil-help-card {
+            background-color: #f8f9fa;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            height: 100%;
+        }
+        
+        .foil-specialty-section {
+            padding: 80px 0;
+            background-color: #fff;
+        }
+        
+        .foil-specialty-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #7e9479;
+            margin-bottom: 20px;
+        }
+        
+        .foil-specialty-text {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+        
+        .foil-specialty-card {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .foil-specialty-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .foil-specialty-content {
+            padding: 20px;
+        }
+        
+        .foil-specialty-card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #7e9479;
+            margin-bottom: 10px;
+        }
+        
+        .foil-specialty-card-text {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .foil-specialty-link {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+    </style>
+<body>
+    <!-- Top Banner -->
+
+
+<section class="foil-hero-section">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="foil-main-title">{{ service.title }}</h1>
+            <p class="foil-subtitle-text">
+                {% autoescape off %}
+                {{ service.subtitle }}
+                {% endautoescape %}
+            </p>
+        </div>
+        <div class="row justify-content-center mt-5">
+            <div class="col-lg-8">
+                <img src="{{ service.image.url }}" alt="{{ service.title }}" class="foil-hero-image">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<!-- <section class="foil-pricing-section">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="foil-pricing-title">How Much Does It Cost?</h2>
+        </div>
+        <div class="foil-pricing-table">
+            {% if service.setup_price %}
+            <div class="foil-pricing-row">
+                <span class="foil-pricing-item">Setup</span>
+                <span class="foil-pricing-cost">${{ service.setup_price }}</span>
+            </div>
+            {% endif %}
+            {% if service.Per_Color_Price %}
+            <div class="foil-pricing-row">
+                <span class="foil-pricing-item">Per Color</span>
+                <span class="foil-pricing-cost">${{ service.Per_Color_Price }}</span>
+            </div>
+            {% endif %}
+            {% if service.Per_Location_Price %}
+            <div class="foil-pricing-row">
+                <span class="foil-pricing-item">Per Location</span>
+                <span class="foil-pricing-cost">${{ service.Per_Location_Price }}</span>
+            </div>
+            {% endif %}
+            {% if service.Rush %}
+            <div class="foil-pricing-row">
+                <span class="foil-pricing-item">Rush</span>
+                <span class="foil-pricing-cost">{{ service.Rush }}%</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section> -->
+
+<!-- Care Sections (loop over ServiceSection) -->
+{% for section in sections %}
+<section class="foil-care-section">
+    <div class="container">
+        <div class="row align-items-center">
+            {% if forloop.counter|divisibleby:2 %}
+                <!-- Even section: image on left -->
+                <div class="col-lg-6 order-lg-1">
+                    <img src="{{ section.image.url }}" alt="{{ section.title }}" class="foil-care-image">
+                </div>
+                <div class="col-lg-6 order-lg-2">
+                    <h2 class="foil-care-title">{{ section.title }}</h2>
+                    <p class="foil-care-text">
+                        {% autoescape off %}
+                        {{ section.subtitle }}
+                        {% endautoescape %}
+                    </p>
+                </div>
+            {% else %}
+                <!-- Odd section: image on right -->
+                <div class="col-lg-6 order-lg-1">
+                    <h2 class="foil-care-title">{{ section.title }}</h2>
+                    <p class="foil-care-text">
+                        {% autoescape off %}
+                        {{ section.subtitle }}
+                        {% endautoescape %}
+                    </p>
+                </div>
+                <div class="col-lg-6 order-lg-2">
+                    <img src="{{ section.image.url }}" alt="{{ section.title }}" class="foil-care-image">
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endfor %}
+
+    <!-- <section class="foil-info-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <img src="/static/shop/img/foil.jpg" alt="Screen Printing Materials" class="foil-info-image">
+                </div>
+                <div class="col-lg-6">
+                    <h2 class="foil-info-title">Get to know screen printing.</h2>
+                    <p class="foil-info-text">
+                        Screen printing is a versatile printing technique that uses a mesh screen to transfer ink onto fabric. This method allows for vibrant, long-lasting prints with excellent color opacity and durability. The process involves creating a stencil on a mesh screen, then using a squeegee to push ink through the open areas onto the garment.
+                    </p>
+                    <a href="#" class="foil-learn-btn">Learn More</a>
+                    <span class="ms-3 text-muted">What is screen printing? The Process →</span>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Updated Gallery Section with Bootstrap Carousel -->
+    <!-- <section class="foil-gallery-section">
+        <div class="container">
+            <div id="foilGalleryCarousel" class="carousel slide foil-gallery-carousel" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="foil-gallery-slide">
+                            <img src="/static/shop/img/foil.jpg" alt="Single Color Screen Print" class="foil-gallery-item">
+                            <img src="/static/shop/img/metallic_printing.jpg" alt="Multi-Color Design" class="foil-gallery-item">
+                            <img src="/static/shop/img/toanl.jpg" alt="Logo Screen Print" class="foil-gallery-item">
+                            <img src="/static/shop/img/glow_dark.jpg" alt="Text Screen Print" class="foil-gallery-item">
+                            <img src="/static/shop/img/metallic_printing.jpg" alt="Graphic Design Print" class="foil-gallery-item">
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="foil-gallery-slide">
+                            <img src="/static/shop/img/1900x700.png" alt="Blue Ink Print" class="foil-gallery-item">
+                            <img src="/static/shop/img/1900x700.png" alt="Green Screen Print" class="foil-gallery-item">
+                            <img src="/static/shop/img/1900x700.png" alt="Purple Design Print" class="foil-gallery-item">
+                            <img src="/static/shop/img/1900x700.png" alt="Red Logo Print" class="foil-gallery-item">
+                            <img src="/static/shop/img/1900x700.png" alt="Black Ink Design" class="foil-gallery-item">
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#foilGalleryCarousel" data-bs-slide-to="0" class="active"></button>
+                    <button type="button" data-bs-target="#foilGalleryCarousel" data-bs-slide-to="1"></button>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+    
+
+    
+
+    <!-- Comparison Section -->
+    <!-- <section class="foil-comparison-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <img src="/static/shop/img/toanl.jpg" alt="Screen Printing vs Digital Printing" class="foil-comparison-image">
+                </div>
+                <div class="col-lg-6">
+                    <h2 class="foil-comparison-title">Screen Printing vs Digital Printing</h2>
+                    <p class="foil-comparison-text">
+                        Screen printing offers superior durability and vibrant colors, especially for large quantity orders. While digital printing is better for complex designs with many colors, screen printing excels in color opacity, longevity, and cost-effectiveness for bulk orders.
+                    </p>
+                    <a href="#" class="foil-learn-btn">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Updated FAQ Section with Bootstrap Accordion -->
+    <!-- <section class="foil-faq-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <img src="/static/shop/img/metallic_printing.jpg" alt="FAQ About Screen Printing" class="foil-faq-image">
+                </div>
+                <div class="col-lg-6">
+                    <h3 class="foil-faq-title">Screen Printing FAQ</h3>
+                    
+                    <div class="accordion foil-accordion" id="foilFAQ">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    What colors can you print with screen printing?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#foilFAQ">
+                                <div class="accordion-body">
+                                    We can print virtually any color using our extensive Pantone color matching system. From standard colors to custom mixed inks, metallic inks, and specialty inks like glow-in-the-dark or puff ink, we have options to bring your design to life.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    What garment colors work best with screen printing?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#foilFAQ">
+                                <div class="accordion-body">
+                                    Screen printing works on all garment colors. Light colored garments show vibrant colors easily, while dark garments may require an underbase (white ink layer) for bright colors. We can print on any fabric color to achieve your desired look.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    What are the advantages of screen printing?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#foilFAQ">
+                                <div class="accordion-body">
+                                    Screen printing offers excellent durability, vibrant colors, and cost-effectiveness for larger quantities. The ink sits on top of the fabric creating opacity and longevity. It's ideal for simple to moderately complex designs and provides consistent results across large orders.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    How should I prepare my artwork for screen printing?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#foilFAQ">
+                                <div class="accordion-body">
+                                    Provide artwork in vector format (AI, EPS, or PDF) at 300 DPI minimum. Each color should be on a separate layer. Keep designs simple with solid colors for best results. Our art team will review and optimize your design for screen printing if needed.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                    What's the minimum order quantity for screen printing?
+                                </button>
+                            </h2>
+                            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#foilFAQ">
+                                <div class="accordion-body">
+                                    Our minimum order is typically 12 pieces per design. Screen printing becomes more cost-effective with larger quantities due to setup costs. For smaller quantities, consider our digital printing options which have lower minimums.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- CTA Section -->
+    <!-- <section class="foil-cta-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="foil-cta-card">
+                        <div class="d-flex justify-content-center mb-3">
+                            <img src="/static/shop/img/1900x700.png" alt="Custom Apparel Team" style="height: 60px;">
+                        </div>
+                        <h3 class="foil-cta-title">Contact a Custom Apparel Pro</h3>
+                        <p class="foil-cta-text">Get expert advice on your custom printing project</p>
+                        <a href="#" class="foil-cta-btn">Start Your Project</a>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="foil-help-card">
+                        <h3 class="foil-cta-title text-dark">Help Center</h3>
+                        <p class="foil-cta-text text-muted">Find answers to common questions</p>
+                        <a href="#" class="foil-learn-btn">Get Help</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Specialty Printing Section -->
+    <section class="foil-specialty-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="foil-specialty-title">Other Services</h2>
+                <p class="foil-specialty-text">
+                    Explore our other specialty printing services to add unique finishes and effects to your custom apparel.
+                </p>
+                <!-- <a href="#" class="foil-learn-btn">View All</a> -->
+            </div>
+            <div class="row">
+                {% for i in services %}
+                <div class="col-lg-4">
+                    <div class="foil-specialty-card">
+                        <img src="{{i.image.url}}" alt="{{i.title}}" class="foil-specialty-image">
+                        <div class="foil-specialty-content">
+                            <h4 class="foil-specialty-card-title">{{i.title}}</h4>
+                            <p class="foil-specialty-card-text">
+                                {% autoescape off %}
+                                {{i.subtitle}}
+                                {% endautoescape %}
+                            
+                            </p>
+                            <a href="/service_detail/{{i.id}}" class="foil-specialty-link">Learn More →</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <!-- <div class="col-lg-4">
+                    <div class="foil-specialty-card">
+                        <img src="/static/shop/img/glow_dark.jpg" alt="Digital Printing Service" class="foil-specialty-image">
+                        <div class="foil-specialty-content">
+                            <h4 class="foil-specialty-card-title">Digital Printing</h4>
+                            <p class="foil-specialty-card-text">Perfect for complex designs with multiple colors and photo-realistic prints. Ideal for...</p>
+                            <a href="#" class="foil-specialty-link">Learn More →</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="foil-specialty-card">
+                        <img src="/static/shop/img/toanl.jpg" alt="Heat Transfer Service" class="foil-specialty-image">
+                        <div class="foil-specialty-content">
+                            <h4 class="foil-specialty-card-title">Heat Transfer</h4>
+                            <p class="foil-specialty-card-text">Quick turnaround option for single color designs and text. Perfect for names, numbers, and simple graphics.</p>
+                            <a href="#" class="foil-specialty-link">Learn More →</a>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </section>
+
+   
+    <script>
+        
+
+
+        $(document).ready(function() {
+    // Animate testimonial photos on scroll
+    // $(window).scroll(function() {
+    //     var scrollTop = $(window).scrollTop();
+    //     var windowHeight = $(window).height();
+        
+    //     $('.testimonial-photo').each(function(index) {
+    //         var elementTop = $(this).offset().top;
+            
+    //         if (elementTop < scrollTop + windowHeight && elementTop + $(this).height() > scrollTop) {
+    //             $(this).css({
+    //                 'transform': 'translateY(' + (scrollTop * 0.1 * (index + 1)) + 'px)',
+    //                 'transition': 'transform 0.3s ease'
+    //             });
+    //         }
+    //     });
+    // });
+
+    // Hover effects for feature items
+    // $('.feature-item').hover(
+    //     function() {
+    //         $(this).find('.feature-icon').css('transform', 'scale(1.1)');
+    //     },
+    //     function() {
+    //         $(this).find('.feature-icon').css('transform', 'scale(1)');
+    //     }
+    // );
+
+    // Button hover animations
+    $('.btn-success-stories').hover(
+        function() {
+            $(this).css('transform', 'translateY(-2px)');
+        },
+        function() {
+            $(this).css('transform', 'translateY(0)');
+        }
+    );
+
+    // Animate step numbers on scroll
+    $(window).scroll(function() {
+        $('.step-number').each(function() {
+            var elementTop = $(this).offset().top;
+            var elementBottom = elementTop + $(this).outerHeight();
+            var viewportTop = $(window).scrollTop();
+            var viewportBottom = viewportTop + $(window).height();
+
+            if (elementBottom > viewportTop && elementTop < viewportBottom) {
+                $(this).addClass('animate-pulse');
+            }
+        });
+    });
+
+    // Add pulse animation class
+    $('<style>')
+        .prop('type', 'text/css')
+        .html(`
+            .animate-pulse {
+                animation: pulse 2s infinite;
+            }
+            
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        `)
+        .appendTo('head');
+
+    // Smooth scrolling for footer links
+    $('.footer-column a').on('click', function(e) {
+        var href = $(this).attr('href');
+        if (href.startsWith('#')) {
+            e.preventDefault();
+            var target = $(href);
+            if (target.length) {
+                $('html, body').animate({
+                    scrollTop: target.offset().top - 100
+                }, 800);
+            }
+        }
+    });
+
+    // Add loading animation for testimonial photos
+    $('.testimonial-photo').each(function(index) {
+        $(this).css({
+            'opacity': '0',
+            'transform': 'scale(0.8)'
+        });
+        
+        setTimeout(() => {
+            $(this).css({
+                'opacity': '1',
+                'transform': 'scale(1)',
+                'transition': 'all 0.5s ease'
+            });
+        }, index * 100);
+    });
+});
+
+$(document).ready(function() {
+    let currentSlide = 0;
+    const totalSlides = $('.review-card').length;
+    let isAnimating = false; // Prevent multiple clicks during animation
+    
+    // Initialize slider
+    function initSlider() {
+        $('.review-card').removeClass('active');
+        $('.review-image').removeClass('active');
+        $('.review-card').eq(currentSlide).addClass('active');
+        $('.review-image').eq(currentSlide).addClass('active');
+    }
+    
+    // Slide to next
+    function slideNext() {
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        const currentCard = $('.review-card.active');
+        const currentImage = $('.review-image.active');
+        const nextIndex = (currentSlide + 1) % totalSlides;
+        const nextCard = $('.review-card').eq(nextIndex);
+        const nextImage = $('.review-image').eq(nextIndex);
+        
+        // Position next elements to the left (off-screen)
+        nextCard.css({
+            'transform': 'translateX(-100%)',
+            'opacity': '0'
+        }).addClass('active');
+        
+        nextImage.css({
+            'transform': 'translateX(-100%)',
+            'opacity': '0'
+        }).addClass('active');
+        
+        // Animate current elements out to the right
+        currentCard.animate({
+            'transform': 'translateX(100%)',
+            'opacity': '0'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+        
+        currentImage.animate({
+            'transform': 'translateX(100%)',
+            'opacity': '0'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+        
+        // Animate next elements in from the left
+        nextCard.animate({
+            'transform': 'translateX(0%)',
+            'opacity': '1'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+        
+        nextImage.animate({
+            'transform': 'translateX(0%)',
+            'opacity': '1'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            },
+            complete: function() {
+                // Clean up after animation
+                currentCard.removeClass('active').css({
+                    'transform': 'translateX(100%)',
+                    'opacity': '0'
+                });
+                currentImage.removeClass('active').css({
+                    'transform': 'translateX(100%)',
+                    'opacity': '0'
+                });
+                
+                currentSlide = nextIndex;
+                isAnimating = false;
+            }
+        });
+    }
+    
+    // Slide to previous
+    function slidePrev() {
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        const currentCard = $('.review-card.active');
+        const currentImage = $('.review-image.active');
+        const prevIndex = currentSlide === 0 ? totalSlides - 1 : currentSlide - 1;
+        const prevCard = $('.review-card').eq(prevIndex);
+        const prevImage = $('.review-image').eq(prevIndex);
+        
+        // Position previous elements to the right (off-screen)
+        prevCard.css({
+            'transform': 'translateX(100%)',
+            'opacity': '0'
+        }).addClass('active');
+        
+        prevImage.css({
+            'transform': 'translateX(100%)',
+            'opacity': '0'
+        }).addClass('active');
+        
+        // Animate current elements out to the left
+        currentCard.animate({
+            'transform': 'translateX(-100%)',
+            'opacity': '0'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+        
+        currentImage.animate({
+            'transform': 'translateX(-100%)',
+            'opacity': '0'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+        
+        // Animate previous elements in from the right
+        prevCard.animate({
+            'transform': 'translateX(0%)',
+            'opacity': '1'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+        
+        prevImage.animate({
+            'transform': 'translateX(0%)',
+            'opacity': '1'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            },
+            complete: function() {
+                // Clean up after animation
+                currentCard.removeClass('active').css({
+                    'transform': 'translateX(-100%)',
+                    'opacity': '0'
+                });
+                currentImage.removeClass('active').css({
+                    'transform': 'translateX(-100%)',
+                    'opacity': '0'
+                });
+                
+                currentSlide = prevIndex;
+                isAnimating = false;
+            }
+        });
+    }
+    
+    // Event listeners
+    $('#nextBtn').on('click', function() {
+        slideNext();
+    });
+    
+    $('#prevBtn').on('click', function() {
+        slidePrev();
+    });
+    
+    // Keyboard navigation
+    $(document).on('keydown', function(e) {
+        if (e.key === 'ArrowRight') {
+            slideNext();
+        } else if (e.key === 'ArrowLeft') {
+            slidePrev();
+        }
+    });
+    
+    // Auto-slide functionality (optional - you can remove this if not needed)
+    let autoSlideInterval;
+    
+    function startAutoSlide() {
+        autoSlideInterval = setInterval(slideNext, 5000); // 5 seconds
+    }
+    
+    function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
+    }
+    
+    // Start auto-slide (comment out if you don't want auto-slide)
+    // startAutoSlide();
+    
+    // Pause auto-slide on hover
+    $('.review-content').hover(
+        function() {
+            stopAutoSlide();
+        },
+        function() {
+            // startAutoSlide(); // Uncomment if you want auto-slide
+        }
+    );
+    
+    // Button hover effects
+    $('.slider-btn').hover(
+        function() {
+            $(this).css('transform', 'scale(1.1)');
+        },
+        function() {
+            $(this).css('transform', 'scale(1)');
+        }
+    );
+    
+    // Touch/swipe support for mobile
+    let startX = 0;
+    let endX = 0;
+    
+    $('.review-card-container, .review-image-container').on('touchstart', function(e) {
+        startX = e.originalEvent.touches[0].clientX;
+    });
+    
+    $('.review-card-container, .review-image-container').on('touchend', function(e) {
+        endX = e.originalEvent.changedTouches[0].clientX;
+        handleSwipe();
+    });
+    
+    function handleSwipe() {
+        const threshold = 50; // Minimum swipe distance
+        const diff = startX - endX;
+        
+        if (Math.abs(diff) > threshold) {
+            if (diff > 0) {
+                // Swiped left - go to next
+                slideNext();
+            } else {
+                // Swiped right - go to previous
+                slidePrev();
+            }
+        }
+    }
+    
+    // Initialize the slider
+    initSlider();
+});
+
+//   const hamburgerBtn = document.getElementById('hamburgerBtn');
+//   const mobileMenu = document.getElementById('mobileMenu');
+//   const closeMenuBtn = document.getElementById('closeMenuBtn');
+
+//   hamburgerBtn.addEventListener('click', () => {
+//     mobileMenu.classList.add('open');
+//   });
+
+//   closeMenuBtn.addEventListener('click', () => {
+//     mobileMenu.classList.remove('open');
+//   });
+    </script>
+</body>
+{% endblock %}

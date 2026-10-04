@@ -1,0 +1,594 @@
+{% extends 'shop/base.html' %}
+{% block head %}
+    <title>{{i.meta_title}}</title>
+    <meta name="description" content="{{i.meta_description}}">
+{% endblock head %}
+{% block body %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+    <style>
+        .church-merch-container {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .church-merch-breadcrumb {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .church-merch-breadcrumb a {
+            color: #666;
+            text-decoration: none;
+        }
+        
+        .church-merch-main-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+        
+        .church-merch-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .church-merch-hero-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .church-merch-author-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        
+        .church-merch-author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            object-fit: cover;
+        }
+        
+        .church-merch-author-info h6 {
+            margin: 0;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .church-merch-author-info small {
+            color: #666;
+        }
+        
+        .church-merch-sidebar {
+            position: sticky;
+            /* top: 2rem; */
+            height: fit-content;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .church-merch-sidebar h5 {
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        .church-merch-nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .church-merch-nav-item {
+            margin-bottom: 0.8rem;
+        }
+        
+        .church-merch-nav-link {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            display: block;
+            border-left: 3px solid transparent;
+            padding-left: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .church-merch-nav-link:hover,
+        .church-merch-nav-link.active {
+            color: #7e9479;
+            border-left-color: #7e9479;
+            background: #7e947917;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .church-merch-content-section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 2rem;
+        }
+        
+        .church-merch-section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        .church-merch-content-text {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+        
+        .church-merch-highlight-text {
+            background: linear-gradient(120deg, #7e947917, #7e947917);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .church-merch-cta-section {
+            background: #7e9479;
+            color: white;
+            padding: 3rem;
+            border-radius: 16px;
+            text-align: center;
+            margin: 4rem 0;
+        }
+        .main_container {
+    padding: 0px 102px;
+}
+        
+        .church-merch-cta-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .church-merch-cta-text {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+        
+        .church-merch-cta-button {
+            background: white;
+            color: #7e9479;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .church-merch-cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            color: #d35400;
+        }
+        
+        .church-merch-more-articles {
+            margin-top: 5rem;
+            padding-top: 3rem;
+            border-top: 2px solid #f1f1f1;
+        }
+        
+        .church-merch-more-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: #2c3e50;
+        }
+        
+        .church-merch-article-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .church-merch-article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .church-merch-article-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .church-merch-article-content {
+            padding: 1.5rem;
+        }
+        
+        .church-merch-article-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .church-merch-article-excerpt {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .church-merch-main-title {
+                font-size: 2rem;
+            }
+            .church-merch-cta-section{
+                padding: 2rem;
+            }
+            .church-merch-cta-title{
+                font-size: 1.5rem;
+            }
+            
+            .church-merch-sidebar {
+                position: static;
+                margin-bottom: 2rem;
+            }
+            
+            .church-merch-hero-image {
+                height: 300px;
+            }
+        }
+    </style>
+<body>
+    <!-- Top Banner -->
+
+
+  <div class="church-merch-container">
+        <div class="container-fluid main_container">
+            <!-- Breadcrumb -->
+            <div class="church-merch-breadcrumb">
+                <a href="/">Home</a> > <a href="#">Get Apparel For</a>
+            </div>
+            
+            <!-- Main Title -->
+            <h1 class="church-merch-main-title">{{i.title}}</h1>
+            {% autoescape off %}
+            <p class="church-merch-subtitle">{{i.subtitle}}</p>
+            {% endautoescape %}
+            
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-3 col-md-4">
+                    <div class="church-merch-sidebar" id="sidebar">
+                        <h5>Contents</h5>
+                        <ul class="church-merch-nav-list">
+                            {% for m in i.sections.all %}
+                            <li class="church-merch-nav-item">
+                                <a href="#sec-{{m.id}}" class="church-merch-nav-link">{{forloop.counter}}. {{m.title}}</a>
+                            </li>
+                            {% endfor %}
+                            <!-- <li class="church-merch-nav-item">
+                                <a href="#boxy-tshirts" class="church-merch-nav-link">2. Boxy T-Shirts</a>
+                            </li>
+                            <li class="church-merch-nav-item">
+                                <a href="#trucker-hats" class="church-merch-nav-link">3. Trucker Hats</a>
+                            </li>
+                            <li class="church-merch-nav-item">
+                                <a href="#dad-caps" class="church-merch-nav-link">4. Dad Caps</a>
+                            </li>
+                            <li class="church-merch-nav-item">
+                                <a href="#tote-bags" class="church-merch-nav-link">5. Tote Bags</a>
+                            </li> -->
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Main Content -->
+                <div class="col-lg-9 col-md-8">
+                    <!-- Hero Image -->
+                    <img src="/media/{{i.image}}" alt="{{i.title}}" class="church-merch-hero-image">
+                    
+                    <!-- Author Section -->
+                    <!-- <div class="church-merch-author-section">
+                        <img src="/static/shop/img/1900x700.png" alt="Colleen McCaffrey" class="church-merch-author-avatar">
+                        <div class="church-merch-author-info">
+                            <h6>Colleen McCaffrey</h6>
+                            <small>Content Writer</small>
+                        </div>
+                    </div> -->
+                    
+                    <!-- Introduction -->
+                    <div class="church-merch-content-text">
+                        {% autoescape off %}
+                        {{i.description}}
+                        {% endautoescape %}
+                        <!-- {{i.description}} -->
+                    </div>
+                        
+                    <!--<div class="church-merch-content-text">
+                        Real Thread has been in the custom apparel industry since 2009, and we've helped churches and organizations get custom apparel orders since from the beginning.
+                    </div>
+                    
+                    <div class="church-merch-content-text">
+                        We narrowed down some current church apparel trends, read along to learn about some options you and your community are sure to love.
+                    </div> -->
+                    
+                    <!-- Pocket Tees Section -->
+                     <!-- {% for m in i.sections.all %}
+                     <div class="church-merch-content-text">
+                        <h3>{{m.title}}</h3>
+                        {% autoescape off %}
+                        {{m.description}}
+                        {% endautoescape %}
+                        </div>
+                    {% endfor %} -->
+
+                    {% for m in i.sections.all %}
+                     <section id="sec-{{m.id}}" class="church-merch-content-section">
+                        <h2 class="church-merch-section-title">{{m.title}}</h2>
+                        {% autoescape off %}
+                        {{m.description}}
+                        {% endautoescape %}
+                    </section>
+                    {% endfor %}
+                    
+                    <!-- Boxy T-Shirts Section -->
+                    <!-- <section id="boxy-tshirts" class="church-merch-content-section">
+                        <h2 class="church-merch-section-title">Boxy T-Shirts</h2>
+                        <div class="church-merch-content-text">
+                            Recently speaking, boxy oversized t-shirts have become increasingly popular over time in the church merch world. Youth groups, worship leaders, and teenage churchgoers alike are rocking these cozy tees.
+                        </div>
+                        <div class="church-merch-content-text">
+                            They are often popular for custom church apparel because they provide a modest and comfortable option for those who attend church services. They're also great for representing your congregation in a casual, laid-back way. Boxy tees provide a relaxed fit that can be comfortable for people of all ages and sizes, making them a popular choice for church apparel that aims to be inclusive and comfortable option for most people!
+                        </div>
+                        <div class="church-merch-content-text">
+                            Additionally, <span class="church-merch-highlight-text">boxy shirts</span> are popular for church apparel because they can be easily customized with religious imagery or messaging. Many churches use print inspirational quotes or Bible verses on these shirts, making them a popular choice for churchgoers who want to wear clothing that expresses their faith.
+                        </div>
+                    </section> -->
+                    
+                    <!-- Trucker Hats Section -->
+                    <!-- <section id="trucker-hats" class="church-merch-content-section">
+                        <h2 class="church-merch-section-title">Trucker Hats</h2>
+                        <div class="church-merch-content-text">
+                            Trucker hats are baseball caps that became popular in the 1960s and 1990s but have made a recent resurgence in recent years. They are characterized by mesh back panels, which provide ventilation and make them comfortable in hot weather. The front panels are usually foam and often printed with logos, images, or slogans.
+                        </div>
+                        <div class="church-merch-content-text">
+                            Trucker hats with customized designs featuring the church's name, logo, or message could be a popular and trendy option, especially among younger Gen Z and Millennial audiences.
+                        </div>
+                        <div class="church-merch-content-text">
+                            Whether you have these hats printed or <span class="church-merch-highlight-text">embroidered</span>, they are a comfortable, casual, and stylish option for your congregation. Perfect for youth groups, serving teams, mission trips, and more.
+                        </div>
+                    </section> -->
+                    
+                    <!-- Dad Caps Section -->
+                    <!-- <section id="dad-caps" class="church-merch-content-section">
+                        <h2 class="church-merch-section-title">Dad Caps</h2>
+                        <div class="church-merch-content-text">
+                            Dad hats have recently become a popular option for custom church apparel. These hats are typically unstructured with a curved brim and a low profile, making them comfortable and easy to wear. They often feature a snapback closure, which allows for a more adjustable fit.
+                        </div>
+                        <div class="church-merch-content-text">
+                            These hats can be customized with various designs and messaging, making them popular for churches looking to create unique and personalized items for their congregation, whether that's your church's logo or a beloved verse.
+                        </div>
+                        <div class="church-merch-content-text">
+                            Dad hats are versatile and can be worn by people of all ages and genders, making them a great option for churches that want to offer merchandise that appeals to a wide range of members. They can be worn casually or dressed up, making them a popular choice for churchgoers who want to show their faith outside the church setting.
+                        </div>
+                        <div class="church-merch-content-text">
+                            Overall, dad hats can be a great addition to custom church apparel, offering a trendy and personalized option for churchgoers looking to show their support and affiliation with their community.
+                        </div>
+                    </section> -->
+                    
+                    <!-- Tote Bags Section -->
+                    <!-- <section id="tote-bags" class="church-merch-content-section">
+                        <h2 class="church-merch-section-title">Tote Bags</h2>
+                        <div class="church-merch-content-text">
+                            <span class="church-merch-highlight-text">Tote bags</span> can be a great option for church merchandise as they are practical, versatile, and environmentally friendly. Customized tote bags with a design or message that reflects the church's mission or values can serve as useful and meaningful items for the church and its community members.
+                        </div>
+                        <div class="church-merch-content-text">
+                            Tote bags are often used as a reusable alternative to plastic bags, making them an eco-friendly option for carrying groceries, books, or other items. Customized tote bags with the church's logo or message can also serve as a way to promote the church's brand and mission and can be given out as events or used as a fundraising item.
+                        </div>
+                        <div class="church-merch-content-text">
+                            When designing tote bags for church merchandise, it's important to consider the target audience and the purpose of the merchandise. The design should be attractive, functional, and reflect your message. Tote bags should be made of durable, high-quality materials to withstand frequent use.
+                        </div>
+                    </section> -->
+                    
+                    <!-- Call to Action Section -->
+                    <!-- <div class="church-merch-cta-section">
+                        <h3 class="church-merch-cta-title">Now that you've learned about some popular church apparel trends, are you inspired?</h3>
+                        <p class="church-merch-cta-text">When designing and marketing church apparel, it's important to consider the values and mission of the church and ensure that the products align with them.</p>
+                        <p class="church-merch-cta-text">Whether you need 20 tote bags or 2000 t-shirts for your church, we'll handle the embroidery and screen printing!</p>
+                        <p class="church-merch-cta-text">Our team of printing pros and product specialists is here to help you determine what garments are best for you and your community's needs, and we know when you need it.</p>
+                        <a href="#" class="church-merch-cta-button">We've got answers!</a>
+                    </div> -->
+                    
+                    <!-- More Articles Section -->
+                    <!-- <div class="church-merch-more-articles mb-5">
+                        <h4 class="church-merch-more-title">More Trends Articles</h4>
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="church-merch-article-card">
+                                    <img src="https://s3.amazonaws.com/a.storyblok.com/f/263304/1600X901/62dee37314/real-thread-blog-header-church-merch.jpg?auto=compress,format&q=75&w=1920" alt="Group wearing orange shirts" class="church-merch-article-image">
+                                    <div class="church-merch-article-content">
+                                        <h5 class="church-merch-article-title">Team Building Through Custom Apparel</h5>
+                                        <p class="church-merch-article-excerpt">Discover how custom apparel can strengthen community bonds and create lasting memories for your church group.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="church-merch-article-card">
+                                    <img src="https://s3.amazonaws.com/a.storyblok.com/f/263304/1600X901/62dee37314/real-thread-blog-header-church-merch.jpg?auto=compress,format&q=75&w=1920" alt="Vintage church merch" class="church-merch-article-image">
+                                    <div class="church-merch-article-content">
+                                        <h5 class="church-merch-article-title">Vintage-Inspired Church Merchandise</h5>
+                                        <p class="church-merch-article-excerpt">Explore the growing trend of retro and vintage-style designs in modern church apparel and accessories.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="church-merch-article-card">
+                                    <img src="https://s3.amazonaws.com/a.storyblok.com/f/263304/1600X901/62dee37314/real-thread-blog-header-church-merch.jpg?auto=compress,format&q=75&w=1920" alt="Eco-friendly apparel" class="church-merch-article-image">
+                                    <div class="church-merch-article-content">
+                                        <h5 class="church-merch-article-title">Sustainable Church Apparel Options</h5>
+                                        <p class="church-merch-article-excerpt">Learn about environmentally conscious choices for your church merchandise that align with stewardship values.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Reviews Section -->
+<!-- <section class="reviews-section">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">
+                <i class="fas fa-star"></i>
+                Testimonial
+            </div>
+            <h2 class="section-title">Our Google & Yelp Reviews are Awesome!</h2>
+            <p class="section-subtitle">Bulk orders, fast turnaround and no headaches - that's why they keep coming back.</p>
+        </div>
+        
+        <div class="review-content">
+            <div class="review-image">
+                <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Team wearing custom shirts" class="team-photo">
+            </div>
+            
+            <div class="review-details">
+                <div class="review-card">
+                    <h4 class="reviewer-name">Fizza Jones</h4>
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-text">I live in Alberta and I needed 14 Custom T-shirts for a wedding I was attending in Toronto. Downside was it was very short notice but I was so lucky to find Remark Tees who made the entire process so easy & seamless! I was in contact with them throughout and they delivered exactly what I wanted. The t-shirts were a ready on time!</p>
+                </div>
+                
+                <div class="review-stats">
+                    <div class="stat-box">
+                        <h3 class="stat-number">100,000+</h3>
+                        <p class="stat-label">Satisfied Clients</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 class="stat-number">1,950</h3>
+                        <p class="stat-label">Positive Reviews</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section> -->
+
+
+
+    <script>
+        // Register ScrollTrigger plugin
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.church-merch-nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    gsap.to(window, {
+                        duration: 1,
+                        scrollTo: {
+                            y: targetElement,
+                            offsetY: 100
+                        },
+                        ease: "power2.inOut"
+                    });
+                }
+            });
+        });
+        
+        // Active section highlighting
+        const sections = document.querySelectorAll('.church-merch-content-section');
+        const navLinks = document.querySelectorAll('.church-merch-nav-link');
+        
+        sections.forEach((section, index) => {
+            ScrollTrigger.create({
+                trigger: section,
+                start: "top center",
+                end: "bottom center",
+                onEnter: () => {
+                    navLinks.forEach(link => link.classList.remove('active'));
+                    navLinks[index].classList.add('active');
+                },
+                onEnterBack: () => {
+                    navLinks.forEach(link => link.classList.remove('active'));
+                    navLinks[index].classList.add('active');
+                }
+            });
+        });
+        
+        // Sticky sidebar with GSAP ScrollTrigger
+        ScrollTrigger.matchMedia({
+  "(min-width: 768px)": function() {
+    ScrollTrigger.create({
+      trigger: ".church-merch-container",
+      start: "top top",
+      end: "bottom bottom",
+      pin: "#sidebar",
+      pinSpacing: false
+    });
+  }
+});
+        
+        // Smooth animations for article cards
+        // gsap.from('.church-merch-article-card', {
+        //     duration: 0.8,
+        //     y: 50,
+        //     opacity: 0,
+        //     stagger: 0.2,
+        //     scrollTrigger: {
+        //         trigger: '.church-merch-more-articles',
+        //         start: 'top 80%',
+        //         end: 'bottom 20%',
+        //         toggleActions: 'play none none reverse'
+        //     }
+        // });
+        
+        // CTA section animation
+        gsap.from('.church-merch-cta-section', {
+            duration: 1,
+            scale: 0.95,
+            opacity: 0,
+            scrollTrigger: {
+                trigger: '.church-merch-cta-section',
+                start: 'top 80%',
+                end: 'bottom 20%',
+                toggleActions: 'play none none reverse'
+            }
+        });
+    </script>
+</body>
+{% endblock %}

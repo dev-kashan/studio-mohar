@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+
+ 
+
+    <title>Order Success</title>
+</head>
+<body style="    background: #afafaf;
+padding: 25px;    width: 740px;
+margin: auto;">
+
+
+    <table  class='m-mt' width="700px" style="margin: auto;" cellpadding="0" cellspacing="0" border="0" class="backgroundTable main-temp">
+        <tbody>
+
+
+            <tr>
+                <td>
+                    <table  width="600" align="center" cellpadding="15" cellspacing="0" border="0" class="devicewidth" style="background-color: #ffffff;">
+                        <tbody id="invoice">
+                            <!-- Start header Section -->
+                            <tr>
+                                <td style="padding-top: 30px;">
+                                    <table width="600" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="border-bottom: 1px solid #eeeeee;">
+                                        <tbody>
+                                            
+
+                                            <tr>
+                                                <td style="padding-bottom: 10px;">
+                                                    <a href="https://{{request.get_host}}/"><img src="https://{{request.get_host}}/media/{{logo}}" alt="Ruii Logo" width="200px" /></a>
+                                                    <span style="float:right; font-size: 17px;
+                                                    color: #ff1800;
+                                                    font-family: 'Poppins';
+                                                    margin-top: 19px;" >#Order Id: {{order_id}}</span>
+                                                </td>
+                                            </tr>
+
+                                            <!-- <tr>
+                                                <td style="padding-bottom: 10px;">
+                                                    <p style="    margin: 0px 0px;
+                                                    font-family: sans-serif;
+                                                    text-align: center;">Order Status</p>
+                                                   <div style="    font-size: 35px;
+                                                   font-family: sans-serif;
+                                                   text-align: center;
+                                                   color: #e9c000;">In Process</div>
+                                                </td>
+                                            </tr> -->
+
+                                           
+                                            <tr>
+                                            <td style="font-size: 20px; line-height: 18px; color: #1d1d1d; font-weight: 600;">
+                                                Thank you for your purchase!
+                                            </td>
+                                            </tr>
+
+                                            <tr>
+                                            <td style="font-size: 14px; line-height: 18px; color: #666666; padding: 10px 0;">
+                                                We’ve successfully received your order. Our design team will carefully review the details, and once everything looks good, we’ll confirm it and notify you as soon as it leaves our warehouse.
+                                            </td>
+                                            </tr>
+
+                                            <tr>
+                                            <td style="font-size: 14px; line-height: 18px; color: #666666; padding: 10px 0;">
+                                                In the meantime, feel free to browse our store for more custom pieces or reach out if you have any questions about your order.
+                                            </td>
+                                            </tr>
+
+                                            <tr>
+                                            <td style="font-size: 14px; line-height: 18px; color: #666666; padding: 10px 0;">
+                                                Thank you for choosing Studio Mohar — proudly Canadian, crafted with care.
+                                            </td>
+                                            </tr>
+                                            <!-- <tr>
+                                                <td style="font-size: 14px; line-height: 18px; color: #666666;">
+                                                    Canada.
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 14px; line-height: 18px; color: #666666;">
+                                                    Email: design@studiomohar.ca
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 25px;">
+                                                    <strong>Order Date:</strong> {{date}}
+                                                </td>
+                                            </tr> -->
+                                            <tr>
+                                                <td style="font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 25px;">
+                                                    <strong>Estimated Delivery Time:</strong> {{estimated_delivery_time}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <!-- End header Section -->
+                            
+                            <!-- Start address Section -->
+                            <tr>
+                                <td style="padding-top: 0;">
+                                    <table width="600" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="border-bottom: 1px solid #bbbbbb;">
+                                        <tbody>
+                                            <tr>
+                                                <td style="width: 55%; font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 5px;">
+                                                    Delivery Adderss
+                                                </td>
+                                                <!-- <td style="width: 45%; font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 5px;">
+                                                    Billing Address
+                                                </td> -->
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666;">
+                                                    {{name}}
+                                                </td>
+                                                
+                                                <!-- <td style="width: 45%; font-size: 14px; line-height: 18px; color: #666666;">
+                                                    {{name}}
+                                                </td> -->
+                                            </tr>
+
+                                            <tr>
+                                                <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666;">
+                                                    {{phone}}
+                                                </td>
+                                                <!-- <td style="width: 45%; font-size: 14px; line-height: 18px; color: #666666;">
+                                                    {{phone}}
+                                                </td> -->
+                                            </tr>
+
+
+                                            <tr>
+                                                <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666;">
+                                                    {{address}}
+                                                </td>
+                                                <!-- <td style="width: 45%; font-size: 14px; line-height: 18px; color: #666666;">
+                                                    {{address}}
+                                                </td> -->
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px;">
+                                                    {{city}},{{country}}
+                                                </td>
+                                                <!-- <td style="width: 45%; font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px;">
+                                                    {{city}},{{country}}
+                                                </td> -->
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px;">
+                                                    {{zip_code}}
+                                                </td>
+                                                <!-- <td style="width: 45%; font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px;">
+                                                    {{city}},{{country}}
+                                                </td> -->
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px;">
+                                                    {{province}}
+                                                </td>
+                                                <!-- <td style="width: 45%; font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px;">
+                                                    {{city}},{{country}}
+                                                </td> -->
+                                            </tr>
+                                            
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <!-- End address Section -->
+                            
+                            <!-- Start product Section -->
+                            {% for i in order_items %}
+                               
+                            <tr>
+                                    <td style="padding-top: 0;">
+                                        <table class="table_560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="border-bottom: 1px solid #eeeeee; border: 1px solid lightgrey;">
+                                            <tbody>
+                                                <tr>
+                                                    <td rowspan="4" style="padding-right: 10px; padding-bottom: 10px;">
+                                                    
+                                    
+                                    <img class="pl-2" style="height:80px; width:69px; object-fit:scale-down;"
+                                        src="{{ i.image }}" alt="{{ i.order_item.product_name }}">
+                                
+                            
+
+                                                  
+                                                    </td>
+                                                    <td colspan="2" style="font-size: 14px; font-weight: bold; color: #666666; padding-bottom: 5px;">
+                                                        {{i.order_item.product_name|slice:':30'}}...
+                                                    </td>
+                                                </tr>
+                                                <!-- <tr>
+                                                    <td style="font-size: 14px; line-height: 18px; color: #757575; width: 440px;">
+                                                        Quantity: 
+                                                        
+                                                        {% for cart_item in i.sizes.all %}
+                                                            <p>{{ cart_item.size }} ({{ cart_item.quantity }})</p>
+                                                        {% empty %}
+                                                            <p>No sizes added</p>
+                                                        {% endfor %}
+                                                    </td>
+                                                    <td style="width: 130px;"></td>
+                                                </tr> -->
+                                                <tr>
+                                                    {% if i.color == "undefined" or i.color == "None" or i.color == None or i.color == '' %}
+                                                    <td style="font-size: 14px; line-height: 18px; color: #757575;">
+                                                        
+                                                    </td>
+                                                    {% else %}
+                                                    <td style="font-size: 14px; line-height: 18px; color: #757575;">
+                                                        Color: {{i.color}}
+                                                    </td>
+                                                    {% endif %}
+                                                   
+
+                                                    <!-- <td style="font-size: 14px; line-height: 18px; color: #757575; text-align: right;width: 30%;padding: 0px 6px;">
+                                                        C${{i.unity_price}} Per Unit
+                                                    </td> -->
+                                                </tr>
+                                                <tr>
+                                                    
+                                                    <td style="font-size: 14px; line-height: 18px; color: #757575; padding-bottom: 10px;vertical-align: initial;">
+                                                        Size: 
+                                                        {% for cart_item in i.sizes.all %}
+                                                            <p>{{ cart_item.size }} ({{ cart_item.quantity }}) x C${{ cart_item.unit_price }} = C${{ cart_item.total_price }}</p>
+                                                        {% empty %}
+                                                            <p>No sizes added</p>
+                                                        {% endfor %}
+                                                    </td>
+                                                    
+                                                   
+                                                  
+                                                    <td style="font-size: 14px; line-height: 18px; color: #757575; text-align: right; padding-bottom: 10px;width: 30%;padding: 0px 6px;  ">
+                                                        <b style="color: #666666;">C${{i.item_total}}</b> Total
+                                                    </td>
+                                                </tr>
+
+                                                
+                                            </tbody>
+                                        </table>
+
+                                        
+                                        
+                                    </td>
+                                </tr>
+                       
+                            {% endfor %}
+                            <!-- End product Section -->
+                            
+                            <!-- Start calculation Section -->
+                            <tr>
+                                <td style="padding-top: 0;">
+                                    <table width="600" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="border-bottom: 1px solid #bbbbbb; margin-top: -5px;     background: #e3e3e3;
+                                    padding: 10px;">
+                                        <tbody>
+                                            <tr>
+                                                <td rowspan="5" class="left_width"></td>
+                                                <td style="font-size: 14px; line-height: 18px; color: #666666;">
+                                                    Sub-Total:
+                                                </td>
+                                                <td style="font-size: 14px; line-height: 18px; color: #666666; width: 130px; text-align: right;">
+                                                    {{symbol}}{{SubTotal|floatformat:"2"}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px; border-bottom: 1px solid #eeeeee;padding: 10px;">(+) Delivery Charge:
+                                                </td>
+                                                <td style="font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px; border-bottom: 1px solid #eeeeee; text-align: right;padding: 10px;">
+                                                    
+                                                    {{symbol}}{{Delivery|floatformat:"2"}}
+                                                    
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px; border-bottom: 1px solid #eeeeee;padding: 10px;">(+) Tax:
+                                                </td>
+                                                <td style="font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px; border-bottom: 1px solid #eeeeee; text-align: right;padding: 10px;">
+                                                    {{symbol}}{{tax|floatformat:"2"}}
+                                                </td>
+                                            </tr>
+                                            {% if discount_amount != '0' %}
+                                            <tr>
+                                                <td style="font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px; border-bottom: 1px solid #eeeeee;padding: 10px;">(-) Discount:
+                                                </td>
+                                                <td style="font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px; border-bottom: 1px solid #eeeeee; text-align: right;padding: 10px;">
+                                         
+                                                    -{{symbol}}{{discount_amount}}
+                                                   
+                                                </td>
+                                            </tr>
+                                            {% endif %}
+                                           
+                                            <tr>
+                                                <td style="font-size: 14px; font-weight: bold; line-height: 18px; color: #666666; padding-top: 10px;">
+                                                    Order Total
+                                                </td>
+                                                <td style="font-size: 14px; font-weight: bold; line-height: 18px; color: #666666; padding-top: 10px; text-align: right;">
+                                                    {{symbol}}{{total|floatformat:"2"}}
+                                                </td>
+                                            </tr>
+                                            
+                                            
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <!-- End calculation Section -->
+                            
+                            
+                            <!-- Start payment method Section -->
+                            <tr>
+                                <td style="padding: 0 10px;">
+                                    <table width="600" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+                                        <tbody>
+                                            <!-- <tr>
+                                                <td colspan="2" style="font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 5px;">
+                                                    Payment Method
+                                                </td>
+                                            </tr>
+                                            <tr >
+                                                <td style="width: 55%; font-size: 14px; line-height: 18px; color: #f50000; ">
+                                                    {{Payment_method}}
+                                                </td>
+                                                
+                                            </tr> -->
+                                            
+                                            {% comment %} <tr>
+                                                <td colspan="2" style="width: 100%; text-align: center; font-style: italic; font-size: 13px; font-weight: 600; color: #666666; padding: 15px 0; border-top: 1px solid #eeeeee;">
+                                                    <b style="font-size: 14px; color: black;">Note:</b> 24 Hour Return Policy 
+                                                </td>
+                                            </tr> {% endcomment %}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+
+
+                            <!-- <tr>
+                                <td>
+                                <table width="600" align="center" cellpadding="15" cellspacing="0" border="0" class="devicewidth" style="background-color: #ffffff;">
+                                <tbody >
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <a style="background: #000000;
+                                        color: white !important;
+                                        padding: 10px 33px;
+                                        margin: 0px 11px 0px 0px;
+                                        border: none;
+                                        cursor: pointer;" href="https://{{request.get_host}}/order_tracker/?orderId={{order_id}}&phone={{phone}}">Order Track</a>
+                                    </td>
+                                </tr>  
+                               
+                                </tbody>
+                                </table>
+                                </td>
+                            </tr> -->
+
+                            
+
+
+                            <!-- End payment method Section -->
+
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+
+    
+</body>
+</html>
+
+       
+
+    

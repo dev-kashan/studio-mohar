@@ -1,0 +1,548 @@
+{% extends 'shop/base.html' %}
+{% block body %}
+<style>
+        :root {
+            --primary-color: #7E9479;
+            --background-color: #FAFAF8;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--background-color);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #6a8065 100%);
+            color: white;
+            padding: 120px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="1" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            font-weight: 300;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .story-section {
+            padding: 100px 0;
+        }
+
+        .story-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-light);
+        }
+
+        .milestone {
+            padding: 80px 0;
+            position: relative;
+        }
+
+        .milestone:nth-child(even) {
+            background-color: rgba(126, 148, 121, 0.05);
+        }
+
+        .milestone-content {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .milestone:nth-child(even) .milestone-content {
+            flex-direction: row-reverse;
+        }
+
+        .milestone-text {
+            flex: 1;
+        }
+
+        .milestone-image {
+            flex: 1;
+            position: relative;
+        }
+
+        .milestone-image img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .milestone-image:hover img {
+            transform: translateY(-10px);
+        }
+
+        .milestone-badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .milestone-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+            line-height: 1.2;
+        }
+
+        .milestone-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: var(--text-light);
+        }
+
+        .partnership-section {
+            background: var(--white);
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .partnership-logos {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .logo-placeholder {
+            width: 120px;
+            height: 60px;
+            background: var(--primary-color);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .plus-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin: 0 20px;
+        }
+
+        .decorative-element {
+            position: absolute;
+            right: -50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 150px;
+            height: 150px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%237E9479" stroke-width="2" opacity="0.3"/><circle cx="50" cy="50" r="25" fill="none" stroke="%237E9479" stroke-width="1" opacity="0.5"/><text x="50" y="55" text-anchor="middle" fill="%237E9479" font-size="20" font-weight="bold">10</text></svg>');
+            opacity: 0.6;
+        }
+
+        .founder-quote {
+            background: var(--white);
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .quote-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .quote-text {
+            font-size: 1.3rem;
+            font-style: italic;
+            line-height: 1.6;
+            color: var(--text-dark);
+            margin-bottom: 30px;
+        }
+
+        .quote-author {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .author-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .author-info h5 {
+            margin: 0;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .author-info p {
+            margin: 0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .cta-section {
+            background: #fafaf8;
+            color: black;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .cta-button {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            /* color: var(--primary-color); */
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .milestone-content {
+                flex-direction: column !important;
+                gap: 40px;
+                text-align: center;
+            }
+            
+            .milestone-title {
+                font-size: 2rem;
+            }
+            
+            .partnership-logos {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .decorative-element {
+                display: none;
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+    <body>
+    <!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title text-white">{{ story.title }}</h1>
+            <p class="hero-subtitle">{{ story.short_desc }}</p>
+        </div>
+    </div>
+</section>
+
+<!-- Mission Statement -->
+<section class="story-section">
+    <div class="container">
+        <div class="story-content fade-in">
+            <p>{{ story.long_desc }}</p>
+        </div>
+    </div>
+</section>
+
+<!-- Dynamic Milestones / About Sections -->
+{% for section in sections %}
+<section class="milestone {% cycle '' 'reverse' %}">
+    <div class="container">
+        <div class="milestone-content fade-in">
+            <div class="milestone-text">
+                {% comment %} {% if forloop.first %}
+                    <div class="milestone-badge">Our Founding</div>
+                {% endif %} {% endcomment %}
+                <h2 class="milestone-title">{{ section.title }}</h2>
+                <p class="milestone-description">
+                    {% autoescape off %}
+                    {{ section.description }}
+                    {% endautoescape %}
+                </p>
+            </div>
+            <div class="milestone-image">
+                {% if section.image %}
+                    <img src="{{ section.image.url }}" alt="{{ section.title }}">
+                {% else %}
+                    <img src="/static/shop/img/default.jpg" alt="{{ section.title }}">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endfor %}
+
+     {% comment %} <!-- Founding Story  -->
+    <section class="milestone">
+        <div class="container">
+            <div class="milestone-content fade-in">
+                <div class="milestone-text">
+                    <div class="milestone-badge">Our Founding</div>
+                    <h2 class="milestone-title">The Beginning</h2>
+                    <p class="milestone-description">
+                        We were founded by visionary leaders in 2008. It was called StartUp, and started as a blog and an online community where some of the world's first business experts shared their knowledge. The founding team quickly saw that lack of industry expertise transformed into a great consulting firm and had to be made some of our first 50 hires.
+                    </p>
+                </div>
+                <div class="milestone-image">
+                    <img src="/static/shop/img/foil.jpg" alt="Company Founder">
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <!-- Early Growth  -->
+    <section class="milestone">
+        <div class="container">
+            <div class="milestone-content fade-in">
+                <div class="milestone-text">
+                    <h2 class="milestone-title">Early Growth & Funding</h2>
+                    <p class="milestone-description">
+                        After a glimpse of the demand, we shifted our focus from consulting to our software, taking our first round of funding in 2009 to power the development of new tools and ideas. By 2010, we had grown to 25 employees and were ready to make our mark on the industry. We were contributing to that industry with our educational content in an effort to demystify business best practices when we started being recognized by Fortune.
+                    </p>
+                </div>
+                <div class="milestone-image">
+                    <img src="/static/shop/img/metallic_printing.jpg" alt="Early Team">
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <!-- Series B Funding  -->
+    <section class="milestone">
+        <div class="container">
+            <div class="milestone-content fade-in">
+                <div class="milestone-text">
+                    <div class="milestone-badge">Series B</div>
+                    <h2 class="milestone-title">Series B Funding</h2>
+                    <p class="milestone-description">
+                        In 2012, we raised our Series B round. This significant investment allowed us to expand our team of talented marketing, a concept that opens policy data in favor of attracting customers with that value. We exceeded a Twitter analytics tool called Followerwonk as well as One-click a local SEO tool that has enriched into today's Moz Local.
+                    </p>
+                </div>
+                <div class="milestone-image">
+                    <img src="/static/shop/img/foil.jpg" alt="Office Growth">
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <!-- A New Leaf  -->
+    <section class="milestone">
+        <div class="container">
+            <div class="milestone-content fade-in">
+                <div class="milestone-text">
+                    <h2 class="milestone-title">A New Leaf</h2>
+                    <p class="milestone-description">
+                        With new funding came new staff, and we made an important hire in 2013. We released a suite of campaign-based tools called Moz Analytics that included features for content, social media, and brand management in addition to links and rankings. We also expanded our team to nearly 100 employees and launched Moz Local for all of our SMB customers.
+                    </p>
+                </div>
+                <div class="milestone-image">
+                    <div class="decorative-element"></div>
+                    <img src="/static/shop/img/toanl.jpg" alt="Team Celebration">
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <!-- To Infinity and Beyond  -->
+    <section class="milestone">
+        <div class="container">
+            <div class="milestone-content fade-in">
+                <div class="milestone-text">
+                    <div class="milestone-badge">Growth</div>
+                    <h2 class="milestone-title">To Infinity and Beyond!</h2>
+                    <p class="milestone-description">
+                        With 500 more important than ever, in 2014 we made a difficult but necessary decision to focus on what we do best: search engine optimization. We made dramatic improvements to our core products, Moz Pro and Moz Local, and continue to provide the transparency and a clear understanding of an otherwise complex field. Did we mention we're also hiring?
+                    </p>
+                </div>
+                <div class="milestone-image">
+                    <img src="/static/shop/img/foil.jpg" alt="Innovation">
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <!-- Partnership  -->
+    <section class="partnership-section">
+        <div class="container">
+            <div class="fade-in">
+                <h2 class="milestone-title">Better Together</h2>
+                <p class="milestone-description">In 2018 we acquired STAT Search Analytics, to offer a living together high-quality, actionable data and insights for marketers. Combining Moz's keyword and link research tools with STAT's daily rankings and deep SERP analytics.</p>
+                
+                <div class="partnership-logos">
+                    <div class="logo-placeholder">COMPANY</div>
+                    <i class="fas fa-plus plus-icon"></i>
+                    <div class="logo-placeholder">PARTNER</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <!-- Company Group  -->
+    <section class="milestone">
+        <div class="container">
+            <div class="milestone-content fade-in">
+                <div class="milestone-text">
+                    <h2 class="milestone-title">Company Group</h2>
+                    <p class="milestone-description">
+                        Our Story was formed in 2021 following the acquisition by Zephyr Ventures of ZB Reach NASDAQ: ZBR, bringing investment focus and resources for investment in our products and continued innovation of best-in-class business software and development of educational resources.
+                    </p>
+                </div>
+                <div class="milestone-image">
+                    <!-- <div class="logo-placeholder" style="width: 200px; height: 100px; font-size: 1.5rem;">COMPANY GROUP</div> -->
+                     <img src="/static/shop/img/foil.jpg" alt="">
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <!-- Name Origin  -->
+    <section class="founder-quote">
+        <div class="container">
+            <div class="quote-content fade-in">
+                <h2 class="milestone-title">Where Does the Name "Company" Come From?</h2>
+                <p class="quote-text">
+                    "Our company, formerly known as StartUp, has a name that was inspired by organizations like Mozilla, and ChefMoz — all companies that strive for engaging their communities with openness and integrity. From the very beginning, we felt passionately about bringing that same integrity to the frustratingly opaque business industry."
+                </p>
+                <div class="quote-author">
+                    <div class="author-avatar">ON</div>
+                    <div class="author-info">
+                        <h5>Owner Name</h5>
+                        <p>Founder & CEO</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> {% endcomment %}
+
+     <!-- Call to Action  -->
+    {% comment %} <section class="cta-section">
+        <div class="container">
+            <div class="fade-in">
+                <h2 class="cta-title">Interested in our latest chapter?</h2>
+                <a href="#" class="cta-button">Learn about Our Products <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+        </div>
+    </section> {% endcomment %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all fade-in elements
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+{% endblock body %}

@@ -1,0 +1,864 @@
+{% extends 'shop/basic.html' %}
+{% block title %} Tracker{% endblock %}
+
+{% block css %}
+
+
+h1{
+font-size: 30px;
+font-weight: 10px;
+font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+text-align: center;
+
+
+}
+
+
+
+
+
+{% comment %} cart view {% endcomment %}
+
+
+@charset "utf-8";
+
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700,600);
+
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');body{background-color:
+#eeeeee;}.card{position: relative;display: -webkit-box;display: -ms-flexbox;display:
+flex;-webkit-box-orient: vertical;-webkit-box-direction: normal;-ms-flex-direction: column;flex-direction:
+column;min-width: 0;word-wrap: break-word;background-color: #fff;background-clip: border-box;border: 1px solid rgba(0,
+0, 0, 0.1);border-radius: 0.10rem}.card-header:first-child{border-radius: calc(0.37rem - 1px) calc(0.37rem - 1px) 0
+0}.card-header{padding: 0.75rem 1.25rem;margin-bottom: 0;background-color: #fff;border-bottom: 1px solid rgba(0, 0, 0,
+0.1)}.track{position: relative;background-color: #ddd;height: 7px;display: -webkit-box;display: -ms-flexbox;display:
+flex;margin-bottom: 60px;margin-top: 50px}.track .step{-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;width:
+25%;margin-top: -18px;text-align: center;position: relative}.track .step.active:before{background: #6fb500}.track
+.step::before{height: 7px;position: absolute;content: "";width: 100%;left: 0;top: 18px}.track .step.active
+.icon{background: #009520;color: #fff}.track .icon{display: inline-block;width: 40px !important;height: 40px;line-height:
+40px;position: relative;border-radius: 100%;background: #ddd}.track .step.active .text{font-weight: 400;color:
+#000}.track .text{display: block;margin-top: 7px}.itemside{position: relative;display: -webkit-box;display:
+-ms-flexbox;display: flex;width: 100%}.itemside .aside{position: relative;-ms-flex-negative: 0;flex-shrink:
+0}.img-sm{width: 75px;height: 75px;}ul.row, ul.row-sm{list-style: none;padding: 0}.itemside
+.info{padding-left: 15px;padding-right: 7px}.itemside .title{display: block;margin-bottom: 5px;color:
+#212529}p{margin-top: 0;margin-bottom: 1rem}.btn-warning{color: #ffffff;background-color: #ee5435;border-color:
+#ee5435;border-radius: 1px}
+
+
+.cart-container{
+width: 97%;
+display: block;
+margin: 0px auto 0px auto;
+}
+
+
+strong {
+font-weight: bold;
+}
+
+
+
+.head {
+font-size: 0.75rem;
+font-weight: normal;
+margin: 0;
+padding: 0;
+}
+
+input,
+button {
+border: 0 none;
+outline: 0 none;
+}
+
+button {
+background-color: #2e2e2e;
+color: #fff;
+padding: 7px;
+}
+
+button:hover,
+button:focus {
+background-color: #555;
+}
+
+
+.basket-module,
+.basket-labels,
+.basket-product {
+width: 100%;
+}
+
+input,
+button,
+.basket,
+.basket-module,
+.basket-labels,
+.item,
+.price,
+.quantity,
+.subtotal,
+.basket-product,
+.product-image,
+.product-details {
+float: left;
+}
+
+.price:before,
+.subtotal:before,
+.subtotal-value:before,
+.total-value:before,
+.promo-value:before {
+content: '{{currency}}';
+}
+
+.hide {
+display: none;
+}
+
+main {
+clear: both;
+font-size: 0.75rem;
+margin: 0 auto;
+overflow: hidden;
+padding: 1rem 0;
+width: 960px;
+}
+
+.basket,
+aside {
+padding: 0 1rem;
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+}
+
+.basket {
+width: 72%;
+}
+
+.basket-module {
+color: #111;
+}
+
+label {
+display: block;
+margin-bottom: 0.3125rem;
+}
+
+
+
+
+.basket-labels {
+border-bottom: 1px #cccccc solid;
+margin-top: 1.625rem;
+background: white;
+margin-bottom: 13px;
+box-shadow: 0px 1px 11px 1px #d8d7d4;
+}
+
+.ul {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+.li {
+color: #111;
+display: inline-block;
+padding: 0.625rem 0;
+}
+
+li.price:before,
+li.subtotal:before {
+content: '';
+}
+
+.item {
+width: 55%;
+}
+
+.price,
+.quantity,
+.subtotal {
+width: 17%;
+}
+
+.subtotal {
+text-align: right;
+}
+
+.remove {
+bottom: 1.125rem;
+float: right;
+position: absolute;
+right: 0;
+text-align: right;
+width: 45%;
+}
+
+.remove button {
+background-color: transparent;
+color: #777;
+float: none;
+text-decoration: underline;
+text-transform: uppercase;
+}
+
+.item-heading {
+padding-left: 4.375rem;
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+}
+
+.basket-product {
+{% comment %} border-bottom: 1px solid #ccc; {% endcomment %}
+padding: 1rem 8px;
+position: relative;
+background: #fafafa;
+margin-bottom: 12px;
+box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+}
+
+
+
+.product-details {
+width: 65%;
+}
+
+.product-frame {
+border: 1px solid #aaa;
+}
+
+.product-details {
+padding: 0 1.5rem;
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+}
+
+.quantity-field {
+background-color: #ccc;
+border: 1px solid #aaa;
+border-radius: 4px;
+font-size: 0.625rem;
+padding: 2px;
+width: 3.75rem;
+}
+
+aside {
+float: right;
+position: relative;
+
+}
+
+.summary {
+background-color: #fff;
+/* border: 1px solid #aaa; */
+padding: 1rem;
+width: 310px;
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+box-shadow: 0px 1px 11px 1px #d8d7d4;
+}
+
+.summary-total-items {
+color: #666;
+font-size: 0.875rem;
+text-align: center;
+}
+
+.summary-subtotal,
+.summary-total {
+border-top: 1px solid #ccc;
+border-bottom: 1px solid #ccc;
+clear: both;
+margin: 1rem 0;
+overflow: hidden;
+padding: 0.5rem 0;
+}
+
+.subtotal-title,
+.subtotal-value,
+.total-title,
+.total-value,
+.promo-title,
+.promo-value {
+color: #111;
+float: left;
+width: 50%;
+}
+
+.summary-promo {
+-webkit-transition: all .3s ease;
+-moz-transition: all .3s ease;
+-o-transition: all .3s ease;
+transition: all .3s ease;
+}
+
+
+
+.subtotal-value,
+.total-value {
+text-align: right;
+}
+
+.total-title {
+font-weight: bold;
+text-transform: uppercase;
+}
+
+.summary-checkout {
+display: block;
+}
+
+.checkout-cta {
+display: block;
+float: none;
+font-size: 0.75rem;
+text-align: center;
+text-transform: uppercase;
+padding: 0.625rem 0;
+width: 100%;
+}
+
+
+@media screen and (max-width: 640px) {
+
+.cart-container{
+width: 100%;
+
+}
+
+aside,
+.basket,
+.summary,
+.item,
+.remove {
+width: 100%;
+}
+.basket-labels {
+display: none;
+}
+.basket-module {
+margin-bottom: 1rem;
+}
+.item {
+margin-bottom: 1rem;
+}
+
+.product-details {
+width: 60%;
+}
+.price,
+.subtotal {
+width: 33%;
+}
+.quantity {
+text-align: center;
+width: 32%;
+}
+.quantity-field {
+float: none;
+}
+.remove {
+bottom: 0;
+text-align: left;
+margin-top: 0.75rem;
+position: relative;
+}
+.remove button {
+padding: 0;
+}
+.summary {
+margin-top: 1.25rem;
+position: relative;
+}
+}
+
+@media screen and (min-width: 641px) and (max-width: 960px) {
+aside {
+padding: 0 1rem 0 0;
+}
+.summary {
+width: 28%;
+}
+}
+
+@media screen and (max-width: 960px) {
+main {
+width: 100%;
+}
+.product-details {
+padding: 0 1rem;
+}
+}
+
+
+.show-your-item{
+padding-left:0px;
+padding-right:0px;
+}
+
+
+
+.notice {
+padding: 15px;
+background-color: #fafafa;
+border-left: 6px solid #7f7f84;
+margin-bottom: 10px;
+-webkit-box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+-moz-box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+}
+.notice-sm {
+padding: 10px;
+font-size: 80%;
+}
+.notice-lg {
+padding: 35px;
+font-size: large;
+}
+.notice-success {
+border-color: #80D651;
+}
+.notice-success>strong {
+color: #80D651;
+}
+.notice-info {
+border-color: #45ABCD;
+}
+.notice-info>strong {
+color: #45ABCD;
+}
+.notice-warning {
+border-color: #FEAF20;
+}
+.notice-warning>strong {
+color: #FEAF20;
+}
+.notice-danger {
+border-color: #d73814;
+}
+.notice-danger>strong {
+color: #d73814;
+}
+
+.badge{
+float: right;
+margin: 3px 0px 0px 0px;
+color: #ffffff;
+
+}
+
+
+
+li.col-md-12.sigle_item_row {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e9e9e9;
+  margin: 6px 0px;
+  padding: 10px 6px;
+}
+
+.item_status_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item_status {
+  margin: 0px 5px;
+}
+
+.continue_shopping_btn{
+  color: #ffffff !important;
+  background-color: black;
+  border-radius: 2px;
+  padding: 10px;
+}
+
+.main_tracker_container{
+  background: white;
+  padding: 28px 20px;
+}
+
+
+@media screen and (max-width: 500px) {
+.badge{
+float: none;
+margin: 0px 0px 0px 0px;
+
+}
+
+
+.main_tracker_container{
+  background: white;
+  padding: 28px 10px;
+}
+
+
+li.col-md-12.sigle_item_row {
+  display: block;
+  align-items: center;
+}
+
+
+.details_card{
+  display:block !important;
+}
+
+.details_col {
+  border: 1px solid #d9d9d9;
+  margin: 7px 0px;
+}
+
+}
+
+.text-color{
+color:#7c8079;
+
+}
+
+
+.allcantainer {
+padding: 0px 0px 100px 0px;
+}
+
+.undefined {
+display:none !important;
+}
+
+.quantity{
+margin :0px;
+}
+
+
+.icon {
+
+animation: unset;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 0px;
+}
+
+
+.price_and_qty {
+  display: flex;
+  align-items: center;
+}
+
+p.qty {
+  margin: 0px 7px;
+}
+
+{% endblock %}
+
+{% block body %}
+
+{%load static%}
+
+<!-- Start Banner Area -->
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="">
+    <div class="alert alert-{{message.tags}} alert-dismissible mb-0 text-center" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    {{message}}!
+    </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+    
+
+<!--banner-->
+<div class="col-md-12 px-0">
+  <div class="banner-top">
+    <div class="container px-0">
+      <p class="mb-0" style=" display:flex;padding: 13px; font-size: 12px;"><label class="px-1"><i
+            class="fa fa-arrow-left  btitle " onclick="goBack()" style="cursor: pointer;"></i></label> <a href="/"
+          class="px-1">Home</a><label class="px-1">></label>Tracker</p>
+    </div>
+  </div>
+</div>
+<!-- End Banner Area -->
+
+<!--================Tracking Box Area =================-->
+
+<section class="tracking_box_area allcantainer section_gap">
+  <div class="container main_tracker_container">
+    <div class="tracking_box_inner">
+      <p class="mb-0">To track your order please enter your Order ID in the box below and press the "Track" button. This
+        was given to you on your receipt and in the confirmation email you should have received.</p>
+      <form class="row tracking_form" action="#"  id="trackerForm">
+    
+        <div class="col-md-6">
+          <div class="form-group">
+            {% now 'mdY' as current_date %}
+            <input style="margin: 12px 0px;padding: 8px;border-radius: 0%;" type="text" class="  form-control"
+              id="orderId" name="orderId" placeholder="Enter Order Number" onfocus="this.placeholder = ''"
+              onblur="this.placeholder = 'Order ID'" {% if orderId %}value="{{orderId}}" {% else %} value="MZ-{{current_date}}" {% endif %} >
+          </div>
+          <div class="form-group">
+            <input style="   margin: 12px 0px;padding: 8px; border-radius: 0%;" type="number" class="  form-control"
+              id="youremail" name="phone" placeholder="Enter Order Phone Number" onfocus="this.placeholder = ''"
+              onblur="this.placeholder = 'Billing Phone Number'" value="{{phone}}">
+          </div>
+        </div>
+        <div class="col-md-12 form-group">
+          <button type="submit" value="submit" class="btn primary-btn">Track Order</button>
+        </div>
+      </form>
+    </div>
+    <div class="container show-your-item">
+      {% if order_msg %}
+      <h4 class="text-color text-center mt-4">Your Order Notifications</h4>
+      {% endif %}
+      <div class="tracking_box_inner" id="items">
+        {% if order_msg %}
+        {% for msg in order_msg %}
+        <div class="notice notice-success">
+          <strong class="text-info">{{msg.timestamp}} !</strong> {{msg.update_messages}}
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="notice notice-success">
+        <strong class="text-info">Notice !</strong> Enter your order Id and Phone Number and click Track Order to find
+        details about your order!
+        </div>
+        {% endif %}
+      
+      </div>
+    </div>
+
+    {% if order %}
+    <h4 class="text-color text-center">Your Order Tracking</h4>
+
+    <div class="container show-your-item">
+      <div class="tracking_box_inner">
+        <div class="list-group" id="citems">
+
+          <div class="container px-0">
+            <article class="card">
+              <header class="card-header"> My Orders / Tracking </header>
+              <div class="card-body">
+                <h6>Order ID: {{order.order_id}}</h6>
+                <article class="card">
+                  <div class="card-body row details_card">
+                    <div class="col details_col"> <strong>confirmation Phone Number:</strong> <br>{{order.phone}}</div>
+                    <div class="col details_col"> <strong>Shipping Address :</strong> <br> {{order.address}} | 
+                      {{order.city}} </div>
+                    <div class="col details_col"> <strong>Status:</strong> <br> {% if order.Active == True %} Order Comfirm {% else %} Order Unseen{% endif %} </div>
+                    <div class="col details_col"> <strong>Order Amount #:</strong> <br> {{currency}}{{order.total}} </div>
+                     
+                  </div>
+                </article>
+                <div class="track">
+
+                  <div class="step {% if order.Active == True %}active{% endif %} "> <span class="icon"> <i class="fa fa-check"></i> </span> <span class="text">Order confirmed</span> </div>
+
+                  <div class="step {% if order.Active == True %} {% if order.orderitem_set.first.Active == True or order.orderitem_set.last.Active == True %}active{% endif %} {% endif %}"> <span class="icon"> <i class="fa fa-user"></i> </span> <span class="text">Processing</span> </div>
+
+                  <div class="step {% if order.Active == True and  order.orderitem_set.first.Active == True or order.orderitem_set.last.Active == True  %} {% if order.orderitem_set.first.status == "shipped" or order.orderitem_set.last.status == "shipped" or order.orderitem_set.first.status == "delivered" or order.orderitem_set.last.status == "delivered" %}active{% endif %}{% endif %}"> <span class="icon"> <i class="fa fa-truck"></i> </span> <span class="text"> On the
+                      way </span> </div>
+                  <div class="step {% if order.Active == True and  order.orderitem_set.first.Active == True or order.orderitem_set.last.Active == True %} {% if order.orderitem_set.first.status == "delivered" or order.orderitem_set.last.status == "delivered" %}active{% endif %}{% endif %}"> <span class="icon"> <i class="fa fa-home"></i> </span> <span
+                      class="text">Delivered</span> </div>
+                </div>
+                <hr>
+                <ul class="row">
+                  {% for i in order.orderitem_set.all  %}
+                  <li class="col-md-12 sigle_item_row">
+                    <figure class="itemside my-0">
+                      <div class="aside"><img src="{{i.image}}" class="img-sm border"></div>
+                      <figcaption class="info align-self-center">
+                        {% if i.Order_Type == 'Customize' %}
+                        <p class="title">{{i.Mockup.MockUp_Name|slice:"0:30"}}..</p>
+                        {% else %}
+                        <p class="title">{{i.order_item.product_name|slice:"0:30"}}..</p>
+                        {% endif %}
+                        <p>
+                          {% if i.size == "undefined" or i.size == "None" or i.size == None or i.size == '' %}
+                          {% else %}
+                              Size: {{i.size}} ,
+                          {% endif %}
+
+                          {% if i.color == "undefined" or i.color == "None" or i.color == None or i.color == '' %}
+                          {% else %}
+                            Color: {{i.color}}
+                          {% endif %}
+                        </p>
+                         <div class="text-muted">
+                          <div class="price_and_qty">
+                            <p class="unit_price">{{currency}}{{i.unity_price}}, </p>
+                            <p class="qty">Qty:{{i.quantity}} , </p>
+                            <p>Total {{currency}}{{i.item_total}}</p>
+                          </div>
+                          
+                          </div>
+                      </figcaption>
+                    </figure>
+                    <div class="item_status_container">
+                      {% if i.status == "processing" %}
+                      <div class="item_status"><span class="badge badge-pill badge-warning">{{i.status}}</span></div>
+                      {% elif i.status == "shipped" %}
+                      <div class="item_status"><span class="badge badge-pill badge-info">{{i.status}}</span></div>
+                      {% elif i.status == "delivered" %}
+                      <div class="item_status"><span class="badge badge-pill badge-success">{{i.status}}</span></div>
+                      {% elif i.status == "cancelation" %}
+                      <div class="item_status"><span class="badge badge-pill badge-danger">{{i.status}}</span></div>
+                      {% endif %}
+
+                      {% if i.Active == True %}
+                      <div class="item_status"><span class="badge badge-pill badge-success">Order Seen <i class="fa fa-check-circle"></i></span></div>
+                      {% else %}
+                      <div class="item_status"><span class="badge badge-pill badge-danger">Order Unseen <i class="fa fa-times-circle"></i></span></div>
+                      {% endif %}
+
+                    </div>
+                  </li>
+
+                  {% endfor %}
+
+                
+                </ul>
+                <hr>
+                <a href="/" class="btn btn-warning continue_shopping_btn" data-abc="true"> <i class="fa fa-chevron-left"></i> Continue Shopping</a>
+              </div>
+            </article>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+
+</section>
+
+
+
+
+
+{% endblock %}
+
+
+{% block js %}
+
+<!-- <script>
+  $('#trackerForm').submit(function (event) {
+    $('#items').empty();
+    var formData = {
+      'orderId': $('input[name=orderId]').val(),
+      'phone': $('input[name=phone]').val(),
+      'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+    };
+
+    $.ajax({
+      type: 'POST',
+      url: '/order_tracker/',
+      data: formData,
+      encode: true
+    })
+      .done(function (data) {
+        $('#citems').empty();
+        $('#statuss').empty();
+        data = JSON.parse(data);
+        if (data['status'] == 'success') {
+          updates = data['updates'];
+          for (i = 0; i < updates.length; i++) {
+            let text = updates[i]['text'];
+            let time = updates[i]['time'];
+            mystr = `
+                    <div class="notice notice-success" >
+            <strong>Message!</strong> ${text}!
+          <span class="badge badge-primary badge-pill">${time.slice(0, 8)}</span>
+             </div>
+                    
+               
+                `
+            $('#items').append(mystr);
+
+
+          }
+          // Fill in the order details
+          cart = JSON.parse(data['itmejson']);
+          status = JSON.parse(data['active']);
+
+
+          for (item in cart) {
+            let product_name = cart[item]['product_name'];
+            let quantity = cart[item]['quantity'];
+            let size = cart[item]['size'];
+            let color = cart[item]['color'];
+            let unity_price = cart[item]['unity_price'];
+            let products_id = cart[item]['id'];
+            let item_type = cart[item]['item_type'];
+            let product_brand = cart[item]['product_brand'];
+            items_total = unity_price * quantity
+
+            mystr = `<div class='basket-product'>
+      <div class='item'>
+      <div class='product-image'>
+      <img class='product-frame' height='78px' src='${item_type}' alt='${product_name}'>
+      </div>
+      <div class='product-details'>
+      <h2 class='head'><strong><span class='item-quantity'> ${quantity} </span> x  ${product_brand} </strong>"${product_name.slice(0, 30)}..</h2>
+      <div >Qty. ${quantity}</div>
+      <div class='${size}'>Size : ${size} ,<span class='${color}'> Color : ${color}</span></div>
+      <div>Product Code - ${products_id}</div>
+      
+      </div>
+       </div>
+       <div class='price'>${unity_price}</div>
+       <div class='quantity'>
+       <div class='subtotal item-qty' >${items_total}</div>
+       </div>
+       
+      <small class='' id="${products_id}"></small>
+       
+     
+       </div>`
+            $('#citems').append(mystr);
+
+            if (status == 'true') {
+
+              activated = `Order Success`
+              $('small').text(activated);
+              $('small').css({ 'background': '#80d651', 'width': '76px', 'color': 'white', 'padding': ' 0px 7px 0px 7px', 'font-size': '13px', 'box-shadow': '0px 1px 3px 2px #dedcdc' });
+
+            }
+            else {
+              activated = `Order Pending...`
+              $('small').text(activated);
+              $('small').css({ 'background': 'rgb(162 0 0)', 'width': '76px', 'color': 'white', 'padding': '5px 7px', 'font-size': '13px', 'font-family': 'Oxygen-Bold' });
+
+            }
+
+
+
+          }
+        } else {
+          mystr = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <strong>Sorry Your ID and Phone Number is Not Match</strong> Please Enter a Valid ID and Email.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>`
+          $('#items').append(mystr);
+
+        }
+
+
+
+      });
+
+    event.preventDefault();
+  });
+</script> -->
+
+{% endblock %}

@@ -1,0 +1,859 @@
+{% extends 'shop/base.html' %}
+{% block head %}
+    <title>Premium Custom Apparel in Canada at Affordable Prices |
+Studio Mohar</title>
+    <meta name="description" content="Studio Mohar offers luxury custom apparel in Toronto at
+affordable prices. Enjoy bulk discounts, no minimums, and free delivery.
+Use our online design lab to create unique t-shirts, hoodies & more.">
+{% endblock head %}
+
+{% block body %}
+<style>
+    .insta-post {
+    width: 100%;
+    /* height: 303px; */
+    /* object-fit: cover; */
+    width: 100%;
+    max-width: 400px;  /* adjust as needed */
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+}
+</style>
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+/>
+<body>
+    {% if messages %}
+    {% for i in messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{i.message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <!-- Top Banner -->
+
+
+    <!-- Hero Section -->
+    <section class="hero-section px-5">
+        <div class="container-fluid">
+
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+
+            <div class="hero-content">
+                <h1 class="hero-title">{{layout.hero_title}}</h1>
+                
+                <ul class="hero-features">
+                    {% for i in features %}
+                    <li>
+                        <div class="icon">
+                            <img src="/media/{{i.icon}}" alt="">
+                        </div>
+                        <div>
+                            <strong>{{i.title}}</strong><br>
+                            {{i.short_desc}}
+                        </div>
+                    </li>
+                    {% endfor %}
+                    <!-- <li>
+                        <div class="icon">
+                            <img src="/static/shop/img/dollar-symbol 1.png" alt="">
+                        </div>
+                        <div>
+                            <strong>Low Price Guarantee on bulk orders</strong><br>
+                            Enjoy big discounts, low minimums, and Low Price Guarantee on every order.
+                        </div>
+                    </li>
+                    <li>
+                        <div class="icon">
+                            <img src="/static/shop/img/t-shirt 1.png" alt="">
+                        </div>
+                        <div>
+                            <strong>For people who hate fluff</strong><br>
+                            No bloated catalogs, confusing options or hidden fees — just an easy, streamlined way to get great merch.
+                        </div>
+                    </li> -->
+                </ul>
+                
+                <div class="hero-buttons">
+                    <a href="/customize-editor/{{first_mockup_product.customize_mockup_template.id}}/{{first_mockup_product.customize_mockup_template.MockUp_Name}}/{{first_mockup_product.product_id}}/?attr_id={{first_mockup_product.productattribute_set.first.id}}&color_id={{first_mockup_product.productattribute_set.first.color.id}}&color_code={{first_mockup_product.productattribute_set.first.color.color_code|urlencode}}" class="btn-get-started">Get Started</a>
+                    <a href="#" onclick="openQuotePopup()" class="btn-instant-quote">Get Instant Quote</a>
+                </div>
+            </div>
+            </div>
+
+            <div class="col-lg-6">
+
+            <div class="hero-image">
+                <div class="hero-image-container">
+                    <div class="hero-bg-circle"></div>
+                   {% if layout.hero_image %}
+    {% if layout.is_video %}
+        <video class="hero-people-img" autoplay muted loop playsinline>
+            <source src="{{ layout.hero_image.url }}">
+        </video>
+    {% else %}
+        <img src="{{ layout.hero_image.url }}" class="hero-people-img">
+    {% endif %}
+{% endif %}
+                    <!-- <div class="color-palette">
+                        <div class="color-swatch color-black"></div>
+                        <div class="color-swatch color-red"></div>
+                        <div class="color-swatch color-blue"></div>
+                        <div class="color-swatch color-yellow"></div>
+                    </div> -->
+                </div>
+            </div>
+            </div>
+
+        </div>
+        </div>
+
+    </section>
+
+    <!-- Categories Section -->
+    {% comment %} <section class="categories-section">
+        <div class="categories-container">
+            <div class="categories-header">
+                <div class="section-badge">
+                <!-- <i class="fa-regular fa-message"></i> -->
+                Categories
+            </div>
+                <h2 class="categories-title">TOP CATEGORIES</h2>
+                <p class="categories-subtitle">
+                    Enter mission statement here that we offer premium quality to save you the hassle of choosing or settling for the cheapest cost while staying competitive on cost.
+                </p>
+            </div>
+            
+            <div class="categories-grid">
+                <div class="category-card">
+                    <div class="category_name">
+                        Shirts
+                    </div>
+                    <div class="category-image">
+                        <!-- <div class="category-text">YOUR<br>DESIGN<br>HERE</div> -->
+                         <img src="/static/shop/img/cate_img.png" alt="">
+                    </div>
+                    <div class="category-footer">
+                        <!-- <div class="category-name">T-shirts</div> -->
+                         <div class="category_title_name">
+                            Start Designing
+                         </div>
+                        <div class="category-details">colors available based on what colors we have</div>
+                        <div class="category-price">Start from $2.49.00</div>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category_name">
+                        Shirts
+                    </div>
+                    <div class="category-image">
+                        <!-- <div class="category-text">YOUR<br>DESIGN<br>HERE</div> -->
+                         <img src="/static/shop/img/cate_img.png" alt="">
+                    </div>
+                    <div class="category-footer">
+                        <!-- <div class="category-name">T-shirts</div> -->
+                         <div class="category_title_name">
+                            Start Designing
+                         </div>
+                        <div class="category-details">colors available based on what colors we have</div>
+                        <div class="category-price">Start from $2.49.00</div>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category_name">
+                        Shirts
+                    </div>
+                    <div class="category-image">
+                        <!-- <div class="category-text">YOUR<br>DESIGN<br>HERE</div> -->
+                         <img src="/static/shop/img/cate_img.png" alt="">
+                    </div>
+                    <div class="category-footer">
+                        <!-- <div class="category-name">T-shirts</div> -->
+                         <div class="category_title_name">
+                            Start Designing
+                         </div>
+                        <div class="category-details">colors available based on what colors we have</div>
+                        <div class="category-price">Start from $2.49.00</div>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category_name">
+                        Shirts
+                    </div>
+                    <div class="category-image">
+                        <!-- <div class="category-text">YOUR<br>DESIGN<br>HERE</div> -->
+                         <img src="/static/shop/img/cate_img.png" alt="">
+                    </div>
+                    <div class="category-footer">
+                        <!-- <div class="category-name">T-shirts</div> -->
+                         <div class="category_title_name">
+                            Start Designing
+                         </div>
+                        <div class="category-details">colors available based on what colors we have</div>
+                        <div class="category-price">Start from $2.49.00</div>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category_name">
+                        Shirts
+                    </div>
+                    <div class="category-image">
+                        <!-- <div class="category-text">YOUR<br>DESIGN<br>HERE</div> -->
+                         <img src="/static/shop/img/cate_img.png" alt="">
+                    </div>
+                    <div class="category-footer">
+                        <!-- <div class="category-name">T-shirts</div> -->
+                         <div class="category_title_name">
+                            Start Designing
+                         </div>
+                        <div class="category-details">colors available based on what colors we have</div>
+                        <div class="category-price">Start from $2.49.00</div>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category_name">
+                        Shirts
+                    </div>
+                    <div class="category-image">
+                        <!-- <div class="category-text">YOUR<br>DESIGN<br>HERE</div> -->
+                         <img src="/static/shop/img/cate_img.png" alt="">
+                    </div>
+                    <div class="category-footer">
+                        <!-- <div class="category-name">T-shirts</div> -->
+                         <div class="category_title_name">
+                            Start Designing
+                         </div>
+                        <div class="category-details">colors available based on what colors we have</div>
+                        <div class="category-price">Start from $2.49.00</div>
+                    </div>
+                </div>
+                
+                <!-- <div class="category-card">
+                    <div class="category-image">
+                        <div class="category-text">YOUR<br>DESIGN<br>HERE</div>
+                    </div>
+                    <div class="category-footer">
+                        <div class="category-name">Sweatshirts</div>
+                        <div class="category-details">Start Designing<br>colors available based on what colors we have</div>
+                        <div class="category-price">Start from $2.49.00</div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-image">
+                        <div class="category-text">YOUR<br>DESIGN<br>HERE</div>
+                    </div>
+                    <div class="category-footer">
+                        <div class="category-name">Hoodies</div>
+                        <div class="category-details">Start Designing<br>colors available based on what colors we have</div>
+                        <div class="category-price">Start from $2.49.00</div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-image">
+                        <div class="category-text">YOUR<br>DESIGN<br>HERE</div>
+                    </div>
+                    <div class="category-footer">
+                        <div class="category-name">Polos</div>
+                        <div class="category-details">Start Designing<br>colors available based on what colors we have</div>
+                        <div class="category-price">Start from $2.49.00</div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-image">
+                        <div class="category-text">YOUR<br>DESIGN<br>HERE</div>
+                    </div>
+                    <div class="category-footer">
+                        <div class="category-name">Hoodies</div>
+                        <div class="category-details">Start Designing<br>colors available based on what colors we have</div>
+                        <div class="category-price">Start from $2.49.00</div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-image">
+                        <div class="category-text">YOUR<br>DESIGN<br>HERE</div>
+                    </div>
+                    <div class="category-footer">
+                        <div class="category-name">Yo</div>
+                        <div class="category-details">Start Designing<br>colors available based on what colors we have</div>
+                        <div class="category-price">Start from $2.49.00</div>
+                    </div>
+                </div> -->
+            </div>
+            
+            <div class="text-center">
+                <a href="#" class="btn-create-mockup">Create a free Mockup</a>
+            </div>
+        </div>
+    </section> {% endcomment %}
+    <div class="products-section">
+    <div class="container" id="productsContainer">
+        <div class="section-header">
+            {% comment %} <div class="section-badge">
+                <!-- <i class="fa-regular fa-message"></i> -->
+                3 STEP PROCESS
+            </div> {% endcomment %}
+            <h2 class="section-title">Our Products</h2>
+            <p class="section-subtitle">Easily create custom T-shirts, hoodies, polos, hats and more online.</p>
+        </div>
+        
+                            <div class="row products-grid" id="productsGrid">
+                                <!-- Product 1 -->
+
+                                {% for i in mockup_products %}
+                                <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/{{i.product_id}}'" data-category="women" data-price="24.00">
+                                        <div class="product-image">
+                                            <img src="/media/{{i.blank_image}}" alt="{{i.product_name}}" class="product-img default-img">
+                                            <img src="/media/{{i.printed_image}}" alt="{{i.product_name}}" class="product-img hover-img">
+                                            <!-- <div class="product-overlay">
+                                                <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
+                                            </div> -->
+                                        </div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">{{i.product_name}}</h6>
+                                            {% comment %} <span class="product-price">${{i.productattribute_set.first.price}}</span> {% endcomment %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+
+                                {% comment %} <!-- Product 2 -->
+                                <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/'" data-category="men" data-price="18.00">
+                                        <div class="product-image">
+    <img src="/static/shop/img/hoodei_blank.png" alt="Short Sleeve T-shirt" class="product-img default-img">
+    <img src="/static/shop/img/hoodei_printed.png" alt="Short Sleeve T-shirt Back" class="product-img hover-img">
+</div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">Hoodie</h6>
+                                            <span class="product-price">$18.00</span>
+                                        </div>
+                                    </div>
+                                </div>        
+                        
+                                <!-- Product 3 -->
+                                <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/'" data-category="men" data-price="30.00">
+                                        <div class="product-image">
+                                            <img src="/static/shop/img/polo_blank.png" alt="Long Sleeve T-shirt" class="product-img default-img">
+                                            <img src="/static/shop/img/polo_printed.png" alt="Short Sleeve T-shirt Back" class="product-img hover-img">
+                                            <!-- <div class="product-overlay">
+                                                <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
+                                            </div> -->
+                                        </div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">Polo</h6>
+                                            <span class="product-price">$30.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Product 4 -->
+                                <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/'" data-category="men" data-price="14.00">
+                                        <div class="product-image">
+                                            <img src="/static/shop/img/sports_printed.png" alt="Short Sleeve T-shirt" class="product-img default-img">
+    <img src="/static/shop/img/sports_printed.png" alt="Short Sleeve T-shirt Back" class="product-img hover-img">
+                                            <!-- <div class="product-overlay">
+                                                <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
+                                            </div> -->
+                                        </div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">Sports</h6>
+                                            <span class="product-price">$14.00</span>
+                                        </div>
+                                    </div>
+                                </div> {% endcomment %}
+
+                                
+                                <!-- Repeat similar products for rows 2, 3, 4 -->
+                                <!-- Row 2 -->
+                                {% comment %} <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/'" data-category="men" data-price="18.00">
+                                        <div class="product-image">
+                                            <img src="/static/shop/img/png mockup/black_front-removebg-preview.png" alt="Short Sleeve T-shirt" class="product-img default-img">
+    <img src="/static/shop/img/png mockup/front-removebg-preview.png" alt="Short Sleeve T-shirt Back" class="product-img hover-img">
+                                            <!-- <div class="product-overlay">
+                                                <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
+                                            </div> -->
+                                        </div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">Short Sleeve T-shirt</h6>
+                                            <span class="product-price">$18.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/'" data-category="men" data-price="30.00">
+                                        <div class="product-image">
+                                            <img src="/static/shop/img/png mockup/front-removebg-preview.png" alt="Long Sleeve T-shirt" class="product-img default-img">
+                                            <img src="/static/shop/img/png mockup/black_front-removebg-preview.png" alt="Short Sleeve T-shirt Back" class="product-img hover-img">
+                                            <!-- <div class="product-overlay">
+                                                <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
+                                            </div> -->
+                                        </div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">Long Sleeve T-shirt</h6>
+                                            <span class="product-price">$30.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/'" data-category="men" data-price="14.00">
+                                        <div class="product-image">
+                                            <img src="/static/shop/img/png mockup/black_front-removebg-preview.png" alt="Short Sleeve T-shirt" class="product-img default-img">
+    <img src="/static/shop/img/png mockup/front-removebg-preview.png" alt="Short Sleeve T-shirt Back" class="product-img hover-img">
+                                            
+                                            <!-- <div class="product-overlay">
+                                                <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
+                                            </div> -->
+                                        </div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">Long Sleeve T-shirt</h6>
+                                            <span class="product-price">$14.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/'" data-category="women" data-price="24.00">
+                                        <div class="product-image">
+                                            <img src="/static/shop/img/png mockup/front-removebg-preview.png" alt="Long Sleeve T-shirt" class="product-img default-img">
+                                            <img src="/static/shop/img/png mockup/black_front-removebg-preview.png" alt="Short Sleeve T-shirt Back" class="product-img hover-img">
+                                            <!-- <div class="product-overlay">
+                                                <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
+                                            </div> -->
+                                        </div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">Ladies T-shirt</h6>
+                                            <span class="product-price">$24.00</span>
+                                        </div>
+                                    </div>
+                                </div> {% endcomment %}
+
+                                <!-- Continue with more products... -->
+                            </div>
+                        </div>
+                        </div>
+                        
+
+    <!-- How It Works Section -->
+<section class="how-it-works-section">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">
+                <!-- <i class="fa-regular fa-message"></i> -->
+                3 STEP PROCESS
+            </div>
+            <h2 class="section-title">HOW IT WORKS</h2>
+            <p class="section-subtitle">Easily create custom T-shirts, hoodies, polos, hats and more online.</p>
+        </div>
+        
+        <div class="steps-container">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <h4 class="step-title">Create Your Design</h4>
+                <p class="step-description">Our easy-to-use Design Studio lets you create your custom product in minutes. Pick from tees, hoodies, totes, and more, then design with thousands of fonts upload your own artwork to make it truly yours.</p>
+            </div>
+            
+            <!-- <div class="step-connector"></div> -->
+             <div class="section_between_line1">
+                <img src="/static/shop/img/line.png" alt="">
+             </div>
+             
+             <div class="step-item">
+                 <div class="step-number">2</div>
+                 <h4 class="step-title">We Bring It to Life</h4>
+                 <p class="step-description">We bring your design to life on high-quality, premium fabric. Our skilled team ensures every piece is printed with precision and care, so your shirt looks and feels exceptional.</p>
+            </div>
+                
+            <div class="section_between_line2">
+                <img src="/static/shop/img/line.png" alt="">
+            </div>
+            
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <h4 class="step-title">Straight to Your Door</h4>
+                <p class="step-description">We ship your order quickly, right to your door, with no delivery fee on most orders. Great custom apparel at affordable prices - without the hassle.</p>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <a href="/customize-editor/{{first_mockup_product.customize_mockup_template.id}}/{{first_mockup_product.customize_mockup_template.MockUp_Name}}/{{first_mockup_product.product_id}}/?attr_id={{first_mockup_product.productattribute_set.first.id}}&color_id={{first_mockup_product.productattribute_set.first.color.id}}&color_code={{first_mockup_product.productattribute_set.first.color.color_code|urlencode}}" class="btn-success-stories">Start Designing</a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+    <div class="container">
+        <div class="section-header">
+            <!-- <div class="section-badge">
+                <i class="fas fa-quote-left"></i>
+                TESTIMONIAL
+            </div> -->
+            <h2 class="section-title">Trusted by Teams, Brands & Businesses Across Canada</h2>
+            <p class="section-subtitle">Bulk orders, fast turnaround and no headaches - that's why they keep coming back.</p>
+        </div>
+
+        
+
+        {% comment %} <div class="testimonial_grid">
+                <div class="main_image_div">
+                    <div class="single_image_div">
+                        <img src="/static/shop/img/team1.png" alt="">
+                    </div>
+                    <div class="single_image_div">
+                        <img src="/static/shop/img/team2.png" alt="">
+                    </div>
+                </div>
+                <div class="main_image_div">
+                    <div class="single_image_div">
+                        <img src="/static/shop/img/team2.png" alt="">
+                    </div>
+                    
+                </div>
+                <div class="main_image_div">
+                    <div class="single_image_div">
+                        <img src="/static/shop/img/team1.png" alt="">
+                    </div>
+                    <div class="single_image_div">
+                        <!-- <img src="/static/shop/img/team1.png" alt=""> -->
+                    </div>
+                </div>
+                <div class="main_image_div">
+                    <div class="single_image_div">
+                        <img src="/static/shop/img/team2.png" alt="">
+                    </div>
+                    
+                </div>
+                <div class="main_image_div">
+                    <div class="single_image_div">
+                        <img src="/static/shop/img/team1.png" alt="">
+                    </div>
+                    <div class="single_image_div">
+                        <!-- <img src="/static/shop/img/team1.png" alt=""> -->
+                    </div>
+                </div>
+                <div class="main_image_div">
+                    <div class="single_image_div">
+                        <img src="/static/shop/img/team2.png" alt="">
+                    </div>
+                    
+                </div>
+                <div class="main_image_div">
+                    <div class="single_image_div">
+                        <img src="/static/shop/img/team1.png" alt="">
+                    </div>
+                    <div class="single_image_div">
+                        <img src="/static/shop/img/team2.png" alt="">
+                    </div>
+                </div>
+        </div>
+        <div class="testimonial_mobile_grid">
+            <!-- <div class="single_team_img">
+                <img src="/static/shop/img/team1.png" alt="">
+            </div> -->
+
+            <div class="single_team_img">
+                <img src="/static/shop/img/team2.png" alt="">
+            </div>
+            <div class="single_team_img">
+                <img src="/static/shop/img/team1.png" alt="">
+            </div>
+            <div class="single_team_img">
+                <img src="/static/shop/img/team2.png" alt="">
+            </div>
+            <div class="single_team_img">
+                <img src="/static/shop/img/team1.png" alt="">
+            </div>
+            <div class="single_team_img">
+                <img src="/static/shop/img/team2.png" alt="">
+            </div>
+            <div class="single_team_img">
+                <img src="/static/shop/img/team1.png" alt="">
+            </div>
+            <div class="single_team_img">
+                <img src="/static/shop/img/team2.png" alt="">
+            </div>
+            <div class="single_team_img">
+                <img src="/static/shop/img/team1.png" alt="">
+            </div>
+            <div class="single_team_img">
+                <img src="/static/shop/img/team2.png" alt="">
+            </div>
+        </div> {% endcomment %}
+        
+        <!-- <div class="testimonial-photos">
+            <div class="photo-grid">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face" alt="Customer" class="testimonial-photo photo-1">
+                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face" alt="Customer" class="testimonial-photo photo-2">
+                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face" alt="Customer" class="testimonial-photo photo-3">
+                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face" alt="Customer" class="testimonial-photo photo-4">
+                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face" alt="Customer" class="testimonial-photo photo-5">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face" alt="Customer" class="testimonial-photo photo-6">
+                <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face" alt="Customer" class="testimonial-photo photo-7">
+                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face" alt="Customer" class="testimonial-photo photo-8">
+            </div>
+        </div> -->
+        
+        
+    </div>
+    <div class="testimonials_logo_wrapper">
+    <div class="testimonials_logo">
+        {% for i in clients %}
+        <div class="single_testimonial_logo"><img src="/media/{{i.image}}" alt=""></div>
+        {% endfor %}
+        {% for i in clients %}
+        <div class="single_testimonial_logo"><img src="/media/{{i.image}}" alt=""></div>
+        {% endfor %}
+        <!-- <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div> -->
+        <!-- Repeat logos to make seamless loop -->
+        <!-- <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div> -->
+    </div>
+</div>
+        
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <h3 class="section-title text-center mb-5">Why Choose Us</h3>
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <img src="/static/shop/img/dropdown_img/unnamed.png" alt="">
+                </div>
+                <h5 class="feature-title">Premium Fabric</h5>
+                <p class="feature-description">Superior quality blanks for exceptional comfort and durability</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <img src="/static/shop/img/dropdown_img/unnamed1.jpg" alt="">
+                </div>
+                <h5 class="feature-title">Multiple Decoration Methods</h5>
+                <p class="feature-description">Screen printing, DTG, DTF, embroidery, and more</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <img src="/static/shop/img/dropdown_img/unnamed (1).png" alt="">
+                </div>
+                <h5 class="feature-title">Expert Design Support</h5>
+                <p class="feature-description">Professional guidance from concept to final product</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <img src="/static/shop/img/dropdown_img/unnamed (2).png" alt="">
+                </div>
+                <h5 class="feature-title">Fast Turnaround Times</h5>
+                <p class="feature-description">Quick production without compromising quality</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <img src="/static/shop/img/dropdown_img/unnamed (3).png" alt="">
+                </div>
+                <h5 class="feature-title">Bulk Order Discounts</h5>
+                <p class="feature-description">Better pricing on larger quantities for teams, events, and organizations</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <img src="/static/shop/img/dropdown_img/unnamed (4).png" alt="">
+                </div>
+                <h5 class="feature-title">Proudly Canadian</h5>
+                <p class="feature-description">Customized, operated, and hosted in Canada with local support</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <img src="/static/shop/img/dropdown_img/unnamed (5).png" alt="">
+                </div>
+                <h5 class="feature-title">Flexible Order Sizes</h5>
+                <p class="feature-description">From single pieces to large runs, we handle both</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <img src="/static/shop/img/dropdown_img/unnamed (6).png" alt="">
+                </div>
+                <h5 class="feature-title">Free Shipping</h5>
+                <p class="feature-description">Most orders qualify for free or discounted shipping options</p>
+            </div>
+        </div>
+        <div class="text-center">
+            <a href="/customize-editor/{{first_mockup_product.customize_mockup_template.id}}/{{first_mockup_product.customize_mockup_template.MockUp_Name}}/{{first_mockup_product.product_id}}/?attr_id={{first_mockup_product.productattribute_set.first.id}}&color_id={{first_mockup_product.productattribute_set.first.color.id}}&color_code={{first_mockup_product.productattribute_set.first.color.color_code|urlencode}}" class="btn-success-stories">Start Designing</a>
+        </div>
+    </div>
+</section>
+
+<section class="faq-custom-section">
+  <div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-4">
+
+            <div class="faq-custom-header">
+              <p class="faq-custom-label">FAQs</p>
+              <h2 class="faq-custom-title">Your questions<br>answered</h2>
+            </div>
+        </div>
+      <div class="col-lg-8">
+        
+        <div class="accordion faq-custom-accordion" id="faqAccordion">
+  {% for faq in faqs %}
+    <div class="accordion-item faq-custom-item">
+      <h3 class="accordion-header faq-custom-header-item">
+        <button class="accordion-button faq-custom-button collapsed" type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#faq{{ forloop.counter }}"
+          aria-expanded="false"
+          aria-controls="faq{{ forloop.counter }}">
+          
+          <span class="faq-custom-number">
+            {{ forloop.counter|stringformat:"02d" }}
+          </span>
+          <span class="faq-custom-question">{{ faq.question }}</span>
+        </button>
+      </h3>
+
+      <div id="faq{{ forloop.counter }}" class="accordion-collapse collapse"
+        data-bs-parent="#faqAccordion">
+        <div class="accordion-body faq-custom-body">
+          {{ faq.answer }}
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p>No FAQs available right now.</p>
+  {% endfor %}
+</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <h2 class="mb-4">The Gram @studio_mohar</h2>
+
+    <div class="swiper mySwiper">
+      <div class="swiper-wrapper">
+        {% for i in i_posts %}
+        <div class="swiper-slide">
+            <a {% if i.link %}href="{{i.link}}" target="_blank"{% else %}href="#!"{% endif %}>
+
+                <img src="/media/{{i.image}}" class="img-fluid insta-post" alt="{{i.title}}">
+            </a>
+        </div>
+        {% endfor %}
+        <!-- <div class="swiper-slide">
+          <img src="/static/shop/img/1900x700.png" class="img-fluid" alt="Image 2">
+        </div>
+        <div class="swiper-slide">
+          <img src="/static/shop/img/1900x700.png" class="img-fluid" alt="Image 3">
+        </div>
+        <div class="swiper-slide">
+          <img src="/static/shop/img/1900x700.png" class="img-fluid" alt="Image 4">
+        </div>
+        <div class="swiper-slide">
+          <img src="/static/shop/img/1900x700.png" class="img-fluid" alt="Image 5">
+        </div>
+        <div class="swiper-slide">
+          <img src="/static/shop/img/1900x700.png" class="img-fluid" alt="Image 6">
+        </div> -->
+      </div>
+
+
+    </div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+    const swiper = new Swiper(".mySwiper", {
+    slidesPerView: 4,
+    spaceBetween: 10,
+    loop: true,
+    autoplay: {
+      delay: 3000,  // slides change every 3 seconds
+      disableOnInteraction: false,
+    },
+    
+    breakpoints: {
+      0: { slidesPerView: 1 },
+      576: { slidesPerView: 2 },
+      768: { slidesPerView: 3 },
+      992: { slidesPerView: 4 },
+    }
+  });
+
+</script>
+
+
+
+<!-- Reviews Section -->
+<!-- <section class="reviews-section">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">
+                <i class="fas fa-star"></i>
+                Testimonial
+            </div>
+            <h2 class="section-title">Our Google & Yelp Reviews are Awesome!</h2>
+            <p class="section-subtitle">Bulk orders, fast turnaround and no headaches - that's why they keep coming back.</p>
+        </div>
+        
+        <div class="review-content">
+            <div class="review-image">
+                <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Team wearing custom shirts" class="team-photo">
+            </div>
+            
+            <div class="review-details">
+                <div class="review-card">
+                    <h4 class="reviewer-name">Fizza Jones</h4>
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-text">I live in Alberta and I needed 14 Custom T-shirts for a wedding I was attending in Toronto. Downside was it was very short notice but I was so lucky to find Remark Tees who made the entire process so easy & seamless! I was in contact with them throughout and they delivered exactly what I wanted. The t-shirts were a ready on time!</p>
+                </div>
+                
+                <div class="review-stats">
+                    <div class="stat-box">
+                        <h3 class="stat-number">100,000+</h3>
+                        <p class="stat-label">Satisfied Clients</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3 class="stat-number">1,950</h3>
+                        <p class="stat-label">Positive Reviews</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section> -->
+
+</body>
+{% endblock body %}

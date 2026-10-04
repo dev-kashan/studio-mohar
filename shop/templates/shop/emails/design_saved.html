@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Your Design</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      margin: 0;
+      padding: 0;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: #7E9479;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+    .content {
+      padding: 25px;
+      color: #333;
+      line-height: 1.6;
+    }
+    .content h2 {
+      margin-top: 0;
+      font-size: 20px;
+      color: #7E9479;
+    }
+    .button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 25px;
+      background: #7E9479;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .button:hover {
+      background: #6a7f65;
+    }
+    .footer {
+      background: #f0f0f0;
+      padding: 15px;
+      text-align: center;
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h1>Your Design is Saved!</h1>
+    </div>
+    <div class="content">
+      <h2>Hello,</h2>
+      <p>Great news - your design</strong> has been saved successfully.</p>
+      <p>You can continue editing anytime by clicking the retrieve design button below:</p>
+      <p>
+        <a href="{{ link }}" class="button">Retrieve Design</a>
+      </p>
+      <p>If the button doesn’t work, copy and paste this link into your browser:</p>
+      <p><a href="{{ link }}">{{ link }}</a></p>
+    </div>
+    <div class="footer">
+      <p>Thank you for using Studio Mohar </p>
+      <p>&copy; {{ now|date:"Y" }} Studio Mohar. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

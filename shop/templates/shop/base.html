@@ -1,0 +1,2280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Start cookieyes banner --> 
+    <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/7c2794fa549cfcd173ec4d81/script.js"></script>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-MR9BZ39V');</script>
+    <!-- End Google Tag Manager →
+
+
+      <!-- End cookieyes banner -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block head %}
+    {% endblock head %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/shop/css/new_syle.css">
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="icon" type="image/x-icon" href="/media/{{layout.favicon}}">
+
+    <!-- Owl Carousel CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+
+<!-- jQuery and Owl Carousel JS -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+<style>
+
+    /* Chrome, Safari, Edge, Opera */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* Re-enable arrows for specific inputs */
+input.quote-size-input[type=number]::-webkit-inner-spin-button,
+input.quote-size-input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: auto !important;
+}
+
+input.quote-size-input[type=number] {
+    -moz-appearance: number-input !important; /* Firefox */
+}
+
+.mai_utto_ad_ixo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.quote-size-price{
+    display: none;
+}
+
+
+    .text-rotator-div {
+           position: relative;
+    height: 35px;
+    overflow: hidden;
+    /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+    border-radius: 10px;
+    /* padding: 0 20px; */
+    display: flex;
+    align-items: center;
+     /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+        }
+
+        .single_chagig_text_div {
+            position: absolute;
+            width: 100%;
+            left: 0;
+            padding: 0 20px;
+            font-size: 19px;
+            font-weight: 600;
+            color: #6f6f6f;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: all 0.6s 
+            ease-in-out;
+        }
+
+        .single_chagig_text_div.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .single_chagig_text_div.exit {
+            opacity: 0;
+            transform: translateY(-100%);
+        }
+
+
+
+    .single_text{
+        min-width: 482px;
+    }
+
+    .text-rotator {
+    position: relative;
+    height: 40px;     /* adjust based on your text */
+    overflow: hidden;
+}
+
+.single_chagig_text {
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    opacity: 0;
+    transition: all 0.6s ease;
+    text-align: center; /* optional */
+}
+
+/* Active slide shows */
+.single_chagig_text.active {
+    top: 0;
+    opacity: 1;
+}
+
+/* Slide going out */
+.single_chagig_text.out {
+    top: -100%;
+    opacity: 0;
+}
+    
+    .feature-icon img {
+    width: 100px;
+    height: 104px;
+    object-fit: contain;
+}
+    .testimonials_logo {
+    display: flex;
+    gap: 12px;
+    /* margin-bottom: 36px; */
+}
+
+.single_testimonial_logo img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.testimonials_logo_wrapper {
+    overflow: hidden;
+    width: 100%;
+}
+
+.testimonials_logo {
+    display: flex;
+    gap: 50px; /* space between logos */
+    animation: scroll 30s linear infinite;
+}
+.single_testimonial_logo {
+    min-width: 276px;
+}
+
+.single_testimonial_logo img {
+    max-height: 151px; /* adjust as needed */
+    display: block;
+    object-fit: cover;
+}
+
+/* Animation */
+@keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-150%); }
+}
+
+
+    .footer-social {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-social a {
+    background: #ffffff;
+    padding: 4px 11px;
+    border-radius: 5px;
+    color: #000000;
+}
+
+    /* Toast container fixed top-right */
+#toastContainer {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}
+.nice-select{
+    width: 100% !important;
+}
+/* Individual toast */
+.toast {
+  display: flex;
+  align-items: center;
+  min-width: 250px;
+  max-width: 350px;
+  margin-bottom: 10px;
+  padding: 12px 16px;
+  border-radius: 5px;
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  opacity: 0;
+  transform: translateX(100%);
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+/* Toast types */
+.toast.success { background-color: #28a745; }
+.toast.error   { background-color: #dc3545; }
+.toast.warning { background-color: #ffc107; color: #333; }
+
+/* Show animation */
+.toast.show {
+  opacity: 1;
+  transform: translateX(0);
+width: 100%;  
+    max-width: 367px;
+}
+
+
+.main_top_banner {
+    position: relative;
+}
+
+.cart_icons.open {
+    opacity: 0;
+    transition: .3s;
+}
+
+
+.cart_icons {
+    position: relative;
+    /* top: 18px; */
+    /* right: 164px; */
+    cursor: pointer;
+}
+
+.cart_count {
+    position: absolute;
+    top: -8px;
+    left: 15px;
+    /* z-index: 1111; */
+    background: #7e9479;
+    color: white;
+    width: 19px;
+    height: 19px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}
+
+.cart_icons i {
+    font-size: 23px;
+}
+    .business-hours p {
+    color: white;
+}
+        .quote-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+            display: none;
+        }
+
+        .quote-popup-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 582px;
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 1051;
+        }
+
+        .quote-popup-header {
+            padding: 20px 20px 10px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quote-popup-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c5aa0;
+            margin: 0;
+        }
+
+        .quote-popup-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quote-popup-body {
+            padding: 20px;
+        }
+
+        .quote-form-section {
+            margin-bottom: 25px;
+        }
+
+        .quote-form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .quote-product-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+
+        .quote-color-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .quote-color-option {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .quote-color-option.selected {
+            border-color: #2c5aa0;
+            box-shadow: 0 0 0 2px rgba(44, 90, 160, 0.3);
+        }
+
+        .quote-size-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .quote-size-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quote-size-label {
+            font-weight: 600;
+            min-width: 35px;
+        }
+
+        .quote-size-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .quote-ink-section {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .quote-ink-item {
+            flex: 1;
+        }
+
+        .quote-ink-label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .quote-ink-select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .quote-get-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #2c5aa0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .quote-get-btn:hover {
+            background-color: #1e3d6f;
+        }
+
+        .quote-result-container {
+            display: none;
+        }
+
+        .quote-result-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .quote-result-subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .quote-result-price {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .quote-result-total {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .quote-edit-link {
+            color: #2c5aa0;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .quote-features {
+            margin: 20px 0;
+        }
+
+        .quote-feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #28a745;
+            font-size: 14px;
+        }
+
+        .quote-delivery-section {
+            margin: 25px 0;
+        }
+
+        .quote-delivery-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .quote-delivery-options {
+            display: flex;
+            gap: 15px;
+        }
+
+        .quote-delivery-option {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quote-delivery-option.selected {
+            border-color: #2c5aa0;
+            background-color: #f8f9ff;
+        }
+
+        .quote-delivery-type {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .quote-delivery-date {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .quote-save-section {
+            margin: 25px 0;
+        }
+
+        .quote-save-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .quote-save-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .quote-email-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .quote-save-btn {
+            padding: 12px 20px;
+            background-color: #2c5aa0;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .quote-bulk-section {
+            margin-top: 25px;
+        }
+
+        .quote-bulk-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .quote-bulk-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .quote-bulk-table th,
+        .quote-bulk-table td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .quote-bulk-table th {
+            font-weight: 600;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .quote-bulk-table td {
+            font-weight: 600;
+        }
+
+        img#mai_product_img {
+    width: 198px;
+        margin: auto;
+    display: block;
+}
+@media screen and (max-width:990px) {
+    /* .cart_icons{
+        top: 67px;
+        right: 67px;
+        cursor: pointer;
+        z-index: 11111;
+    } */
+     .testimonials_logo {
+    /* display: flex; */
+    gap: 20px; /* space between logos */
+    animation: scroll 20s linear infinite;
+}
+
+@keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-700%); }
+}
+
+}
+@media screen and (max-width:767px) {
+    .quote-ink-section{
+        gap: 11px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+    .single_chagig_text_div{
+        font-size: 14px;
+    }
+    .quote-ink-item{
+        width: 48%;
+        flex: inherit;
+    }
+
+
+}
+        /* .quote-trigger-btn {
+            background-color: #2c5aa0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        } */
+    </style>
+
+
+</head>
+<body>
+
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MR9BZ39V"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+
+      <input type="hidden" id="price_front" value="{{ design_prices.front }}">
+    <input type="hidden" id="price_back" value="{{ design_prices.back }}">
+    <input type="hidden" id="price_left_sleeve" value="{{ design_prices.left_sleeve }}">
+    <input type="hidden" id="price_right_sleeve" value="{{ design_prices.right_sleeve }}">
+    <input type="hidden" id="price_embroidery_extra" value="{{ design_prices.embroidery_extra }}">
+
+     <div class="quote-popup-overlay" id="quotePopupOverlay">
+        <div class="quote-popup-container">
+            <!-- Header -->
+            <div class="quote-popup-header">
+                <h2 class="quote-popup-title">Get a Quote</h2>
+                <button class="quote-popup-close" onclick="closeQuotePopup()">×</button>
+            </div>
+
+            <!-- Body -->
+            <div class="quote-popup-body">
+    <!-- Form Container -->
+    <div class="quote-form-container" id="quoteFormContainer">
+    <!-- Product Selection -->
+    {% load size_filters %}
+    <div class="quote-form-section">
+        <label class="quote-form-label">Product</label>
+        <select class="quote-product-select" id="productSelect" onchange="handleProductChange()">
+            {% for i in mockup_products %}
+            <option value="{{i.product_id}}" 
+                data-image="/media/{{i.blank_image}}"
+                data-attributes='[
+                    {% for attr in i.productattribute_set.all %}
+                    {
+                        "color_name": "{{ attr.color.color_name }}",
+                        "color_code": "{{ attr.color.color_code }}",
+                        "size": "{{ attr.size.Size_name|clean_sizes }}",
+                        "price": {{ attr.discount_price }}
+                    }{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ]'>
+                {{i.product_name}}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    {% for i in mockup_products|slice:":1" %}
+    <img src="/media/{{i.customize_mockup_template.MockUp_Fornt_Image}}" id="mai_product_img" alt="">
+    {% endfor %}
+
+    <!-- Color Selection -->
+    <div class="quote-form-section">
+        <label class="quote-form-label">1. Select a Color</label>
+        <div class="quote-color-grid" id="colorGrid"></div>
+    </div>
+
+    <!-- Shirt Quantities -->
+    <div class="quote-form-section">
+        <label class="quote-form-label">2. Quantities</label>
+        <div class="quote-size-grid" id="sizeGrid">
+            <div class="quote-size-item" data-size="XS">
+                <span class="quote-size-label">XS</span>
+                <input type="number" class="quote-size-input" id="sizeXS" min="0" value="0">
+                <span class="quote-size-price" id="priceXS"></span>
+            </div>
+            <div class="quote-size-item" data-size="S">
+                <span class="quote-size-label">S</span>
+                <input type="number" class="quote-size-input" id="sizeS" min="0" value="0">
+                <span class="quote-size-price" id="priceS"></span>
+            </div>
+            <div class="quote-size-item" data-size="M">
+                <span class="quote-size-label">M</span>
+                <input type="number" class="quote-size-input" id="sizeM" min="0" value="0">
+                <span class="quote-size-price" id="priceM"></span>
+            </div>
+            <div class="quote-size-item" data-size="L">
+                <span class="quote-size-label">L</span>
+                <input type="number" class="quote-size-input" id="sizeL" min="0" value="0">
+                <span class="quote-size-price" id="priceL"></span>
+            </div>
+            <div class="quote-size-item" data-size="XL">
+                <span class="quote-size-label">XL</span>
+                <input type="number" class="quote-size-input" id="sizeXL" min="0" value="0">
+                <span class="quote-size-price" id="priceXL"></span>
+            </div>
+            <div class="quote-size-item" data-size="2XL">
+                <span class="quote-size-label">2XL</span>
+                <input type="number" class="quote-size-input" id="size2XL" min="0" value="0">
+                <span class="quote-size-price" id="price2XL"></span>
+            </div>
+            <div class="quote-size-item" data-size="3XL">
+                <span class="quote-size-label">3XL</span>
+                <input type="number" class="quote-size-input" id="size3XL" min="0" value="0">
+                <span class="quote-size-price" id="price3XL"></span>
+            </div>
+            <div class="quote-size-item" data-size="4XL">
+                <span class="quote-size-label">4XL</span>
+                <input type="number" class="quote-size-input" id="size4XL" min="0" value="0">
+                <span class="quote-size-price" id="price4XL"></span>
+            </div>
+            <div class="quote-size-item" data-size="5XL">
+                <span class="quote-size-label">5XL</span>
+                <input type="number" class="quote-size-input" id="size5XL" min="0" value="0">
+                <span class="quote-size-price" id="price5XL"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customizations -->
+    <div class="quote-form-section">
+        <label class="quote-form-label">3. Customizations</label>
+        <div class="quote-ink-section">
+            <div class="quote-ink-item">
+                <label class="quote-ink-label">Front</label>
+                <select class="quote-ink-select" id="frontInkColors">
+                    <option value="None">None</option>
+                    <option value="Print">Print</option>
+                    <option value="Embroidery">Embroidery</option>
+                </select>
+            </div>
+            <div class="quote-ink-item">
+                <label class="quote-ink-label">Back</label>
+                <select class="quote-ink-select" id="backInkColors">
+                    <option value="None">None</option>
+                    <option value="Print">Print</option>
+                    <option value="Embroidery">Embroidery</option>
+                </select>
+            </div>
+            <div class="quote-ink-item">
+                <label class="quote-ink-label">Left Sleeve</label>
+                <select class="quote-ink-select" id="leftSleeveColors">
+                    <option value="None">None</option>
+                    <option value="Print">Print</option>
+                    <option value="Embroidery">Embroidery</option>
+                </select>
+            </div>
+            <div class="quote-ink-item">
+                <label class="quote-ink-label">Right Sleeve</label>
+                <select class="quote-ink-select" id="rightSleeveColors">
+                    <option value="None">None</option>
+                    <option value="Print">Print</option>
+                    <option value="Embroidery">Embroidery</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Get Quote Button -->
+    <button class="quote-get-btn" onclick="calculateQuote()">Get Quote</button>
+</div>
+
+<!-- Result Container -->
+<div class="quote-result-container" id="quoteResultContainer" style="display:none;">
+    <div class="quote-result-header">
+        <div class="quote-result-price" id="resultPrice">$0.00 per shirt</div>
+        <div class="quote-result-total" id="resultTotal">Total $0.00</div>
+        <a href="#" class="quote-edit-link" onclick="editQuote()">
+            <i class="fas fa-edit"></i> Edit the quote
+        </a>
+    </div>
+
+    <div class="quote-features">
+        <div class="quote-feature-item"><i class="fas fa-check"></i><span>Low price guarantee</span></div>
+        <div class="quote-feature-item"><i class="fas fa-check"></i><span>Free shipping options available</span></div>
+        <div class="quote-feature-item"><i class="fas fa-check"></i><span>Save {{design_pricing.waitsave_discount|floatformat:"0"}}% more with Wait & Save Shipping</span></div>
+    </div>
+
+    <div class="quote-bulk-section">
+        <div class="quote-bulk-title">Buy More & Save</div>
+        <table class="quote-bulk-table">
+            <thead>
+                <tr><th>Qty</th><th>Price</th><th>Total</th></tr>
+            </thead>
+            <tbody id="bulkPricingTable"></tbody>
+        </table>
+    </div>
+</div>
+</div>
+        </div>
+    </div>
+
+    <!-- Top Banner -->
+     <div class="main_top_banner">
+
+         <div class="top-banner">
+            <!-- <marquee behavior="" direction="">
+                <div class="sigle_mar">
+                    Free Shipping in GTA + Free Shipping over $250 
+                </div>
+            </marquee> -->
+            <div class="text-rotator-div">
+                {% for i in layout.text.all %}
+                    <div class="single_chagig_text_div">{{i.title}}</div>
+                    {% endfor %}
+                    <!-- <div class="single_chagig_text_div">Innovative Solutions</div>
+                    <div class="single_chagig_text_div">Built for the Future</div>
+                    <div class="single_chagig_text_div">Join Us Today</div>
+                    <div class="single_chagig_text_div">Experience Excellence</div> -->
+                </div>
+            <!-- <div class="text-rotator-div">
+    {% for i in layout.text.all %}
+        <div class="single_chagig_text_div">{{ i.title }}</div>
+    {% endfor %}
+</div> -->
+            <div class="testimonials_logo_wrapper">
+    <div class="testimonials_logo">
+        {% for i in layout.text.all %}
+      <div class="single_chagig_text">{{i.title}}</div>
+      {% endfor %}
+<!-- <div class="single_text">Premium Fabric Quality with long lasting print results</div>
+<div class="single_text">Every design is made to order and produced with care</div>
+<div class="single_text">Fast processing and fast delivery so you get your order sooner</div> -->
+        <!-- {% for i in clients %}
+        <div class="single_testimonial_logo"><img src="/media/{{i.image}}" alt=""></div>
+        {% endfor %} -->
+        <!-- <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div> -->
+        <!-- Repeat logos to make seamless loop -->
+        <!-- <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div>
+        <div class="single_testimonial_logo"><img src="/static/shop/img/1900x700.png" alt=""></div> -->
+    </div>
+            </div>
+            <!-- <div class="cart_icon" onclick="window.location.href='/cart/'">
+                <div class="cart_count">{{cart_count}}</div>
+                <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+            </div> -->
+        </div>
+
+    <nav class="navbar-custom">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center w-100" >
+                <a href="/" class="navbar-brand-custom">
+                    <img src="/media/{{layout.logo}}" alt="">
+                </a>
+
+                <ul class="nav-menu d-none d-lg-flex align-items-center">
+                    <li class="nav-item custom-products-dropdown">
+            <button class="custom-products-btn">
+                Products
+                <svg xmlns="http://www.w3.org/2000/svg" class="mt-1" width="12" height="12" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                </svg>
+            </button>
+            <div class="custom-products-menu">
+                <div class="custom-products-menu-content">
+
+                <div class="explore-products">
+                    <strong>Explore Products</strong>
+                    <ul>
+                        <li><a href="/all_products/" class="text-white fs-6">All Products</a></li>
+                        <li><a href="/all_products/?is_best_seller=Yes" class="text-white fs-6">Best Seller</a></li>
+                        <li><a href="/all_products/?is_sustainable=Yes" class="text-white fs-6">Trending Now</a></li>
+                    </ul>
+                </div>
+                <div class="categories_and_bottom_text">
+
+                <div class="popular-category">
+                    {% for i in Cate %}
+                    <div class="category-item" onclick="window.location.href='/products/{{i.category_id}}'">
+                        <img src="/media/{{i.cate_image}}" alt="Hoodie">
+                        <div>{{i.category_name}}</div>
+                    </div>
+                    {% endfor %}
+                    <!-- <div class="category-item" onclick="window.location.href='/products/'">
+                        <img src="/static/shop/img/Asset 50 1.svg" alt="Sweatshirts">
+                        <div>Sweatshirts</div>
+                    </div>
+                    <div class="category-item" onclick="window.location.href='/products/'">
+                        <img src="/static/shop/img/Asset 47 1.svg" alt="Top Tanks">
+                        <div>Top Tanks</div>
+                    </div> -->
+                    <!-- <div class="category-item" onclick="window.location.href='/products/'">
+                        <img src="/static/shop/img/dropdown_img/WhatsApp Image 2025-08-22 at 8.54.31 AM (1).jpeg" alt="Hats">
+                        <div>Hats</div>
+                    </div> -->
+                    <!-- <div class="category-item" onclick="window.location.href='/products/'">
+                        <img src="/static/shop/img/Asset 51 1.svg" alt="T-shirts">
+                        <div>Bags</div>
+                    </div>
+                    <div class="category-item" onclick="window.location.href='/products/'">
+                        <img src="/static/shop/img/Asset 49 1.svg" alt="Polos">
+                        <div>Polos</div>
+                    </div>
+                    <div class="category-item" onclick="window.location.href='/products/'">
+                        <img src="/static/shop/img/Asset 49 1.svg" alt="Women">
+                        <div>Women</div>
+                    </div>
+                    <div class="category-item" onclick="window.location.href='/products/'">
+                        <img src="/static/shop/img/hoodie_nav_7-removebg-preview.png" alt="Bags">
+                        <div>T-Shirts</div>
+                    </div> -->
+                </div>
+                </div>
+                </div>
+
+            <div class="bottom-text">
+                Don’t see your product? We can arrange it for you!
+            </div>
+
+            </div>
+        </li>
+                    <!-- <li><a href="#">Learn</a></li> -->
+                     <li class="nav-item dropdown learn-menu">
+        <a class="nav-link" href="#">Learn <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                </svg></a>
+      <div class="learn-dropdown">
+  <div class="container py-2">
+    <div class="row g-4">
+
+      <!-- First Row -->
+      <div class="col-md-6 col-sm-6">
+        <h6 class="mb-3 text-uppercase" style="font-weight:700; font-size:20px;">Services</h6>
+
+
+        <ul class="list-unstyled m-0 learn_pc_options">
+            {% for i in all_services %}
+          <li class="mb-2"><i class="{{i.icon_class}}"></i><a href="/service_detail/{{i.id}}">{{i.title_for_dropdown}}</a></li>
+          {% endfor %}
+          <!-- <li class="mb-2"><i class="fa-solid fa-print me-2 text-success"></i><a href="/service_detail/">DTG</a></li>
+          <li class="mb-2"><i class="fa-solid fa-layer-group me-2 text-success"></i><a href="/service_detail/">Screen Printing</a></li>
+          <li class="mb-2"><i class="fa-solid fa-print me-2 text-success"></i><a href="/service_detail/">ePrinting</a></li>
+          <li class="mb-2"><i class="fa-solid fa-pen-nib me-2 text-success"></i><a href="/service_detail/">Embroidery</a></li>
+          <li class="mb-2"><i class="fa-solid fa-fire me-2 text-success"></i><a href="/service_detail/">Sublimation</a></li> -->
+        </ul>
+      </div>
+
+      <div class="col-md-6 col-sm-6">
+        <h6 class="mb-3 text-uppercase" style="font-weight:700; font-size:20px;">Get Apparel For</h6>
+        <ul class="list-unstyled m-0 learn_pc_options">
+          {% for i in all_apparel_for %}
+            <li class="mb-2"><i class="{{i.icon_class}}"></i><a href="/get_apparel_for/{{i.id}}">{{i.title_for_dropdown}}</a></li>
+          {% endfor %}
+          <!-- <li class="mb-2"><i class="fa-solid fa-users me-2 text-success"></i><a href="/get_apparel_for/">Clubs</a></li>
+          <li class="mb-2"><i class="fa-solid fa-calendar me-2 text-success"></i><a href="/get_apparel_for/">Events & Conferences</a></li>
+          <li class="mb-2"><i class="fa-solid fa-basketball me-2 text-success"></i><a href="/get_apparel_for/">Sports</a></li>
+          <li class="mb-2"><i class="fa-solid fa-briefcase me-2 text-success"></i><a href="/get_apparel_for/">Business</a></li>
+          <li class="mb-2"><i class="fa-solid fa-utensils me-2 text-success"></i><a href="/get_apparel_for/">Restaurants</a></li>
+          <li class="mb-2"><i class="fa-solid fa-user me-2 text-success"></i><a href="/get_apparel_for/">Personal Style</a></li>
+          <li class="mb-2"><i class="fa-solid fa-dollar-sign me-2 text-success"></i><a href="/get_apparel_for/">Fundraising</a></li> -->
+        </ul>
+      </div>
+
+      <div class="border-line"></div>
+
+      <!-- Second Row -->
+      <div class="col-md-6 col-sm-6">
+        <h6 class="mb-3 text-uppercase" style="font-weight:700; font-size:20px;">Support</h6>
+        <ul class="list-unstyled m-0 learn_pc_options">
+          <li class="mb-2"><i class="fa-solid fa-phone me-2 text-success"></i><a href="/contact_sales/">Contact Sales</a></li>
+          <li class="mb-2"><i class="fa-solid fa-headset me-2 text-success"></i><a href="/contact_support/">Contact Support</a></li>
+          <!-- <li class="mb-2"><i class="fa-solid fa-file me-2 text-success"></i><a href="#">Retrieve Design</a></li> -->
+        </ul>
+      </div>
+
+      <div class="col-md-6 col-sm-6">
+  <h6 class="mb-3 text-uppercase" style="font-weight:700; font-size:20px;">About Us</h6>
+  <ul class="list-inline m-0">
+    <li class="list-inline-item">
+      <i class="fa-solid fa-circle-info me-2 text-success"></i>
+      <a href="/our_story/">Our Story</a>
+    </li>
+    <li class="list-inline-item">
+      <i class="fa-solid fa-blog me-2 text-success"></i>
+      <a href="/blog/">Blog</a>
+    </li>
+    <!-- <li class="list-inline-item">
+      <i class="fa-solid fa-blog me-2 text-success"></i>
+      <a href="/retrieve-design/">Retrieve Design</a>
+    </li> -->
+  </ul>
+</div>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+      </li>
+                    <!-- <li><a href="#">Instant Quote</a></li> -->
+                     <li><a href="#" class="quote-trigger-btn" onclick="openQuotePopup()">Instant Quote</a></li>
+                    <li><a href="/specials/">Shop</a></li>
+                    <li><a href="/blog/">Blog</a></li>
+                    <li><a href="/retrieve-design/">Retrieve Design</a></li>
+                    <!-- <li><a href="/cart/">Cart</a></li> -->
+                </ul>
+                <!-- Quote Popup Overlay -->
+
+
+
+                <!-- <a href="#" class="btn-start-designing">Start Designing Now</a> -->
+                 <div class="mai_utto_ad_ixo">
+
+                <a href="/customize-editor/{{first_mockup_product.customize_mockup_template.id}}/{{first_mockup_product.customize_mockup_template.MockUp_Name}}/{{first_mockup_product.product_id}}/?attr_id={{first_mockup_product.productattribute_set.first.id}}&color_id={{first_mockup_product.productattribute_set.first.color.id}}&color_code={{first_mockup_product.productattribute_set.first.color.color_code|urlencode}}" class="btn-get-started">{{layout.header_button_text}}</a>
+
+                <div class="cart_icons" onclick="window.location.href='/cart/'">
+                    <div class="cart_count">{{cart_count}}</div>
+                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                </div>
+                 </div>
+
+
+            </div>
+        </div>
+    </nav>
+
+    <nav class="mobile-navbar d-lg-none">
+  <div class="mobile-navbar-header d-flex justify-content-between align-items-center px-3 py-2">
+    <a href="/" class="mobile-logo">
+      <img src="/media/{{layout.logo}}" alt="Logo" height="40">
+    </a>
+    <div class="mai_utto_ad_ixo">
+
+        <div class="cart_icons" onclick="window.location.href='/cart/'">
+            <div class="cart_count">{{cart_count}}</div>
+            <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+        </div>
+        <button class="hamburger-btn" id="hamburgerBtn">&#9776;</button>
+    </div>
+  </div>
+
+  <div class="mobile-menu-overlay" id="mobileMenu">
+    <div class="mobile-menu-header d-flex justify-content-between align-items-center px-3 py-3">
+      <a href="/" class="mobile-logo">
+        <img src="/media/{{layout.logo}}" alt="Logo" height="40">
+      </a>
+      <button class="close-btn" id="closeMenuBtn">&times;</button>
+    </div>
+
+    <ul class="mobile-nav-links list-unstyled">
+
+      <!-- Products Dropdown -->
+      <li class="mobile-dropdown">
+        <button class="dropdown-toggle">Products</button>
+        <div class="dropdown-content">
+          <strong>Explore Products</strong>
+          <ul>
+            <li><a href="/all_products/">All Products</a></li>
+            <li><a href="/all_products/?is_best_seller=Yes">Best Seller</a></li>
+            <li><a href="/all_products/?is_sustainable=Yes">Sustainable</a></li>
+          </ul>
+
+          <strong>Popular Categories</strong>
+          <div class="mobile-categories-grid">
+            {% for i in Cate %}
+            <div class="mobile-category-item" onclick="window.location.href='/products/{{i.category_id}}'">
+              <img src="/media/{{i.cate_image}}" alt="Hoodie">
+              <div>{{i.category_name}}</div>
+            </div>
+            {% endfor %}
+            <!-- <div class="mobile-category-item" onclick="window.location.href='/products/'">
+              <img src="/static/shop/img/dropdown_img/WhatsApp Image 2025-08-22 at 8.54.29 AM.jpeg" alt="Sweatshirts">
+              <div>Sweatshirts</div>
+            </div>
+            <div class="mobile-category-item" onclick="window.location.href='/products/'">
+              <img src="/static/shop/img/dropdown_img/WhatsApp Image 2025-08-22 at 8.54.30 AM.jpeg" alt="Top Tanks">
+              <div>Top Tanks</div>
+            </div>
+            <div class="mobile-category-item" onclick="window.location.href='/products/'">
+              <img src="/static/shop/img/dropdown_img/WhatsApp Image 2025-08-22 at 8.54.31 AM.jpeg" alt="T-shirts">
+              <div>T-shirts</div>
+            </div>
+            <div class="mobile-category-item" onclick="window.location.href='/products/'">
+              <img src="/static/shop/img/dropdown_img/WhatsApp Image 2025-08-22 at 8.54.32 AM.jpeg" alt="Polos">
+              <div>Polos</div>
+            </div>
+            <div class="mobile-category-item" onclick="window.location.href='/products/'">
+              <img src="/static/shop/img/dropdown_img/WhatsApp Image 2025-08-22 at 8.54.32 AMa.jpeg" alt="Women">
+              <div>Women</div>
+            </div>
+            <div class="mobile-category-item" onclick="window.location.href='/products/'">
+              <img src="/static/shop/img/dropdown_img/WhatsApp Image 2025-08-22 at 8.54.31 AM (1).jpeg" alt="Bags">
+              <div>Bags</div>
+            </div> -->
+          </div>
+        </div>
+      </li>
+
+      <!-- Learn Dropdown -->
+      <li class="mobile-dropdown">
+        <button class="dropdown-toggle">Learn</button>
+        <div class="dropdown-content">
+          <strong>Services</strong>
+          <ul>
+            {% for i in all_services %}
+            <li><a href="/service_detail/{{i.id}}">{{i.title_for_dropdown}}</a></li>
+            {% endfor %}
+            <!-- <li><a href="/service_detail/">DTG</a></li>
+            <li><a href="/service_detail/">Screen Printing</a></li>
+            <li><a href="/service_detail/">Embroidery</a></li>
+            <li><a href="/service_detail/">Sublimation</a></li> -->
+          </ul>
+          <strong>Get Apparel For</strong>
+          <ul>
+            {% for i in all_apparel_for %}
+            <li><a href="/get_apparel_for/{{i.id}}">{{i.title_for_dropdown}}</a></li>
+            {% endfor %}
+            <!-- <li><a href="/get_apparel_for/">Marathons</a></li>
+            <li><a href="/get_apparel_for/">Clubs</a></li>
+            <li><a href="/get_apparel_for/">Events & Conferences</a></li>
+            <li><a href="/get_apparel_for/">Sports</a></li>
+            <li><a href="/get_apparel_for/">Business</a></li>
+            <li><a href="/get_apparel_for/">Restaurants</a></li>
+            <li><a href="/get_apparel_for/">Personal Style</a></li>
+            <li><a href="/get_apparel_for/">Fundraising</a></li> -->
+          </ul>
+          <strong>Support</strong>
+          <ul>
+            <li><a href="/contact_sales/">Contact Sales</a></li>
+            <li><a href="/contact_support/">Contact Support</a></li>
+            <!-- <li><a href="#">Retrieve Design</a></li> -->
+          </ul>
+          <strong>About Us</strong>
+          <ul>
+            <li><a href="/our_story/">Our Story</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+      </li>
+
+      <li onclick="openQuotePopup()"><a href="#">Instant Quote</a></li>
+      <li><a href="/specials/">Shop</a></li>
+      <li><a href="/blog/">Blog</a></li>
+      <li><a href="/retrieve-design/">Retrieve Design</a></li>
+      <!-- <li><a href="/cart/">Cart</a></li> -->
+      <li><a href="/customize-editor/{{first_mockup_product.customize_mockup_template.id}}/{{first_mockup_product.customize_mockup_template.MockUp_Name}}/{{first_mockup_product.product_id}}/?attr_id={{first_mockup_product.productattribute_set.first.id}}&color_id={{first_mockup_product.productattribute_set.first.color.id}}&color_code={{first_mockup_product.productattribute_set.first.color.color_code|urlencode}}" class="btn-start-designing mt-3 d-inline-block">{{layout.header_button_text}}</a></li>
+    </ul>
+  </div>
+</nav>
+
+<script>
+    // Global variables
+    let selectedColor = null;
+    let selectedColorName = null;
+    let currentProductAttributes = [];
+    let currentQuoteData = {};
+
+    // Initialize the popup
+    function initializePopup() {
+        handleProductChange();
+    }
+
+    // Handle product change
+    function handleProductChange() {
+        const productSelect = document.getElementById('productSelect');
+        const selectedOption = productSelect.options[productSelect.selectedIndex];
+        
+        // Parse product attributes
+        try {
+            currentProductAttributes = JSON.parse(selectedOption.dataset.attributes);
+        } catch (e) {
+            console.error('Error parsing product attributes:', e);
+            currentProductAttributes = [];
+        }
+
+        // Update product image
+        const imageUrl = selectedOption.dataset.image;
+        if (imageUrl) {
+            document.getElementById('mai_product_img').src = imageUrl;
+        }
+
+        console.log(currentProductAttributes);
+        currentProductAttributes.forEach(a => console.log(a.color_code, a.color_name));
+        
+
+        // Generate color grid
+        generateColorGrid();
+    }
+
+    // Generate color grid based on available colors
+    function generateColorGrid() {
+        const colorGrid = document.getElementById('colorGrid');
+        colorGrid.innerHTML = '';
+
+        // Get unique colors from product attributes
+        const uniqueColors = [];
+        const colorMap = new Map();
+
+        currentProductAttributes.forEach(attr => {
+            if (!colorMap.has(attr.color_code)) {
+                colorMap.set(attr.color_code, {
+                    name: attr.color_name,
+                    code: attr.color_code
+                });
+                uniqueColors.push({
+                    name: attr.color_name,
+                    code: attr.color_code
+                });
+            }
+        });
+        console.log('uniqueColors', uniqueColors, colorMap);
+        
+
+        // Create color options
+        uniqueColors.forEach((color, index) => {
+            console.log('okkk');
+            
+            const colorOption = document.createElement('div');
+            colorOption.className = 'quote-color-option';
+            colorOption.style.backgroundColor = color.code;
+            colorOption.title = color.name;
+            colorOption.dataset.colorName = color.name;
+            colorOption.dataset.colorCode = color.code;
+
+            if (index === 0) {
+                console.log('0000');
+                
+                colorOption.classList.add('selected');
+                selectedColor = color.code;
+                selectedColorName = color.name;
+                $("#mai_product_img").css('background-color', color.code);
+                updateAvailableSizes();
+            }
+
+            colorOption.onclick = () => selectColor(colorOption, color.code, color.name);
+            colorGrid.appendChild(colorOption);
+            console.log('competed');
+            
+        });
+    }
+
+    // Select color and update sizes
+    function selectColor(element, colorCode, colorName) {
+        document.querySelectorAll('.quote-color-option').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+        $("#mai_product_img").css('background-color', colorCode);
+        
+        selectedColor = colorCode;
+        selectedColorName = colorName;
+        
+        // Update available sizes for this color
+        updateAvailableSizes();
+    }
+
+    // Update available sizes based on selected color
+    function updateAvailableSizes() {
+        const sizes = ['XS','S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+        
+        // Get attributes for selected color
+        const colorAttributes = currentProductAttributes.filter(
+            attr => attr.color_code === selectedColor
+        );
+
+        console.log('Updating sizes for color:', selectedColor);
+
+        // Create a map of available sizes for this color
+        const availableSizes = new Map();
+        colorAttributes.forEach(attr => {
+            console.log('attr.size', attr.size);
+            
+            availableSizes.set(attr.size, attr.price);
+        });
+
+        // Update each size item
+        sizes.forEach(size => {
+            const sizeItem = document.querySelector(`.quote-size-item[data-size="${size}"]`);
+            const sizeInput = document.getElementById('size' + size);
+            const priceLabel = document.getElementById('price' + size);
+
+            if (availableSizes.has(size)) {
+                // Size is available for this color
+                sizeItem.style.display = 'flex';
+                sizeItem.style.opacity = '1';
+                sizeInput.disabled = false;
+                const price = availableSizes.get(size);
+                if (priceLabel) {
+                    priceLabel.textContent = `C$${parseFloat(price).toFixed(2)}`;
+                }
+            } else {
+                // Size not available for this color
+                sizeItem.style.display = 'none';
+                sizeInput.value = '0';
+                sizeInput.disabled = true;
+                if (priceLabel) {
+                    priceLabel.textContent = '';
+                }
+            }
+        });
+    }
+
+    // Get price for specific color and size
+    function getPriceForColorAndSize(colorCode, size) {
+        const attribute = currentProductAttributes.find(
+            attr => attr.color_code === colorCode && attr.size === size
+        );
+        return attribute ? parseFloat(attribute.price) : 0;
+    }
+
+    // Get total quantity
+    function getTotalQuantity() {
+        const sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+        let total = 0;
+        sizes.forEach(size => {
+            const input = document.getElementById('size' + size);
+            if (!input.disabled) {
+                total += parseInt(input.value) || 0;
+            }
+        });
+        return total;
+    }
+
+    // Calculate quote with proper pricing
+    function calculateQuote() {
+        const productSelect = document.getElementById('productSelect');
+        const product = productSelect.value;
+        const productName = productSelect.options[productSelect.selectedIndex].text;
+        
+        const totalQuantity = getTotalQuantity();
+        console.log('okkkk', totalQuantity);
+        
+
+        if (totalQuantity === 0) {
+            showToast('Please select at least one quantity.', 'error');
+            return;
+        }
+
+        // Dynamic design prices
+        const designPrices = {
+            front: parseFloat(document.getElementById("price_front").value) || 0,
+            back: parseFloat(document.getElementById("price_back").value) || 0,
+            left_sleeve: parseFloat(document.getElementById("price_left_sleeve").value) || 0,
+            right_sleeve: parseFloat(document.getElementById("price_right_sleeve").value) || 0,
+            embroidery_extra: parseFloat(document.getElementById("price_embroidery_extra").value) || 0,
+        };
+
+        // Get customization selections
+        const frontOpt = document.getElementById('frontInkColors').value;
+        const backOpt = document.getElementById('backInkColors').value;
+        const leftOpt = document.getElementById('leftSleeveColors').value;
+        const rightOpt = document.getElementById('rightSleeveColors').value;
+
+        // Calculate customization cost per shirt
+        const calcSideCost = (option, baseSidePrice) => {
+            if (option === 'Print') return baseSidePrice;
+            if (option === 'Embroidery') return baseSidePrice + designPrices.embroidery_extra;
+            return 0;
+        };
+
+        const customCost = calcSideCost(frontOpt, designPrices.front) +
+                          calcSideCost(backOpt, designPrices.back) +
+                          calcSideCost(leftOpt, designPrices.left_sleeve) +
+                          calcSideCost(rightOpt, designPrices.right_sleeve);
+
+        // Calculate subtotal by iterating through each size
+        let subtotal = 0;
+        const sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+        
+        sizes.forEach(size => {
+            const input = document.getElementById('size' + size);
+            if (!input.disabled) {
+                const qty = parseInt(input.value) || 0;
+                if (qty > 0) {
+                    const basePrice = getPriceForColorAndSize(selectedColor, size);
+                    const pricePerShirt = basePrice + customCost;
+                    subtotal += pricePerShirt * qty;
+                }
+            }
+        });
+
+        // Dynamic Discount Brackets from Backend
+        const discountBrackets = [
+            {% for i in design_pricing.discount_tiers.all %}
+            {
+                min: {{ i.min_qty }},
+                max: {% if i.max_qty %}{{ i.max_qty }}{% else %}Infinity{% endif %},
+                discount: {{ i.discount_percent }}
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        // Find applicable discount
+        let applicableDiscount = 0;
+        for (const b of discountBrackets) {
+            if (totalQuantity >= b.min && totalQuantity < b.max) {
+                applicableDiscount = b.discount;
+                break;
+            }
+        }
+
+        // Apply discount
+        const discountAmount = subtotal * (applicableDiscount / 100);
+        const total = subtotal - discountAmount;
+        const averagePricePerShirt = total / totalQuantity;
+        console.log('totla', total, discountAmount, averagePricePerShirt);
+        
+
+        // Store quote data
+        currentQuoteData = {
+            product,
+            productName,
+            selectedColor,
+            selectedColorName,
+            totalQuantity,
+            frontOpt,
+            backOpt,
+            leftOpt,
+            rightOpt,
+            customCost,
+            subtotal,
+            applicableDiscount,
+            discountAmount,
+            total,
+            pricePerShirt: averagePricePerShirt
+        };
+
+        // Update result display
+        document.getElementById('resultPrice').textContent = `C$${averagePricePerShirt.toFixed(2)} each`;
+        document.getElementById('resultTotal').textContent = `Total C$${total.toFixed(2)}`;
+
+        // Update bulk pricing table
+        generateBulkPricingTable();
+
+        // Toggle UI
+        document.getElementById('quoteFormContainer').style.display = 'none';
+        document.getElementById('quoteResultContainer').style.display = 'block';
+    }
+
+    // Generate bulk pricing table
+    function generateBulkPricingTable() {
+        const tableBody = document.getElementById('bulkPricingTable');
+        tableBody.innerHTML = '';
+
+        const { customCost, totalQuantity } = currentQuoteData;
+
+        // Get average base price from current selection
+        let totalBasePrice = 0;
+        let itemCount = 0;
+        const sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+        
+        sizes.forEach(size => {
+            const input = document.getElementById('size' + size);
+            if (!input.disabled) {
+                const qty = parseInt(input.value) || 0;
+                if (qty > 0) {
+                    const basePrice = getPriceForColorAndSize(selectedColor, size);
+                    totalBasePrice += basePrice * qty;
+                    itemCount += qty;
+                }
+            }
+        });
+
+        const avgBasePrice = itemCount > 0 ? totalBasePrice / itemCount : 0;
+        const baseTotalPerShirt = avgBasePrice + customCost;
+
+        // Discount brackets
+        const discountBrackets = [
+            {% for i in design_pricing.discount_tiers.all %}
+            {
+                min: {{i.min_qty}},
+                max: {% if i.max_qty %}{{ i.max_qty }}{% else %}Infinity{% endif %},
+                discount: {{i.discount_percent}}
+            },
+            {% endfor %}
+        ];
+
+        // Find current bracket
+        const currentIndex = discountBrackets.findIndex(
+            b => totalQuantity >= b.min && totalQuantity < b.max
+        );
+
+        // Get next 3 brackets
+        const nextBrackets = discountBrackets.slice(currentIndex + 1, currentIndex + 4);
+        const displayBrackets = nextBrackets.length ? nextBrackets : discountBrackets.slice(-3);
+
+        displayBrackets.forEach(b => {
+            const qtyDisplay = b.max === Infinity ? `${b.min}+` : `${b.min}`;
+            const qtyValue = b.min;
+            const discountedPrice = baseTotalPerShirt * (1 - b.discount / 100);
+            const total = discountedPrice * qtyValue;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${qtyDisplay}</td>
+                <td>C$${discountedPrice.toFixed(2)}</td>
+                <td>${b.max === Infinity ? '-' : `C$${total.toFixed(2)}`}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Edit quote
+    function editQuote() {
+        document.getElementById('quoteResultContainer').style.display = 'none';
+        document.getElementById('quoteFormContainer').style.display = 'block';
+    }
+
+    // Open popup
+    function openQuotePopup() {
+        document.getElementById('quotePopupOverlay').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        initializePopup();
+    }
+
+    // Close popup
+    function closeQuotePopup() {
+        document.getElementById('quotePopupOverlay').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Select delivery option
+    function selectDelivery(element) {
+        document.querySelectorAll('.quote-delivery-option').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+
+    // Save quote
+    function saveQuote() {
+        const email = document.getElementById('saveEmail').value;
+        if (!email) {
+            showToast('Please enter your email address.', 'error');
+            return;
+        }
+        showToast('Quote saved successfully! We\'ll send you the details via email.', 'success');
+    }
+
+    // Close popup when clicking overlay
+    document.getElementById('quotePopupOverlay').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeQuotePopup();
+        }
+    });
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        initializePopup();
+    });
+</script>
+
+    {% block body %}
+    {% endblock body %}
+
+
+<!-- Footer Section -->
+<section class="footer-section">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <img src="/media/{{layout.logo}}" alt="">
+                </div>
+                <div class="footer-social">
+    <a href="https://www.facebook.com/studiomoharto" target="_blank"><i class="fab fa-facebook-f"></i></a>
+    <a href="https://www.instagram.com/studio_mohar/" target="_blank"><i class="fab fa-instagram"></i></a>
+    <a href=" https://www.linkedin.com/company/studio-mohar" target="_blank"><i class="fab fa-linkedin"></i></a>
+    <a href="mailto:support@studiomohar.ca"><i class="far fa-envelope"></i></a>
+</div>
+
+                <!-- <div class="business-hours">
+                    <p><strong>Ruii.com</strong></p>
+                    <p>Our Store is open from 12 pm to 7pm </p>
+                    <p>every day including weeksends</p>
+                </div> -->
+            </div>
+
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h5>Products</h5>
+                    <ul>
+                        {% for i in Cate %}
+                        <li><a href="/products/{{i.category_id}}">{{i.category_name}}</a></li>
+                        {% endfor %}
+                        <li><a href="/all_products/">All Products</a></li>
+                        <!-- <li><a href="/privacy-policy/">Privacy Policy</a></li>
+                        <li><a href="/terms-conditions/">Terms & Conditions</a></li>
+                        <li><a href="/shipping-policy/">Shipping Policy</a></li> -->
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h5>Services</h5>
+                    <ul>
+                        {% for i in all_services %}
+                        <li><a href="/service_detail/{{i.id}}">{{i.title_for_dropdown}}</a></li>
+                        {% endfor %}
+                        <!-- <li><a href="#">Ladies T- Shirts</a></li>
+                        <li><a href="#">Hoodies & Sweatshirts</a></li>
+                        <li><a href="#">Unisex Tanks Tops</a></li>
+                        <li><a href="#">Long Sleeve & Crewneck</a></li>
+                        <li><a href="#">Polo Shirts</a></li>
+                        <li><a href="#">Youth & Baby</a></li>
+                        <li><a href="#">Hats</a></li> -->
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h5>Resources</h5>
+                    <ul class="footer-links-right">
+                        <li><a href="/our_story/">About Us</a></li>
+                        <li><a href="/blog/">Blog</a></li>
+                        <li><a href="/contact_sales/">Contact Sales</a></li>
+                        <li><a href="/contact_support/">Contact Support</a></li>
+                        <li><a href="/privacy-policy/">Privacy Policy</a></li>
+                        <li><a href="/terms-conditions/">Terms & Conditions</a></li>
+                        <li><a href="/shipping-policy/">Shipping Policy</a></li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+    <script>
+        // Create container if it doesn't exist
+if (!document.getElementById('toastContainer')) {
+  const container = document.createElement('div');
+  container.id = 'toastContainer';
+  document.body.appendChild(container);
+}
+
+// Reusable function
+function showToast(message, type = 'success', duration = 3000) {
+  const container = document.getElementById('toastContainer');
+  
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+
+  container.appendChild(toast);
+
+  // Animate in
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 10);
+
+  // Remove after duration
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => container.removeChild(toast), 500); // wait for fade out
+  }, duration);
+}
+
+
+        $(document).ready(function() {
+            // Smooth hover animations for category cards
+            $('.category-card').hover(
+                function() {
+                    $(this).css('transform', 'translateY(-5px)');
+                },
+                function() {
+                    $(this).css('transform', 'translateY(0)');
+                }
+            );
+
+            // Button hover effects
+            $('.btn-get-started, .btn-create-mockup').hover(
+                function() {
+                    $(this).css('transform', 'translateY(-1px)');
+                },
+                function() {
+                    $(this).css('transform', 'translateY(0)');
+                }
+            );
+
+            // Responsive navigation toggle
+            $(window).resize(function() {
+                if ($(window).width() < 992) {
+                    $('.nav-menu').addClass('d-none');
+                } else {
+                    $('.nav-menu').removeClass('d-none').addClass('d-lg-flex');
+                }
+            });
+        });
+
+
+        $(document).ready(function() {
+    // Animate testimonial photos on scroll
+    // $(window).scroll(function() {
+    //     var scrollTop = $(window).scrollTop();
+    //     var windowHeight = $(window).height();
+
+    //     $('.testimonial-photo').each(function(index) {
+    //         var elementTop = $(this).offset().top;
+
+    //         if (elementTop < scrollTop + windowHeight && elementTop + $(this).height() > scrollTop) {
+    //             $(this).css({
+    //                 'transform': 'translateY(' + (scrollTop * 0.1 * (index + 1)) + 'px)',
+    //                 'transition': 'transform 0.3s ease'
+    //             });
+    //         }
+    //     });
+    // });
+
+    // Hover effects for feature items
+    // $('.feature-item').hover(
+    //     function() {
+    //         $(this).find('.feature-icon').css('transform', 'scale(1.1)');
+    //     },
+    //     function() {
+    //         $(this).find('.feature-icon').css('transform', 'scale(1)');
+    //     }
+    // );
+
+    // Button hover animations
+    $('.btn-success-stories').hover(
+        function() {
+            $(this).css('transform', 'translateY(-2px)');
+        },
+        function() {
+            $(this).css('transform', 'translateY(0)');
+        }
+    );
+
+    // Animate step numbers on scroll
+    $(window).scroll(function() {
+        $('.step-number').each(function() {
+            var elementTop = $(this).offset().top;
+            var elementBottom = elementTop + $(this).outerHeight();
+            var viewportTop = $(window).scrollTop();
+            var viewportBottom = viewportTop + $(window).height();
+
+            if (elementBottom > viewportTop && elementTop < viewportBottom) {
+                $(this).addClass('animate-pulse');
+            }
+        });
+    });
+
+    // Add pulse animation class
+    $('<style>')
+        .prop('type', 'text/css')
+        .html(`
+            .animate-pulse {
+                animation: pulse 2s infinite;
+            }
+
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        `)
+        .appendTo('head');
+
+    // Smooth scrolling for footer links
+    $('.footer-column a').on('click', function(e) {
+        var href = $(this).attr('href');
+        if (href.startsWith('#')) {
+            e.preventDefault();
+            var target = $(href);
+            if (target.length) {
+                $('html, body').animate({
+                    scrollTop: target.offset().top - 100
+                }, 800);
+            }
+        }
+    });
+
+    // Add loading animation for testimonial photos
+    $('.testimonial-photo').each(function(index) {
+        $(this).css({
+            'opacity': '0',
+            'transform': 'scale(0.8)'
+        });
+
+        setTimeout(() => {
+            $(this).css({
+                'opacity': '1',
+                'transform': 'scale(1)',
+                'transition': 'all 0.5s ease'
+            });
+        }, index * 100);
+    });
+});
+
+$(document).ready(function() {
+    let currentSlide = 0;
+    const totalSlides = $('.review-card').length;
+    let isAnimating = false; // Prevent multiple clicks during animation
+
+    // Initialize slider
+    function initSlider() {
+        $('.review-card').removeClass('active');
+        $('.review-image').removeClass('active');
+        $('.review-card').eq(currentSlide).addClass('active');
+        $('.review-image').eq(currentSlide).addClass('active');
+    }
+
+    // Slide to next
+    function slideNext() {
+        if (isAnimating) return;
+        isAnimating = true;
+
+        const currentCard = $('.review-card.active');
+        const currentImage = $('.review-image.active');
+        const nextIndex = (currentSlide + 1) % totalSlides;
+        const nextCard = $('.review-card').eq(nextIndex);
+        const nextImage = $('.review-image').eq(nextIndex);
+
+        // Position next elements to the left (off-screen)
+        nextCard.css({
+            'transform': 'translateX(-100%)',
+            'opacity': '0'
+        }).addClass('active');
+
+        nextImage.css({
+            'transform': 'translateX(-100%)',
+            'opacity': '0'
+        }).addClass('active');
+
+        // Animate current elements out to the right
+        currentCard.animate({
+            'transform': 'translateX(100%)',
+            'opacity': '0'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+
+        currentImage.animate({
+            'transform': 'translateX(100%)',
+            'opacity': '0'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+
+        // Animate next elements in from the left
+        nextCard.animate({
+            'transform': 'translateX(0%)',
+            'opacity': '1'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+
+        nextImage.animate({
+            'transform': 'translateX(0%)',
+            'opacity': '1'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            },
+            complete: function() {
+                // Clean up after animation
+                currentCard.removeClass('active').css({
+                    'transform': 'translateX(100%)',
+                    'opacity': '0'
+                });
+                currentImage.removeClass('active').css({
+                    'transform': 'translateX(100%)',
+                    'opacity': '0'
+                });
+
+                currentSlide = nextIndex;
+                isAnimating = false;
+            }
+        });
+    }
+
+    // Slide to previous
+    function slidePrev() {
+        if (isAnimating) return;
+        isAnimating = true;
+
+        const currentCard = $('.review-card.active');
+        const currentImage = $('.review-image.active');
+        const prevIndex = currentSlide === 0 ? totalSlides - 1 : currentSlide - 1;
+        const prevCard = $('.review-card').eq(prevIndex);
+        const prevImage = $('.review-image').eq(prevIndex);
+
+        // Position previous elements to the right (off-screen)
+        prevCard.css({
+            'transform': 'translateX(100%)',
+            'opacity': '0'
+        }).addClass('active');
+
+        prevImage.css({
+            'transform': 'translateX(100%)',
+            'opacity': '0'
+        }).addClass('active');
+
+        // Animate current elements out to the left
+        currentCard.animate({
+            'transform': 'translateX(-100%)',
+            'opacity': '0'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+
+        currentImage.animate({
+            'transform': 'translateX(-100%)',
+            'opacity': '0'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+
+        // Animate previous elements in from the right
+        prevCard.animate({
+            'transform': 'translateX(0%)',
+            'opacity': '1'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+
+        prevImage.animate({
+            'transform': 'translateX(0%)',
+            'opacity': '1'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            },
+            complete: function() {
+                // Clean up after animation
+                currentCard.removeClass('active').css({
+                    'transform': 'translateX(-100%)',
+                    'opacity': '0'
+                });
+                currentImage.removeClass('active').css({
+                    'transform': 'translateX(-100%)',
+                    'opacity': '0'
+                });
+
+                currentSlide = prevIndex;
+                isAnimating = false;
+            }
+        });
+    }
+
+    // Event listeners
+    $('#nextBtn').on('click', function() {
+        slideNext();
+    });
+
+    $('#prevBtn').on('click', function() {
+        slidePrev();
+    });
+
+    // Keyboard navigation
+    $(document).on('keydown', function(e) {
+        if (e.key === 'ArrowRight') {
+            slideNext();
+        } else if (e.key === 'ArrowLeft') {
+            slidePrev();
+        }
+    });
+
+    // Auto-slide functionality (optional - you can remove this if not needed)
+    let autoSlideInterval;
+
+    function startAutoSlide() {
+        autoSlideInterval = setInterval(slideNext, 5000); // 5 seconds
+    }
+
+    function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
+    }
+
+    // Start auto-slide (comment out if you don't want auto-slide)
+    // startAutoSlide();
+
+    // Pause auto-slide on hover
+    $('.review-content').hover(
+        function() {
+            stopAutoSlide();
+        },
+        function() {
+            // startAutoSlide(); // Uncomment if you want auto-slide
+        }
+    );
+
+    // Button hover effects
+    $('.slider-btn').hover(
+        function() {
+            $(this).css('transform', 'scale(1.1)');
+        },
+        function() {
+            $(this).css('transform', 'scale(1)');
+        }
+    );
+
+    // Touch/swipe support for mobile
+    let startX = 0;
+    let endX = 0;
+
+    $('.review-card-container, .review-image-container').on('touchstart', function(e) {
+        startX = e.originalEvent.touches[0].clientX;
+    });
+
+    $('.review-card-container, .review-image-container').on('touchend', function(e) {
+        endX = e.originalEvent.changedTouches[0].clientX;
+        handleSwipe();
+    });
+
+    function handleSwipe() {
+        const threshold = 50; // Minimum swipe distance
+        const diff = startX - endX;
+
+        if (Math.abs(diff) > threshold) {
+            if (diff > 0) {
+                // Swiped left - go to next
+                slideNext();
+            } else {
+                // Swiped right - go to previous
+                slidePrev();
+            }
+        }
+    }
+
+    // Initialize the slider
+    initSlider();
+});
+
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const closeMenuBtn = document.getElementById('closeMenuBtn');
+  const cart_icon = document.querySelector('.cart_icons');
+  
+
+  hamburgerBtn.addEventListener('click', () => {
+    mobileMenu.classList.add('open');
+    cart_icon.classList.add('open');
+    
+});
+
+closeMenuBtn.addEventListener('click', () => {
+    mobileMenu.classList.remove('open');
+    cart_icon.classList.remove('open');
+  });
+
+  document.querySelectorAll('.mobile-dropdown .dropdown-toggle').forEach(btn => {
+  btn.addEventListener('click', function() {
+    this.classList.toggle('active');
+    this.nextElementSibling.classList.toggle('show');
+  });
+});
+
+function updateProductColors() {
+    const productSelect = document.getElementById("productSelect");
+    if (!productSelect) return;
+
+    const selectedOption = productSelect.options[productSelect.selectedIndex];
+    if (!selectedOption) return;
+
+    const newImage = selectedOption.getAttribute("data-image");
+    const colorGrid = document.getElementById("colorGrid");
+
+    // Update main image
+    const mainImg = document.getElementById("mai_product_img");
+    if (mainImg && newImage) {
+        mainImg.src = newImage;
+    }
+
+    // Get color data from data-colors
+    const colorData = selectedOption.getAttribute("data-colors") || "";
+
+    // Split and clean up colors
+    const colors = colorData.split(",").filter(Boolean);
+
+    // Remove duplicates
+    const uniqueColors = [...new Set(colors)];
+
+    // Clear previous colors
+    colorGrid.innerHTML = "";
+
+    // Render each color option
+    uniqueColors.forEach((item, index) => {
+        const [name, code, price] = item.split("|");
+        const colorOption = document.createElement("div");
+        colorOption.className = "quote-color-option";
+        colorOption.style.backgroundColor = code || "#ccc";
+        colorOption.title = name;
+        colorOption.dataset.price = price;
+
+        // Select the first color by default
+        if (index === 0) {
+            colorOption.classList.add("selected");
+            $("#mai_product_img").css("background-color", code);
+            window.selectedColor = code;
+        }
+
+        // Handle click event for color selection
+        colorOption.onclick = () => selectColor(colorOption, code);
+
+        colorGrid.appendChild(colorOption);
+    });
+}
+
+
+function updateProductSizes() {
+    const productSelect = document.getElementById("productSelect");
+    if (!productSelect) return;
+
+    const selectedOption = productSelect.options[productSelect.selectedIndex];
+    if (!selectedOption) return;
+
+    // Get size list
+    const sizeData = selectedOption.getAttribute("data-sizes") || "";
+    const sizes = sizeData.split(",").map(s => s.trim()).filter(Boolean);
+
+    // Hide all size inputs first
+    document.querySelectorAll(".quote-size-item").forEach(item => {
+        item.style.display = "none";
+    });
+
+    // Show only sizes available for this product
+    sizes.forEach(sizeName => {
+        const item = document.querySelector(`.quote-size-item[data-size="${sizeName}"]`);
+        if (item) item.style.display = "flex";
+    });
+}
+// Handle color selection (same as before)
+// function selectColor(element, color) {
+//     document.querySelectorAll(".quote-color-option").forEach((el) => el.classList.remove("selected"));
+//     element.classList.add("selected");
+//     $("#mai_product_img").css("background-color", color);
+//     window.selectedColor = color;
+// }
+
+
+// When product changes
+// document.getElementById("productSelect").addEventListener("change", () => {
+//     updateProductColors();
+//     updateProductSizes();
+// });
+
+// // When popup opens
+// function initializePopup() {
+//     updateProductColors(); // this will auto-run and populate colors for the selected product
+//     updateProductSizes();
+// }
+
+document.addEventListener('DOMContentLoaded', function() {
+            const textItems = document.querySelectorAll('.single_chagig_text_div');
+            let currentIndex = 0;
+            const rotationInterval = 3000; // 3 seconds
+
+            // Show first item
+            if (textItems.length > 0) {
+                textItems[0].classList.add('active');
+            }
+
+            function rotateText() {
+                // Exit current item
+                textItems[currentIndex].classList.remove('active');
+                textItems[currentIndex].classList.add('exit');
+
+                // Move to next item
+                currentIndex = (currentIndex + 1) % textItems.length;
+
+                // Reset exit class after animation
+                setTimeout(() => {
+                    textItems.forEach(item => item.classList.remove('exit'));
+                }, 600);
+
+                // Show next item
+                textItems[currentIndex].classList.add('active');
+            }
+
+            // Start rotation
+            setInterval(rotateText, rotationInterval);
+        });
+
+
+
+    </script>
+
+
+
+
+</body>
+</html>

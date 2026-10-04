@@ -1,0 +1,15 @@
+env/
+venv/
+__pycache__/
+.ruff_cache/
+db.sqlite3
+media/
+.env
+access.txt
+*.zip
+*.rar
+*.psd
+.vscode/
+.claude/settings.local.json
+# contains hardcoded SECRET_KEY / email password / Stripe key
+newecom/settings.py

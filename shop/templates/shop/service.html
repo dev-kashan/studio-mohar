@@ -1,0 +1,258 @@
+  
+{% extends 'shop/basic.html' %}
+{% load static %}
+{% block title %}
+Service
+{% endblock  %}
+
+{% block css %}
+
+
+.contact-us .form-main {
+    padding: 17px;
+    border: none;
+    box-shadow: none;
+}
+
+.contact-us .single-head {
+    padding: 50px;
+    box-shadow: none;
+    height: 100%;
+}
+
+
+
+.jumbotron{
+    {% comment %} background-image:url({% static 'shop/img/jumbo_bg.jpg' %}); {% endcomment %}
+	background: #00000012;
+}
+.text-white{
+	color: #000000!important;
+}
+.card-img-top{
+    padding:10px;
+    height: 189px;
+    transform: skewY(176deg);
+}
+.card-img-top:hover{
+    padding:0px;
+}
+
+
+.floating-wpp-button{
+    width:54px !important;
+    height:54px !important;
+}
+
+
+.wp_btn{
+    background :#25d366;
+    color:white !important;
+
+}
+
+.wp_btn:hover{
+    background :white;
+    color:#25d366 !important;
+
+}
+
+.ct_btn{
+    background: none;
+    border: 1px solid white;
+    color: #000000 !important;
+
+}
+
+.ct_btn:hover{
+    background: white;
+    border:none;
+    color:black !important;
+
+
+
+}
+
+#scrollUp{
+    display:none !important;
+}
+
+
+
+@media screen and (max-width: 630px){
+.col-md-4 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    padding: 0px 7px 0px 8px;
+    margin-bottom: 18px !important;
+}
+}
+  
+{% endblock  %}
+
+{% block body %}
+
+     <!--Div where the WhatsApp will be rendered-->
+    <div id="WAButton" style="z-index: 1062;
+    left: auto;
+    right: 11px;
+    bottom: 54px;"></div>
+  
+  <main role="main">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="">
+    <div class="alert alert-{{message.tags}} alert-dismissible mb-0 text-center" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    {{message}}!
+    </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+    
+
+      <section class="jumbotron text-center mb-0">
+        <div class="container">
+          <h1 class="jumbotron-heading text-white">Contact Us For Any Question</h1>
+          <p class="lead text-white ">Lets talk about everything! Feel free to ask us anything!</p>
+          {% comment %} <p>
+            <a href="#contact_div" class="btn btn-primary my-2 ct_btn">Contact Us</a>
+            <a href="https://web.whatsapp.com/send?phone=+923032210275&text=" class="btn btn-secondary my-2 wp_btn " id="WAButton">Whatsapp</a>
+          </p> {% endcomment %}
+        </div>
+      </section>
+
+   
+
+    </main>
+
+    <h3 class="text-center mt-4" id="contact_div">Contact Us</h3>
+    
+
+    	<!-- Start Contact -->
+	<section id="contact-us" class="contact-us section">
+        
+		<div class="container">
+				<div class="contact-head">
+					<div class="row">
+						<div class="col-lg-8 col-12">
+							<div class="form-main bg-white">
+								<div class="title">
+									<h4>Get in touch</h4>
+									<h3>Write us a message</h3>
+								</div>
+								<form class="form" method="post" action="">
+                                    {% csrf_token %}
+									<div class="row">
+										<div class="col-lg-6 col-12">
+											<div class="form-group">
+												<label>First Name<span>*</span></label>
+												<input name="name" type="text" placeholder="">
+											</div>
+										</div>
+										<div class="col-lg-6 col-12">
+											<div class="form-group">
+												<label>Last Name<span>*</span></label>
+												<input name="lname" type="text" placeholder="">
+											</div>
+										</div>
+										<div class="col-lg-6 col-12">
+											<div class="form-group">
+												<label>Your Email<span>*</span></label>
+												<input name="email" type="email" placeholder="">
+											</div>	
+										</div>
+										<div class="col-lg-6 col-12">
+											<div class="form-group">
+												<label>Your Phone<span>*</span></label>
+												<input name="phone" type="text" placeholder="">
+											</div>	
+										</div>
+										<div class="col-12">
+											<div class="form-group message">
+												<label>your message<span>*</span></label>
+												<textarea name="desc" placeholder=""></textarea>
+											</div>
+										</div>
+										<div class="col-12">
+											<div class="form-group button">
+												<button type="submit" class="btn ">Send Message</button>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="col-lg-4 col-12">
+							<div class="single-head bg-white py-3">
+								<div class="single-info">
+									<i class="fa fa-phone"></i>
+									<h4 class="title">Call us Now:</h4>
+									<ul>
+										<li>+92 306 0159619</li>
+										{% comment %} <li>+92 306 0159619</li> {% endcomment %}
+									</ul>
+								</div>
+								<div class="single-info">
+									<i class="fa fa-envelope-open"></i>
+									<h4 class="title">Email:</h4>
+									<ul>
+										<li><a href="mailto:info@Marzyy.com">marzyy2023@gmail.com</a></li>
+										{% comment %} <li><a href="mailto:info@Marzyy.com">marzyy2023@gmail.com</a></li> {% endcomment %}
+									</ul>
+								</div>
+								<div class="single-info">
+									<i class="fa fa-location-arrow"></i>
+									<h4 class="title">Our Address:</h4>
+									<ul>
+										<li>Karachi, Pakistan.</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	</section>
+	<!--/ End Contact -->
+	
+	<!-- Map Section -->
+	{% comment %} <div class="map-section">
+		<div id="myMap"></div>
+	</div> {% endcomment %}
+	<!--/ End Map Section -->
+
+
+    {% endblock body %}
+
+    {% block js %}
+    	<!-- Google Map JS -->
+	{% comment %} <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnhgNBg6jrSuqhTeKKEFDWI0_5fZLx0vM"></script>	
+	<script src="{% static 'shop/js/gmap.min.js' %}"></script>
+	<script src="{% static 'shop/js/map-script.js' %}"></script> {% endcomment %}
+    <!--Floating WhatsApp javascript-->
+<script type="text/javascript" src="https://rawcdn.githack.com/rafaelbotazini/floating-whatsapp/3d18b26d5c7d430a1ab0b664f8ca6b69014aed68/floating-wpp.min.js"></script>
+<!--Floating WhatsApp css-->
+<link rel="stylesheet" href="https://rawcdn.githack.com/rafaelbotazini/floating-whatsapp/3d18b26d5c7d430a1ab0b664f8ca6b69014aed68/floating-wpp.min.css">
+    <script>
+        // whatsapp
+      
+        $(function() {
+      $('#WAButton').floatingWhatsApp({
+      phone: '03001030711', //WhatsApp Business phone number International format-
+      //Get it with Toky at https://toky.co/en/features/whatsapp.
+      headerTitle: 'Chat with us on WhatsApp!', //Popup Title
+      popupMessage: 'Hello, how can we help you?', //Popup Message
+      showPopup: true, //Enables popup display
+      buttonImage: '<img src="https://rawcdn.githack.com/rafaelbotazini/floating-whatsapp/3d18b26d5c7d430a1ab0b664f8ca6b69014aed68/whatsapp.svg"  width: 53px;/>', //Button Image
+      //headerColor: 'crimson', //Custom header color
+      //backgroundColor: 'crimson', //Custom background button color
+      position: "right"
+      });
+      });
+      
+      
+      
+      </script>
+
+    {% endblock js %}

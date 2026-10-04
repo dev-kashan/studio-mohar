@@ -1,0 +1,31 @@
+{% extends 'shop/base.html' %}
+{% block head %}
+    <title>Retrieve Your Custom Apparel Design | Access Saved Projects | Studio Mohar</title>
+    <meta name="description" content="Access your saved custom apparel designs with Studio
+Mohar. Pick up where you left off, make modifications or reorder
+previous projects. Fast, easy & convenient.">
+{% endblock head %}
+{% block body %}
+
+<div class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h3 class="card-title">Retrieve Your Design</h3>
+
+      {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+      {% endif %}
+
+      <form method="POST" action="{% url 'retrieve_design_request' %}" class="mt-3">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Enter Your Email Address</label>
+          <input type="text" name="query" class="form-control" placeholder="Email" required>
+        </div>
+        <button type="submit" class="btn-get-started">Continue</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock body %}

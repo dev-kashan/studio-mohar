@@ -1,0 +1,32 @@
+{% extends 'shop/base.html' %}
+{% block head %}
+    <title>Retrieve Your Custom Apparel Design | Access Saved Projects | Studio Mohar</title>
+    <meta name="description" content="Access your saved custom apparel designs with Studio
+Mohar. Pick up where you left off, make modifications or reorder
+previous projects. Fast, easy & convenient.">
+{% endblock head %}
+{% block body %}
+
+<div class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h4 class="card-title">Your Designs</h4>
+
+      {% if designs %}
+      <ul class="list-group">
+        {% for d in designs %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>{{ d.design_name }} - {{ d.created_at|date:"Y-m-d H:i" }}</span>
+          <a href="{{ d.get_link }}" class="btn btn-sm btn-outline-primary">Open Design</a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>No designs found.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
+{% endblock body %}

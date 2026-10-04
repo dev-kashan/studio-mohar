@@ -1,0 +1,670 @@
+{% extends 'shop/basic.html' %}
+{% block title %}
+STORE
+{% endblock  %}
+{% block css %}
+
+.tergetall{
+display:none;
+}
+
+.col-md-3
+{
+display: inline-block;
+margin-left:-4px;
+}
+
+.carousel-indicators.active {
+background-color: #6a1ac1d4;
+}
+
+.col-md-3 img{
+
+width: 250px;
+height: 265px;
+{% comment %} padding: 18px;
+margin-left: 8px; {% endcomment %}
+display:block;
+margin:auto;
+}
+
+
+body.carousel-indicator li{
+background-color: blue;
+}
+
+body.carousel-indicators{
+bottom: 0;
+}
+
+body.carousel-control-prev-icon,
+body.carousel-control-next-icon{
+background-color: #691bbd;
+
+
+}
+body.no-padding{
+padding-left: 0,
+padding-right: 0;
+}
+
+
+.owl-nav{
+display:none;
+}
+
+
+.card-img-top{
+transition: all 0.7s ease-in-out;
+border: 10px #ff6c00 solid;
+box-shadow: 0px 8px 25px -4px #818084;
+}
+
+
+.card-img-top:hover{
+transform:perspective(250px) rotateY(180deg);
+}
+
+.card-all:hover{
+background-color:#edeaf3;
+
+}
+.alls{
+height:40%;
+}
+
+
+.tergetall{
+display:none;
+}
+
+.showmore{
+background: linear-gradient(45deg, #fe7d00, #ffb000);
+position: relative;
+overflow: hidden;
+color: #fff;
+padding: 0 30px;
+line-height: 50px;
+display: inline-block;
+text-transform: uppercase;
+font-weight: 500;
+cursor: pointer;
+box-shadow: 0px 4px 9px -2px #868282;
+
+
+
+
+}
+
+.price{
+	    margin: 0px 0px 20px 0px;
+}
+
+
+.slider{
+margin-top: 49px;
+}
+
+.showmore:hover{
+background:-webkit-linear-gradient(230deg,transparent 0%, #ff6c00 0% , #ffba00 100%);
+
+}
+
+
+.title h3{
+font-size: 28px;
+color: #ffaf00;
+font-family: 'Roboto';
+}
+
+.title h5{
+font-size: 17px;
+color: #ffaf00;
+font-family: 'Roboto';
+}
+
+.card-body{
+color:black;
+}
+
+.card-body h6{
+color:#ec5454;
+padding:3px;
+}
+
+
+
+.allcatepor{
+border: 1px #8e8787 solid;
+box-shadow: 0px 6px 9px #b9b4b4;
+height: 424px;
+}
+
+
+
+
+.selected p{
+    font-size:14px;
+	
+}
+
+
+
+
+
+
+
+.owl-item{
+	width:0px;
+	margin-right:0px;
+}
+
+{% comment %} slider css {% endcomment %}
+
+.slider-box2{
+    box-shadow: 0px 0px 10px -4px #6b6566;
+    padding: 6px 9px 8px 8px;
+    margin: 0px -67px 0px 3px;
+    height: 386px;
+    width: 254px;
+	position:relative;
+			background-color:#FFFFFF;
+			border-radius:5px;
+			display:flex;
+			flex-direction:column;
+			justify-content:center;
+			align-items:center;
+			text-align:center;
+			border:1px solid rgba(187,187,187,0.40);
+			
+}
+
+
+@media screen and (max-width: 500px) {
+.slider-box2{
+  
+	    flex: 0 0 15%;
+    max-width: 56%;
+    margin: 0px 0px 0px 0px;
+    height: 286px;
+
+}
+
+.slidesc{
+	display:none;
+}
+
+}
+
+
+.cart2{
+position:absolute;
+bottom:0px;
+height:45px;
+background-color:#ff696e;
+width:100%;
+display:flex;
+justify-content:center;
+align-items:center;
+box-shadow: 0px 1px 28px -2px #968e8e;
+background: linear-gradient(54deg, #fe7600 , #ffb700 );
+										 
+}
+.cart2 a{
+color:#FFFFFF;
+}
+
+.slider-box2:hover .img-box img{
+transform:scale(1.07);
+transition:all ease 0.3s;}
+
+.cart:hover{
+background-color:#fe9048;
+transition:all ease 0.1s;}
+
+
+.slider-box2:hover{
+box-shadow:2px 2px 12px rgba(47,47,47,0.40);
+}
+
+
+.cart2:hover{
+transform:scale(1.1);
+background-color:#fe9048;
+box-shadow:2px 2px 12px rgba(47,47,47,0.40);
+transition:all ease 0.1s;
+margin-right: 17px;
+}
+
+
+.justfor{
+	height: 40px;
+    transition: 0.8s;
+    font-size: 33px;
+    font-family: Roboto;
+    text-align: center;
+    margin: 37px 0px -49px -39px;
+}
+
+.justfor:hover{
+	font-size:35px;
+	color :orange;
+}
+
+.carousel{
+	    margin-top: 82px;
+}
+
+@media screen and (max-width: 999px){
+	.carousel{
+	    margin-top: 62px;
+}
+
+}
+
+@media screen and (max-width: 504px){
+	.carousel{
+	    margin-top: 51px;
+}
+
+}
+
+
+
+
+
+
+@media screen and (max-width: 3000px) {
+.alloption{
+	        margin: -51px 0px 0px 76px;
+			   }
+
+}
+
+
+
+@media screen and (max-width: 1200px) {
+.all-cart{
+    -ms-flex: 0 0 50%;
+    flex: 0 0 30%;
+    max-width: 22%;
+    margin: 0px 0px 0px 23px;
+		}
+
+.alloption{
+	margin: -10px 0px 0px 23px;
+			   
+}
+
+}
+
+
+@media (min-width: 990px){
+.all-cart{
+
+    -ms-flex: 0 0 25%;
+    flex: 0 0 25%;
+    max-width: 15.8%;
+}
+}
+
+
+@media screen and (max-width: 990px) {
+.all-cart{
+    -ms-flex: 0 0 50%;
+    flex: 0 0 57%;
+    max-width: 30%;
+    margin: 0px 0px 28px 22px;
+		
+}}
+
+
+
+
+@media screen and (max-width: 770px) {
+.all-cart{
+  -ms-flex: 0 0 50%;
+    flex: 0 0 44%;
+    max-width: 42%;
+    margin: 3px 10px 27px 22px;
+}
+
+
+}
+
+  
+		
+}
+
+
+
+
+.imgowner{
+	width: 100%;
+
+}
+
+
+@media screen and (max-width: 414px) {
+.all-cart{
+    -ms-flex: 0 0 50%;
+    flex: 0 0 47%;
+    max-width: 46%;
+    margin: 4px 6px 10px 6px;
+	
+}
+
+
+
+   
+.selected {
+    flex-direction: column;
+    margin: 0px 15px 0px 0px;
+}
+
+.selected p{
+	    margin: -15px 0px 20px 0px;
+ }
+	    
+.single-product{
+	        margin-bottom: 10px;}
+
+.single-product .product-desc{
+	    display:none;}
+
+.alloption{
+	margin: -18px 0px 4px -3px;}
+
+.single-product img{
+width: 150px;
+height: 150px;
+height: 166px;
+margin: 0px 0px 7px 0px;
+
+
+}
+		
+} 
+
+
+@media screen and (max-width: 361px) {
+
+.single-product img{
+    width: 150px;
+    height: 150px;
+    height: 166px;
+	margin: 0px 0px 7px -8px;
+
+
+}
+
+
+}
+
+@media screen and (max-width: 320px) {
+.all-cart{
+	 -ms-flex: 0 0 50%;
+    flex: 0 0 46%;
+    max-width: 48%;
+    margin: 10px 3px 20px 3px;
+}
+
+.single-product img{
+        width: 150px;
+    height: 150px;
+    height: 166px;
+    margin: 0px 0px 7px -14px;
+	    margin: 0px 0px 7px -8px;
+
+
+}
+
+
+}
+
+
+
+.img-cart{
+     width: 160px;
+    height: 160px;
+    padding: 5px;
+    transition:0.4s;
+}
+
+
+
+.desc{
+	font-size:12px;
+}
+
+.proname{
+	font-size:15px;
+}
+
+
+
+
+
+
+{% comment %} slider2 {% endcomment %}
+
+
+
+.selected p{
+font-size:14px;
+
+}
+
+
+
+
+
+.cateshow{
+margin: 45px 0px -10px -4px;
+padding: 0px 0px 9px 0px;
+font-size: 20px;
+
+
+}
+
+.brandname{
+	color: #fe9a00;
+    font-weight: bold;
+    font-size: 15px;
+    font-family: sans-serif;
+}
+
+
+
+
+
+
+
+{% endblock  %}
+
+{% block body %}
+
+
+
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb">
+	<div class="container">
+		<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+
+			<div class="col-first">
+				<h2 class="h2text">Welcome To {{showprodname.store}}</h2>
+				<nav class="d-flex align-items-center">
+					<a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+					<a href="/">Shop<span class="lnr lnr-arrow-right"></span></a>
+					<a href="/allstores">Shop Product</a>
+				</nav>
+			</div>
+		</div>
+	</div>
+</section>
+
+{% comment %} mbanner {% endcomment %}
+<div class="mbanner">
+<div class="d-flex  container">
+<i class="fas fa-arrow-left  btitle pt-2 mt-2 " onclick="goBack()" ></i>
+<h3 class="btitle mr-auto ml-auto mt-2 text-white">{{showprodname.store|slice:"0:20"}}...</h3>
+</div>
+</div>
+<!-- End Banner Area --> 
+<!-- End Banner Area -->
+<div class="container">
+	<div class="row">
+
+		<div class="col-xl-12 col-lg-12 col-md-12">
+			<!-- Start Filter Bar -->
+
+			<!-- End Filter Bar -->
+			<!-- Start Best Seller -->
+			<section class="lattest-product-area pb-40 ">
+
+				
+				
+				
+				<p class="cateshow">List of {{showprodname.store}} Product</p>
+
+				<hr>
+				<div class="row cartrow">
+					<!-- single product -->
+					<!-- single product -->
+				{% for i in products%}
+				<div>
+				</div>
+						<div class="col-lg-4 col-md-6 all-cart tergetall">
+						<a href="/product/{{i.product_id}}" >
+					<div class="single-product pro-cart ">
+							<img id="imgid{{i.product_id}}" class="img-cart" src="/media/{{i.productattribute_set.first.image}}" alt="{{i.product_name}}">
+						
+						<div class="product-details">
+							<h6 id="namepr{{i.product_id}}" class="proname">{{i.product_name|slice:"0:25"}}...</h6>
+							
+							<div class="price">
+								<h6 class="cprice">RS:<span id="pricepr{{i.product_id}}">{{ i.price }}</span></h6>
+								<h6 class="l-through text-danger sprice">{{currency}}{{i.sprice}}</h6>
+							<p class="brandname"><i class="fas fa-store mr-0"></i> {{ i.brand|slice:"0:20" }}...</p>
+							</div>
+								
+						</div>
+					</div>
+					</a>
+				</div>
+					{% endfor %}
+
+				</div>
+		
+                 	
+				<br>
+				<br>
+				<br>
+
+			</section>
+			<div class="filter-bar pt-2 d-flex flex-wrap align-items-center">
+
+				<div class="sortin ">
+
+				</div>
+				<div class="pagination m-auto">
+					{% if page_obj.has_previous %} 
+					<a href="/store/?store={{showprodname.store_id}}&page={{page_obj.previous_page_number}}" class="prev-arrow"><i class="fas fa-arrow-left mr-0"></i></a>
+				{% endif %}
+				{% for i in paginator.page_range%}
+					<a href="/store/?store={{showprodname.store_id}}&page={{ i }}" class="{% if i == page_number%} active  {% endif %}">{{ i }}</a>
+				{%endfor%}
+				{% if page_obj.has_next %}
+					<a href="/store/?store={{showprodname.store_id}}&page={{page_obj.next_page_number}}" class="next-arrow"><i class="fas fa-arrow-right mr-0"></i></a>
+				{% endif %}
+				</div>
+			</div>
+			<br>
+			<br>
+			<br>
+
+			<!-- End Best Seller -->
+			<!-- Start Filter Bar -->
+
+		</div>
+
+	</div>
+</div>
+
+
+{% endblock %}
+
+
+{% block js %}
+
+
+<script>
+
+
+	{% comment %} showmore button {% endcomment %}
+	$(".tergetall").slice(0,24).show();
+	
+	$(".showmore2").on("click" , function(){
+	  $(".tergetall:hidden").slice(0,8).show(3);
+	   if ($(".tergetall:hidden").length == 0)
+	   {
+		 
+	   }
+	
+	})
+	
+	
+	$(".showmore3").on("click" , function(){
+	  $(".tergetall:hidden").slice(0,12).show(3);
+	   if ($(".tergetall:hidden").length == 0)
+	   {
+		 
+	   }
+	
+	})
+	
+	
+	$(".showmore6").on("click" , function(){
+	  $(".tergetall:hidden").slice(0,16).show(3);
+	   if ($(".tergetall:hidden").length == 0)
+	   {
+		 
+	   }
+	
+	})
+	
+	
+	
+	$(".prev-arrow").on("click" , function(){
+	  $(".tergetall").slice(0,24).hide();
+	   if ($(".tergetall:hidden").length == 0)
+	   {
+		 
+	   }
+	
+	})
+	
+	
+	$(".next-arrow").on("click" , function(){
+	  $(".tergetall:hidden").slice(0,24).show(3);
+	   if ($(".tergetall:hidden").length == 0)
+	   {
+		 
+	   }
+	
+	})
+	
+
+	$("#hide3").hide();
+	
+	
+	
+	
+	{% comment %} showmore button END {% endcomment %}
+	
+	 
+	</script>
+
+
+
+{% endblock  %}

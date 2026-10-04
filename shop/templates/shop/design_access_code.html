@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Your Design Access Code</title>
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background-color: #f8f9f8;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .email-wrapper {
+      width: 100%;
+      background-color: #f8f9f8;
+      padding: 40px 0;
+    }
+    .email-container {
+      background: #ffffff;
+      max-width: 500px;
+      margin: 0 auto;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .email-header {
+      background-color: #7e9479;
+      color: #ffffff;
+      text-align: center;
+      padding: 24px;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .email-body {
+      padding: 30px;
+      text-align: center;
+    }
+    .code-box {
+      background-color: #f1f3f1;
+      border: 2px dashed #7e9479;
+      color: #333;
+      font-size: 26px;
+      font-weight: 600;
+      padding: 15px 0;
+      border-radius: 10px;
+      margin: 20px 0;
+      letter-spacing: 2px;
+    }
+    .email-footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 12px;
+      color: #777;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background-color: #7e9479;
+      color: #fff !important;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+    .btn:hover {
+      background-color: #6c8369;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-wrapper">
+    <div class="email-container">
+      <div class="email-header">Your Design Access Code</div>
+      <div class="email-body">
+        <p>Hi there,</p>
+        <p>Here’s your verification code to access your saved designs:</p>
+        <div class="code-box">{{ code }}</div>
+        <p>This code will expire in <strong>30 minutes</strong>.</p>
+        
+      </div>
+      <div class="email-footer">
+        &copy; {{ now|default:"2025" }} Studio Mohar. All rights reserved.
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{% extends 'shop/base.html' %}
+{% block body %}
+
+<div class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h3 class="card-title">Enter Verification Code</h3>
+
+      {% if sent %}
+      <div class="alert alert-success">
+        We've sent a 6-digit code to <strong>{{ email }}</strong>. It will expire in 30 minutes.
+      </div>
+      {% endif %}
+
+      {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+      {% endif %}
+
+      <form method="POST" action="{% url 'verify_design_code' %}" class="mt-3">
+        {% csrf_token %}
+        <input type="hidden" name="email" value="{{ email }}">
+        <div class="mb-3">
+          <label class="form-label">Enter the Code</label>
+          <input type="text" name="code" class="form-control" placeholder="6-digit code" required>
+        </div>
+        <button type="submit" class="btn-get-started">Verify & View Designs</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+{% endblock body %}

@@ -1,0 +1,118 @@
+{% extends 'shop/base.html' %}
+
+{% block body %}
+<style>
+        .main_containers {
+    background: #f7f3ee;
+    padding: 23px 0px;
+}
+        body{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        h1.main_head {
+
+    text-align: center;
+    margin: 20px 0px;
+    text-transform: uppercase;
+    font-size: 34px;
+}
+h1.main_head::before{
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    left: 0;
+    bottom: 0;
+}
+ul.lists {
+    margin-left: 50px;
+    width: 100%;
+}
+
+h6.accuracy_head {
+    color: black;
+    font-style: italic;
+}
+ul.lists li {
+    list-style: disc;
+    margin: 6px 0px;
+    color: #3e3e3e;
+    font-size: 15px;
+
+}
+h2.submain_head {
+    font-size: 27px;
+    margin-top: 15px ; 
+    color: #404040; 
+}
+.return_exchange {
+    padding-bottom: 20px;
+}
+.terms_desc {
+    margin: 15px 3px;
+}
+p.desc {
+    color: black;
+    font-size: 16px;
+    line-height: 27px;
+    /* margin-left: 50px; */
+    margin-top: 10px;
+    /* letter-spacing: 0.5px; */
+    font-family: sans-serif;    
+}
+
+.contact_section {
+    margin: 10px 0px;
+}
+
+.contact_section h6 {
+    font-size: 14px;
+}
+
+.contact_section p {
+    color: black;
+    margin: 4px 0px;
+}
+.container {
+    max-width: 1400px !important;
+}
+@media screen and (max-width:776px) {
+    ul.lists{
+        margin-left: 8px;
+    }
+    h1.main_head {
+    font-size: 30px;
+}
+h2.submain_head {
+    font-size: 25px;
+  
+}
+    
+}
+@media screen and (max-width:1200px) {
+    .container {
+    max-width: 990px !important;
+}
+    
+}
+@media screen and (max-width:990px) {
+    .container {
+    max-width: 767px !important;
+}
+    
+}
+    </style>
+<body>
+     <div class="main_containers">
+        <div class="container">
+        {% autoescape off %}
+    {{terms.description}}
+    {% endautoescape %}
+
+        </div>
+    </div>
+</body>
+{% endblock %}
+</html>

@@ -1,0 +1,452 @@
+{% load static %}
+
+
+<style>
+
+
+.p-all{
+	padding: 0px 14px;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
+  background: 505050;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #543b24;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background:#543b24;
+  cursor: pointer;
+}
+
+.filter-btn{
+	background: #363334;
+    color: white;
+    outline: none;
+    border: none;
+    padding: 6px;
+    border-radius: 0px 11px 11px 0px;
+}
+
+.reset{
+	background: #363334;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 13px;
+    margin-bottom: 72px;
+	margin-top:10px;
+}
+
+
+
+{% comment %} left  slider nav  {% endcomment %}
+
+/* The side navigation menu */
+.sidenav {
+      height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1710;
+    top: 0;
+    left: 0;
+    background-color: #ffffff;
+    overflow-x: hidden;
+    padding-top: 50px;
+    transition: 0.5s;
+    box-shadow: 4px 0px 15px 0px #909090;
+    {% comment %} padding-left: 12px; {% endcomment %}
+}
+}
+
+/* The navigation menu links */
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+/* Position and style the close button (top right corner) */
+.sidenav .closebtn {
+  position: absolute;
+      top: 22px;
+    right: 19px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+#main {
+  transition: margin-left .5s;
+  padding: 20px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+
+
+{% comment %} filter media  query {% endcomment %}
+
+.filter-toggal{
+	display:none;
+}
+
+.rsidebar{
+background: #f6f7fb;
+    padding: 26px;
+} 
+
+.half-product_name{
+	display:none;
+}
+
+.full-product_name{
+	display:none;
+}
+.cate-product_name{
+	display:block;
+}
+
+@media screen and (max-width: 820px) {
+.cate-product_name{
+	display:none;
+}
+.half-product_name{
+	display:block;
+}
+
+}
+
+
+
+@media screen and (max-width: 980px){
+
+
+.filter-toggal{
+	display:block;
+	float:right;
+	white-space: nowrap;
+}
+
+.shop .single-shorter {
+    display: -webkit-inline-box;
+    margin-right: 10px;
+}
+
+.sort-f-l{
+	display:none !important;
+}
+
+}
+
+
+
+@media screen and (max-width: 770px){
+
+
+	.filter-bar{
+		display:none ;
+	}
+
+	.col-lg-3:has(> .filter-bar) {
+		background-color:unset !important;
+	}
+
+	}
+
+
+
+
+
+.col-xl-3.col-lg-4.col-md-4.col-12.mb-4.current-product {
+    padding: 0px 10px;
+}
+
+
+</style>
+
+
+{% comment %} <div class="position_cover_filter_aera"></div> {% endcomment %}
+
+<div class="filter-bar">
+			<!--categories-->
+			<div class=" rsidebar span_1_of_left">
+				<h3 class="title">Categories</h3>
+				<hr>
+				<ul class="menu-drop">
+					{% for categories ,range , nSlides in allcategory %}
+					<li class="item1"><a href="#">{{categories.0.category}} <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+						<ul class="cute">
+							{% for i in categories %}
+							<li class="subitem1"><a href="/category/?category={{i.category_id}}">{{i.category_name}}</a></li>
+							{% endfor %}
+						</ul>
+					</li>
+					{% endfor %}
+
+				</ul>
+			</div>
+
+			<hr>
+
+			{% for product in product_name %}
+			<input class="filter-product" data-product="product_name" value="{{product.product_name}}" type="hidden" />
+			{% endfor %}
+
+			{% comment %} color {% endcomment %}
+			{% comment %} {% if colors%}
+				<!-- Shop By color -->
+				<div class="single-widget range">
+					<h3 class="title">Shop by Color</h3>
+					<ul class="check-box-list">
+					 {% for i in colors %}
+						<li>
+							<label class="checkbox-inline " style="display:{{i.color}};" for="colorbtn{{i.color}}"><input class="filter-checkbox" id="colorbtn{{i.color}}" style="display:{{i.color}};" data-filter="color" value="{{i.color}}" type="checkbox">{{i.color}}</label>
+						</li>
+					{% endfor %}
+						
+					</ul>
+				</div>
+				<!--/ End Shop By color -->
+			<hr>
+			{% endif %} {% endcomment %}
+
+			<!--size-->
+			{% if sizes %}
+
+			<!-- Shop By size -->
+				<div class="single-widget range">
+					<h3 class="title">Shop by Size</h3>
+					<ul class="check-box-list">
+					 {% for i in sizes %}
+				
+						<li>
+							<label class="checkbox-inline " style="display:{{i.size__Size_name}};" for="sizebtn{{i.size__Size_name}}"><input class="filter-checkbox" id="sizebtn{{i.size__Size_name}}" style="display:{{i.size__Size_name}};" data-filter="size" value="{{i.size__Size_name}}" type="checkbox">{{i.size__Size_name}}</label>
+						</li>
+					{% endfor %}
+						
+					</ul>
+				</div>
+			<!--/ End Shop By size -->
+			<hr>
+			{% endif %}
+
+			<!-- brand_filter -->
+
+			{% comment %} {% if brands %}
+
+		<!-- Shop By size -->
+				<div class="single-widget range">
+					<h3 class="title">Shop by Brands</h3>
+					<ul class="check-box-list">
+					 {% for i in brands %}
+						<li>
+							<label class="checkbox-inline" style="display:{{i.brand}};" for="brandbtn{{i.brand}}"><input class="filter-checkbox" id="brandbtn{{i.brand}}" style="display:{{i.brand}};" data-filter="brand" value="{{i.brand}}" type="checkbox">{{i.brand}}</label>
+						</li>
+					{% endfor %}
+						
+					</ul>
+				</div>
+			<!--/ End Shop By size -->
+			<hr>
+			{% endif %} {% endcomment %}
+
+			<!-- Shop By Price -->
+			<div class="single-widget range">
+			<h3 class="title">Shop by Price</h3>
+			
+				<div class="price-filter-inner">
+						<input class="slider" id="myRange" type="range" value="{{minMaxPrice.productattribute__price__max}}" max={{minMaxPrice.productattribute__price__max}} min={{minMaxPrice.productattribute__price__min}} id="rangeInput" oninput="maxPrice.value=this.value" />
+			<p style="margin: 10px 0px;">{{minMaxPrice.productattribute__price__min}}-{{minMaxPrice.productattribute__price__max}}</p>
+				</div>
+			
+
+			<div style="display: flex;">
+				<input type="number" value="{{minMaxPrice.productattribute__price__max}}" max={{minMaxPrice.productattribute__price__max}} min={{minMaxPrice.productattribute__price__min}} class="form-control" id="maxPrice" onkeyup="rangeInput.value=this.value" id="maxPrice" />
+				<button id="priceFilterBtn" class="filter-btn">Filter</button>
+
+			</div>
+
+			</div>
+			<!--/ End Shop By Price -->
+
+			<div>
+				<button type="reset" class="reset" onclick="refrash()">Reset</button>
+			</div>
+</div>
+					
+{% comment %} left sidler nav {% endcomment %}
+
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+
+			<!--categories-->
+			<div class=" rsidebar span_1_of_left">
+				<h3 class="title">Categories</h3>
+				<hr>
+				<ul class="menu-drop">
+					{% for categories ,range , nSlides in allcategory %}
+					<li class="item1"><a href="#">{{categories.0.category}}  <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+						<ul class="cute">
+							{% for i in categories %}
+							<li class="subitem1"><a href="/category/?category={{i.category_id}}">{{i.category_name}} </a></li>
+							{% endfor %}
+						</ul>
+					</li>
+					{% endfor %}
+
+				</ul>
+			</div>
+
+			<hr>
+
+			{% for product in product_name %}
+			<input class="filter-product" data-product="product_name" value="{{product.product_name}}" type="hidden" />
+			{% endfor %}
+
+			{% comment %} color {% endcomment %}
+			{% comment %} {% if colors%}
+
+				<div class="single-widget range">
+					<h3 class="title">Shop by Color</h3>
+					<ul class="check-box-list">
+					 {% for i in colors %}
+						<li>
+							<label class="checkbox-inline " style="display:{{i.color}};" for="mcolorbtn{{i.color}}"><input class="filter-checkbox" id="mcolorbtn{{i.color}}" style="display:{{i.color}};" data-filter="color" value="{{i.color}}" type="checkbox">{{i.color}}</label>
+						</li>
+					{% endfor %}
+						
+					</ul>
+				</div>
+				
+			<hr>
+			{% endif %} {% endcomment %}
+
+			<!--size-->
+			{% if sizes %}
+
+			<!-- Shop By size -->
+				<div class="single-widget range">
+					<h3 class="title">Shop by Size</h3>
+					<ul class="check-box-list">
+					 {% for i in sizes %}
+						<li>
+							<label class="checkbox-inline " style="display:{{i.size__Size_name}};" for="msizebtn{{i.size__Size_name}}"><input class="filter-checkbox" id="msizebtn{{i.size__Size_name}}" style="display:{{i.size__Size_name}};" data-filter="size" value="{{i.size__Size_name}}" type="checkbox">{{i.size__Size_name}}</label>
+						</li>
+					{% endfor %}
+						
+					</ul>
+				</div>
+			<!--/ End Shop By size -->
+			<hr>
+			{% endif %}
+
+			<!-- brand_filter -->
+
+			{% comment %} {% if brands %}
+
+	
+				<div class="single-widget range">
+					<h3 class="title">Shop by Brands</h3>
+					<ul class="check-box-list">
+					 {% for i in brands %}
+						<li>
+							<label class="checkbox-inline " style="display:{{i.brand}};" for="mbrandbtn{{i.brand}}"><input class="filter-checkbox" id="mbrandbtn{{i.brand}}" style="display:{{i.brand}};" data-filter="brand" value="{{i.brand}}" type="checkbox">{{i.brand}}</label>
+						</li>
+					{% endfor %}
+						
+					</ul>
+				</div>
+			
+			<hr>
+			{% endif %} {% endcomment %}
+
+			<!-- Shop By Price -->
+			<div class="single-widget range">
+			<h3 class="title">Shop by Price</h3>
+			
+				<div class="price-filter-inner">
+						<input class="slider" id="myRange" type="range" value="{{minMaxPrice.productattribute__price__max}}" max={{minMaxPrice.productattribute__price__max}} min={{minMaxPrice.productattribute__price__min}} id="rangeInputformobile" oninput="maxPriceformobile.value=this.value" />
+			<p style="margin: 10px 0px;">{{minMaxPrice.productattribute__price__min}}-{{minMaxPrice.productattribute__price__max}}</p>
+				</div>
+			
+
+			<div style="display: flex;">
+				<input type="number" value="{{minMaxPrice.productattribute__price__max}}" max={{minMaxPrice.productattribute__price__max}} min={{minMaxPrice.productattribute__price__min}} class="form-control" id="maxPriceformobile" onkeyup="rangeInputformobile.value=this.value" id="maxPriceformobile" />
+				<button id="mobilepriceFilterBtn" class="filter-btn">Filter</button>
+
+			</div>
+
+			</div>
+			<!--/ End Shop By Price -->
+
+			<div>
+				<button type="reset" class="reset" onclick="refrash()">Reset</button>
+			</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<script>
+
+	function refrash() {
+		window.location.reload()
+
+	}
+</script>
+
+<script>
+
+function openNav() {
+  document.getElementById("mySidenav").style.width = "250px";
+  document.getElementById("mySidenav").style.padding = "50px 9px";
+}
+
+/* Set the width of the side navigation to 0 */
+function closeNav() {
+  document.getElementById("mySidenav").style.width = "0";
+  document.getElementById("mySidenav").style.padding = "0px 0px";
+
+}
+</script>
+
+

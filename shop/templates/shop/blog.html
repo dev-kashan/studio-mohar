@@ -1,0 +1,317 @@
+{% extends 'shop/base.html' %}
+{% block head %}
+    <title>Custom Apparel Insights | Printing Techniques, Design Tips & Trends | Studio Mohar</title>
+    <meta name="description" content="Get expert insights on custom apparel from Studio
+Mohar's blog. Learn about printing techniques, design tips, industry
+trends & more from our experienced team.">
+{% endblock head %}
+{% block body %}
+<style>
+        :root {
+            --primary-color: #7E9479;
+            --primary-hover: #6a7f65;
+            --text-dark: #2c3e50;
+            --text-muted: #6c757d;
+            --bg-light: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fff;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 4rem 0 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .category-tabs {
+            margin-bottom: 3rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .category-tabs .nav-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 1rem 2rem;
+            border: none;
+            background: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .category-tabs .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .category-tabs .nav-link.active {
+            color: var(--primary-color);
+            background: none;
+            border: none;
+        }
+
+        .category-tabs .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px 2px 0 0;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .blog-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: none;
+            height: fit-content;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .blog-card.large {
+            grid-row: span 2;
+        }
+
+        .blog-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .blog-card.large .blog-image {
+            height: 350px;
+        }
+
+        .blog-card:hover .blog-image {
+            transform: scale(1.05);
+        }
+
+        .blog-content {
+            padding: 2rem;
+        }
+
+        .blog-date {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .blog-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            line-height: 1.3;
+        }
+
+        .blog-card.large .blog-title {
+            font-size: 1.8rem;
+        }
+
+        .blog-excerpt {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .read-more {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .read-more:hover {
+            color: var(--primary-hover);
+        }
+
+        .blog-card.hidden {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .blog-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .category-tabs .nav-link {
+                padding: 0.8rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .blog-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+
+<body>
+    <!-- Page Header -->
+    <div class="page-header text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>Our Blog</h1>
+                    <p>Discover the latest stories, insights, and inspiration from our community. Stay updated with trends, guides, and seasonal content.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Category Tabs -->
+        <div class="category-tabs">
+    <ul class="nav nav-tabs border-0" id="categoryTabs">
+        <li class="nav-item">
+            <button class="nav-link active" data-category="all">All</button>
+        </li>
+        {% for category in categories %}
+        <li class="nav-item">
+            <button class="nav-link" data-category="{{ category.slug }}">{{ category.name }}</button>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="blog-grid" id="blogGrid">
+    {% for post in posts %}
+    <article class="blog-card fade-in" data-category="{{ post.category.slug }}" onclick="window.location.href='/blog_detail/{{post.slug}}'">
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="blog-image">
+        <div class="blog-content">
+            <div class="blog-date">{{ post.date|date:"F d, Y" }}</div>
+            <h2 class="blog-title">{{ post.title }}</h2>
+            <p class="blog-excerpt">{{ post.excerpt|truncatewords:25 }}</p>
+            <a href="/blog_detail/{{post.slug}}" class="read-more">Read More →</a>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryTabs = document.querySelectorAll('[data-category]');
+            const blogCards = document.querySelectorAll('.blog-card');
+
+            // Category filtering functionality
+            categoryTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const selectedCategory = this.getAttribute('data-category');
+                    
+                    // Update active tab
+                    categoryTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filter blog posts
+                    filterBlogPosts(selectedCategory);
+                });
+            });
+
+            function filterBlogPosts(category) {
+                blogCards.forEach(card => {
+                    const cardCategory = card.getAttribute('data-category');
+                    
+                    if (category === 'all' || cardCategory === category) {
+                        card.classList.remove('hidden');
+                        // Add fade-in animation
+                        card.style.animation = 'none';
+                        card.offsetHeight; // Trigger reflow
+                        card.style.animation = 'fadeIn 0.6s ease-in-out';
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Add hover effects and smooth scrolling
+            blogCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Smooth scroll for read more links
+            // document.querySelectorAll('.read-more').forEach(link => {
+            //     link.addEventListener('click', function(e) {
+            //         e.preventDefault();
+            //         // You can add navigation logic here
+            //         console.log('Navigate to full blog post');
+            //     });
+            // });
+        });
+    </script>
+</body>
+
+{% endblock body %}

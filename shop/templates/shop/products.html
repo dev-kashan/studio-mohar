@@ -1,0 +1,1521 @@
+{% extends 'shop/base.html' %}
+<!-- {% block top_header %}
+<div class="top-banner">
+    Free Shipping in GTA + Free Shipping over $250
+   </div>
+{% endblock top_header %} -->
+{% block body %}
+<body>
+
+
+<!-- Product Catalog Page -->
+<div class="product-catalog-wrapper">
+    <!-- Hero Section -->
+    <section class="product-hero-section">
+        <div class="container-fluid">
+            <div class="product-hero-content">
+                <nav class="product-breadcrumb">
+                    <span class="breadcrumb-item">Home</span>
+                    <span class="breadcrumb-separator">-</span>
+                    <span class="breadcrumb-item active">Shop</span>
+                </nav>
+                <h1 class="product-hero-title">Premium Custom Apparel - Designed by You</h1>
+                <p class="product-hero-subtitle">At Studio Mohar, we treat clothing as an extension of your expression. We offer only premium apparel and cut through the clutter of endless choices that make decision-making feel overwhelming. Our curated selection keeps it simple: choose your style, pick your color, and start designing. Every piece is made to stand apart from the ordinary.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="product-main-content">
+        <div class="container">
+            <div class="filter_sidebar_mobile" >
+                <div class="product-filters-sidebar">
+
+                    <div class="cross_icon">
+                        X
+                    </div>
+                        <!-- Search Filter -->
+                        <div class="filter-section">
+                            <div class="filter-header" data-toggle="collapse" data-target="#searchFilter">
+                                <h5 class="filter-title">Search</h5>
+                                <i class="fas fa-chevron-down filter-chevron"></i>
+                            </div>
+                            <div class="filter-content collapse show">
+                                <div class="search-input-wrapper">
+                                    <input type="text" class="form-control search-input" placeholder="Search Product">
+                                    <i class="fas fa-search search-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Categories -->
+                        <div class="filter-section">
+                            <div class="filter-header" data-toggle="collapse" data-target="#categoryFilter">
+                                <h5 class="filter-title">Product Categories</h5>
+                                <i class="fas fa-chevron-down filter-chevron"></i>
+                            </div>
+                            <div class="filter-content collapse show">
+                                <ul class="filter-list">
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-category="youth">
+                                            <span class="filter-text">Youth</span>
+                                            <span class="filter-count">31</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-category="women">
+                                            <span class="filter-text">Women</span>
+                                            <span class="filter-count">25</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-category="men">
+                                            <span class="filter-text">Men</span>
+                                            <span class="filter-count">67</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-category="shorts">
+                                            <span class="filter-text">Shorts</span>
+                                            <span class="filter-count">8</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-category="workwear">
+                                            <span class="filter-text">Work/Wear/Shirts</span>
+                                            <span class="filter-count">2</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-category="accessories">
+                                            <span class="filter-text">Accessories</span>
+                                            <span class="filter-count">21</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-category="headwear">
+                                            <span class="filter-text">Headwear</span>
+                                            <span class="filter-count">6</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Filter by Size -->
+                        <div class="filter-section">
+                            <div class="filter-header" data-toggle="collapse" data-target="#sizeFilter">
+                                <h5 class="filter-title">Filter by Size</h5>
+                                <i class="fas fa-chevron-down filter-chevron"></i>
+                            </div>
+                            <div class="filter-content collapse show">
+                                <ul class="filter-list">
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-size="12m">
+                                            <span class="filter-text">12M</span>
+                                            <span class="filter-count">1</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-size="18m">
+                                            <span class="filter-text">18M</span>
+                                            <span class="filter-count">1</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-size="2-3m">
+                                            <span class="filter-text">2-3M</span>
+                                            <span class="filter-count">1</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-size="6m">
+                                            <span class="filter-text">6M</span>
+                                            <span class="filter-count">1</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-size="color">
+                                            <span class="filter-text">color</span>
+                                            <span class="filter-count">1</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-size="nb">
+                                            <span class="filter-text">NB</span>
+                                            <span class="filter-count">1</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Sort by -->
+                        <div class="filter-section">
+                            <div class="filter-header" data-toggle="collapse" data-target="#sortFilter">
+                                <h5 class="filter-title">Sort by</h5>
+                                <i class="fas fa-chevron-down filter-chevron"></i>
+                            </div>
+                            <div class="filter-content collapse show">
+                                <ul class="filter-list">
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="radio" name="sort" class="filter-radio" data-sort="popularity">
+                                            <span class="filter-text">Popularity</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="radio" name="sort" class="filter-radio" data-sort="rating">
+                                            <span class="filter-text">Average rating</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="radio" name="sort" class="filter-radio" data-sort="latest">
+                                            <span class="filter-text">Latest</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="radio" name="sort" class="filter-radio" data-sort="price-low">
+                                            <span class="filter-text">Price (low to high)</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="radio" name="sort" class="filter-radio" data-sort="price-high">
+                                            <span class="filter-text">Price (high to low)</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Stock Status -->
+                        <div class="filter-section">
+                            <div class="filter-header" data-toggle="collapse" data-target="#stockFilter">
+                                <h5 class="filter-title">Stock status</h5>
+                                <i class="fas fa-chevron-down filter-chevron"></i>
+                            </div>
+                            <div class="filter-content collapse show">
+                                <ul class="filter-list">
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-stock="sale">
+                                            <span class="filter-text">On sale</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <!-- Right Content Area -->
+                 
+            <div class="row">
+                <!-- Left Sidebar Filters -->
+                {% comment %} <div class="col-lg-3 col-md-4 main_filter_pc">
+                    <div class="product-filters-sidebar">
+                        <!-- Search Filter -->
+                        <div class="filter-section">
+                            <div class="filter-header" data-toggle="collapse" data-target="#searchFilter">
+                                <h5 class="filter-title">Search</h5>
+                                <i class="fas fa-chevron-down filter-chevron"></i>
+                            </div>
+                            <div class="filter-content collapse show" id="searchFilter">
+                                <div class="search-input-wrapper">
+                                    <input type="text" class="form-control search-input" placeholder="Search Product">
+                                    <i class="fas fa-search search-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Categories -->
+                        <div class="filter-section">
+                            <div class="filter-header" data-toggle="collapse" data-target="#categoryFilter">
+                                <h5 class="filter-title">Product Categories</h5>
+                                <i class="fas fa-chevron-down filter-chevron"></i>
+                            </div>
+                            <div class="filter-content collapse show" id="categoryFilter">
+                                <ul class="filter-list">
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-category="youth">
+                                            <span class="filter-text">Youth</span>
+                                            <span class="filter-count">31</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-category="women">
+                                            <span class="filter-text">Women</span>
+                                            <span class="filter-count">25</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-category="men">
+                                            <span class="filter-text">Men</span>
+                                            <span class="filter-count">67</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-category="shorts">
+                                            <span class="filter-text">Shorts</span>
+                                            <span class="filter-count">8</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-category="workwear">
+                                            <span class="filter-text">Work/Wear/Shirts</span>
+                                            <span class="filter-count">2</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-category="accessories">
+                                            <span class="filter-text">Accessories</span>
+                                            <span class="filter-count">21</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-category="headwear">
+                                            <span class="filter-text">Headwear</span>
+                                            <span class="filter-count">6</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Filter by Size -->
+                        <div class="filter-section">
+                            <div class="filter-header" data-toggle="collapse" data-target="#sizeFilter">
+                                <h5 class="filter-title">Filter by Size</h5>
+                                <i class="fas fa-chevron-down filter-chevron"></i>
+                            </div>
+                            <div class="filter-content collapse show" id="sizeFilter">
+                                <ul class="filter-list">
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-size="12m">
+                                            <span class="filter-text">12M</span>
+                                            <span class="filter-count">1</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-size="18m">
+                                            <span class="filter-text">18M</span>
+                                            <span class="filter-count">1</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-size="2-3m">
+                                            <span class="filter-text">2-3M</span>
+                                            <span class="filter-count">1</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-size="6m">
+                                            <span class="filter-text">6M</span>
+                                            <span class="filter-count">1</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-size="color">
+                                            <span class="filter-text">color</span>
+                                            <span class="filter-count">1</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-size="nb">
+                                            <span class="filter-text">NB</span>
+                                            <span class="filter-count">1</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Sort by -->
+                        <div class="filter-section">
+                            <div class="filter-header" data-toggle="collapse" data-target="#sortFilter">
+                                <h5 class="filter-title">Sort by</h5>
+                                <i class="fas fa-chevron-down filter-chevron"></i>
+                            </div>
+                            <div class="filter-content collapse show" id="sortFilter">
+                                <ul class="filter-list">
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="radio" name="sort" class="filter-radio" data-sort="popularity">
+                                            <span class="filter-text">Popularity</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="radio" name="sort" class="filter-radio" data-sort="rating">
+                                            <span class="filter-text">Average rating</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="radio" name="sort" class="filter-radio" data-sort="latest">
+                                            <span class="filter-text">Latest</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="radio" name="sort" class="filter-radio" data-sort="price-low">
+                                            <span class="filter-text">Price (low to high)</span>
+                                        </label>
+                                    </li>
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="radio" name="sort" class="filter-radio" data-sort="price-high">
+                                            <span class="filter-text">Price (high to low)</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Stock Status -->
+                        <div class="filter-section">
+                            <div class="filter-header" data-toggle="collapse" data-target="#stockFilter">
+                                <h5 class="filter-title">Stock status</h5>
+                                <i class="fas fa-chevron-down filter-chevron"></i>
+                            </div>
+                            <div class="filter-content collapse show" id="stockFilter">
+                                <ul class="filter-list">
+                                    <li class="filter-item">
+                                        <label class="filter-label">
+                                            <input type="checkbox" class="filter-checkbox" data-stock="sale">
+                                            <span class="filter-text">On sale</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div> {% endcomment %}
+
+                
+                <div class="col-lg-12 col-md-8">
+                    <div class="product-content-area">
+                        <!-- Top Bar -->
+                        {% comment %} <div class="product-top-bar">
+                            
+                            <button class="btn btn-primary filter_btn"><i class="fa fa-filter" aria-hidden="true"></i>
+ Filters</button>
+                            <div class="top-bar-controls">
+                                <select class="form-control sort-dropdown">
+                                    <option value="default">Default sorting</option>
+                                    <option value="popularity">Sort by popularity</option>
+                                    <option value="rating">Sort by average rating</option>
+                                    <option value="latest">Sort by latest</option>
+                                    <option value="price-low">Sort by price: low to high</option>
+                                    <option value="price-high">Sort by price: high to low</option>
+                                </select>
+                                <button class="view-toggle-btn" id="viewToggle">
+                                    <i class="fas fa-th-large"></i>
+                                </button>
+                            </div>
+                        </div> {% endcomment %}
+                        <div class="results-info">
+                                <span class="results-text">
+    Showing {{ showing_start }}–{{ showing_end }} of {{ total_count }} results
+</span>
+                            </div>
+
+                        <!-- Products Grid -->
+                        <div class="products-container" id="productsContainer">
+                            <div class="row products-grid" id="productsGrid">
+                                <!-- Product 1 -->
+                                 {% for i in mockup_products %}
+  <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+    <div class="product-card" onclick="window.location.href='/product_detail/{{ i.product_id }}'">
+      
+      <div class="product-image">
+        <img 
+          src="{{ i.blank_image.url|default:'/static/shop/img/default_blank.png' }}" 
+          alt="{{ i.product_name }}" 
+          class="product-img default-img">
+
+        <img 
+          src="{{ i.printed_image.url|default:'/static/shop/img/default_printed.png' }}" 
+          alt="{{ i.product_name }} Printed" 
+          class="product-img hover-img">
+      </div>
+
+      <div class="product-info">
+        <h6 class="product-title">{{ i.product_name }}</h6>
+
+        {% with first_attr=i.productattribute_set.first %}
+          {% if first_attr %}
+            <span class="product-price">
+              {% comment %} {% if first_attr.discount_price %}
+                <span class="text-muted text-decoration-line-through">
+                  C${{ first_attr.price }}
+                </span>
+                <span>${{ first_attr.discount_price }}</span>
+              {% else %} {% endcomment %}
+                <!-- <span>C${{ first_attr.price }}</span> -->
+              {% comment %} {% endif %} {% endcomment %}
+            </span>
+          {% else %}
+            <span class="product-price">$0.00</span>
+          {% endif %}
+        {% endwith %}
+      </div>
+
+    </div>
+  </div>
+{% empty %}
+  <div class="col-12 text-center mt-4">
+    <p>No mockup products available.</p>
+  </div>
+{% endfor %}
+
+                                <!-- Product 2 -->
+                                {% comment %} <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/'" data-category="men" data-price="30.00">
+                                        <div class="product-image">
+                                            <img src="/static/shop/img/polo_blank.png" alt="Long Sleeve T-shirt" class="product-img default-img">
+                                            <img src="/static/shop/img/polo_printed.png" alt="Short Sleeve T-shirt Back" class="product-img hover-img">
+                                            <!-- <div class="product-overlay">
+                                                <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
+                                            </div> -->
+                                        </div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">Polo</h6>
+                                            <span class="product-price">$30.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Product 3 -->
+                                <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/'" data-category="men" data-price="14.00">
+                                        <div class="product-image">
+                                            <img src="/static/shop/img/sports_printed.png" alt="Short Sleeve T-shirt" class="product-img default-img">
+    <img src="/static/shop/img/sports_printed.png" alt="Short Sleeve T-shirt Back" class="product-img hover-img">
+                                            <!-- <div class="product-overlay">
+                                                <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
+                                            </div> -->
+                                        </div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">Sports</h6>
+                                            <span class="product-price">$14.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Product 4 -->
+                                <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/'" data-category="women" data-price="24.00">
+                                        <div class="product-image">
+                                            <img src="/static/shop/img/sweatshirt_blank.png" alt="Long Sleeve T-shirt" class="product-img default-img">
+                                            <img src="/static/shop/img/sweatshirt_printed.png" alt="Short Sleeve T-shirt Back" class="product-img hover-img">
+                                            <!-- <div class="product-overlay">
+                                                <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
+                                            </div> -->
+                                        </div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">Sweatshirt</h6>
+                                            <span class="product-price">$24.00</span>
+                                        </div>
+                                    </div>
+                                </div> {% endcomment %}
+
+                                <!-- Repeat similar products for rows 2, 3, 4 -->
+                                <!-- Row 2 -->
+                                {% comment %} <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/'" data-category="men" data-price="18.00">
+                                        <div class="product-image">
+                                            <img src="/static/shop/img/png mockup/black_front-removebg-preview.png" alt="Short Sleeve T-shirt" class="product-img default-img">
+    <img src="/static/shop/img/png mockup/front-removebg-preview.png" alt="Short Sleeve T-shirt Back" class="product-img hover-img">
+                                            <!-- <div class="product-overlay">
+                                                <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
+                                            </div> -->
+                                        </div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">Short Sleeve T-shirt</h6>
+                                            <span class="product-price">$18.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/'" data-category="men" data-price="30.00">
+                                        <div class="product-image">
+                                            <img src="/static/shop/img/png mockup/front-removebg-preview.png" alt="Long Sleeve T-shirt" class="product-img default-img">
+                                            <img src="/static/shop/img/png mockup/black_front-removebg-preview.png" alt="Short Sleeve T-shirt Back" class="product-img hover-img">
+                                            <!-- <div class="product-overlay">
+                                                <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
+                                            </div> -->
+                                        </div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">Long Sleeve T-shirt</h6>
+                                            <span class="product-price">$30.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/'" data-category="men" data-price="14.00">
+                                        <div class="product-image">
+                                            <img src="/static/shop/img/png mockup/black_front-removebg-preview.png" alt="Short Sleeve T-shirt" class="product-img default-img">
+    <img src="/static/shop/img/png mockup/front-removebg-preview.png" alt="Short Sleeve T-shirt Back" class="product-img hover-img">
+                                            
+                                            <!-- <div class="product-overlay">
+                                                <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
+                                            </div> -->
+                                        </div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">Long Sleeve T-shirt</h6>
+                                            <span class="product-price">$14.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-6 col-sm-6 product-col">
+                                    <div class="product-card" onclick="window.location.href='/product_detail/'" data-category="women" data-price="24.00">
+                                        <div class="product-image">
+                                            <img src="/static/shop/img/png mockup/front-removebg-preview.png" alt="Long Sleeve T-shirt" class="product-img default-img">
+                                            <img src="/static/shop/img/png mockup/black_front-removebg-preview.png" alt="Short Sleeve T-shirt Back" class="product-img hover-img">
+                                            <!-- <div class="product-overlay">
+                                                <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
+                                            </div> -->
+                                        </div>
+                                        <div class="product-info">
+                                            <h6 class="product-title">Ladies T-shirt</h6>
+                                            <span class="product-price">$24.00</span>
+                                        </div>
+                                    </div>
+                                </div> {% endcomment %}
+
+                                <!-- Continue with more products... -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+</div>
+
+<section class="custom-apparel-section py-5 position-relative overflow-hidden">
+  <!-- Floating decorative elements -->
+  <div class="floating-element floating-element-1"></div>
+  <div class="floating-element floating-element-2"></div>
+  <div class="floating-element floating-element-3"></div>
+  
+  <div class="container position-relative">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 col-md-12 text-center">
+        <!-- Enhanced heading with better typography and animation -->
+        <h2 class="custom-apparel-heading mb-4 fw-bold fade-in-up">
+          Looking for something else?
+        </h2>
+        <!-- Improved text layout with better spacing and readability -->
+        <div class="custom-apparel-text-wrapper fade-in-up" style="animation-delay: 0.2s;">
+          <p class="custom-apparel-text mb-5 lead">
+            Looking for something beyond our design lab? We handle custom requests of all kinds, with a wide range of fabrics, colors, printing methods, and finishing techniques. Just share your vision — we’ll make it happen.
+          </p>
+        </div>
+        <!-- Enhanced button with ripple effect and new green color -->
+        <div class="button-wrapper fade-in-up" style="animation-delay: 0.4s;">
+          <button type="button" class="custom-apparel-btn btn btn-lg px-5 py-3 position-relative overflow-hidden" id="customApparelBtn" onclick="window.location.href='/contact_sales/'">
+            <span class="btn-text">Share Your Vision</span>
+            <div class="ripple-effect"></div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer Section -->
+<!-- <section class="footer-section">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <img src="/static/shop/img/logo.png" alt="">
+                </div>
+                <div class="business-hours">
+                    <p><strong>Ruii.com</strong></p>
+                    <p>Our Store is open from 12 pm to 7pm </p>
+                    <p>every day including weeksends</p>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h5>Home</h5>
+                    <ul>
+                        <li><a href="#">Our Prices</a></li>
+                        <li><a href="#">Stores</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h5>Printed Apparel</h5>
+                    <ul>
+                        <li><a href="#">Men's T-Shirts</a></li>
+                        <li><a href="#">Ladies T- Shirts</a></li>
+                        <li><a href="#">Hoodies & Sweatshirts</a></li>
+                        <li><a href="#">Unisex Tanks Tops</a></li>
+                        <li><a href="#">Long Sleeve & Crewneck</a></li>
+                        <li><a href="#">Polo Shirts</a></li>
+                        <li><a href="#">Youth & Baby</a></li>
+                        <li><a href="#">Hats</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <ul class="footer-links-right">
+                        <li><a href="#">Bulk Custom T-shirts</a></li>
+                        <li><a href="#">Request Quote</a></li>
+                        <li><a href="#">Company</a></li>
+                        <li><a href="#">Client Reviews</a></li>
+                        <li><a href="#">Our Blog</a></li>
+                        <li><a href="#">Sitemap</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Smooth hover animations for category cards
+            $('.category-card').hover(
+                function() {
+                    $(this).css('transform', 'translateY(-5px)');
+                },
+                function() {
+                    $(this).css('transform', 'translateY(0)');
+                }
+            );
+
+            // Button hover effects
+            $('.btn-get-started, .btn-create-mockup').hover(
+                function() {
+                    $(this).css('transform', 'translateY(-1px)');
+                },
+                function() {
+                    $(this).css('transform', 'translateY(0)');
+                }
+            );
+
+            // Responsive navigation toggle
+            $(window).resize(function() {
+                if ($(window).width() < 992) {
+                    $('.nav-menu').addClass('d-none');
+                } else {
+                    $('.nav-menu').removeClass('d-none').addClass('d-lg-flex');
+                }
+            });
+        });
+
+
+        $(document).ready(function() {
+    // Animate testimonial photos on scroll
+    // $(window).scroll(function() {
+    //     var scrollTop = $(window).scrollTop();
+    //     var windowHeight = $(window).height();
+        
+    //     $('.testimonial-photo').each(function(index) {
+    //         var elementTop = $(this).offset().top;
+            
+    //         if (elementTop < scrollTop + windowHeight && elementTop + $(this).height() > scrollTop) {
+    //             $(this).css({
+    //                 'transform': 'translateY(' + (scrollTop * 0.1 * (index + 1)) + 'px)',
+    //                 'transition': 'transform 0.3s ease'
+    //             });
+    //         }
+    //     });
+    // });
+
+    // Hover effects for feature items
+    // $('.feature-item').hover(
+    //     function() {
+    //         $(this).find('.feature-icon').css('transform', 'scale(1.1)');
+    //     },
+    //     function() {
+    //         $(this).find('.feature-icon').css('transform', 'scale(1)');
+    //     }
+    // );
+
+    // Button hover animations
+    $('.btn-success-stories').hover(
+        function() {
+            $(this).css('transform', 'translateY(-2px)');
+        },
+        function() {
+            $(this).css('transform', 'translateY(0)');
+        }
+    );
+
+    // Animate step numbers on scroll
+    $(window).scroll(function() {
+        $('.step-number').each(function() {
+            var elementTop = $(this).offset().top;
+            var elementBottom = elementTop + $(this).outerHeight();
+            var viewportTop = $(window).scrollTop();
+            var viewportBottom = viewportTop + $(window).height();
+
+            if (elementBottom > viewportTop && elementTop < viewportBottom) {
+                $(this).addClass('animate-pulse');
+            }
+        });
+    });
+
+    // Add pulse animation class
+    $('<style>')
+        .prop('type', 'text/css')
+        .html(`
+            .animate-pulse {
+                animation: pulse 2s infinite;
+            }
+            
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        `)
+        .appendTo('head');
+
+    // Smooth scrolling for footer links
+    $('.footer-column a').on('click', function(e) {
+        var href = $(this).attr('href');
+        if (href.startsWith('#')) {
+            e.preventDefault();
+            var target = $(href);
+            if (target.length) {
+                $('html, body').animate({
+                    scrollTop: target.offset().top - 100
+                }, 800);
+            }
+        }
+    });
+
+    // Add loading animation for testimonial photos
+    $('.testimonial-photo').each(function(index) {
+        $(this).css({
+            'opacity': '0',
+            'transform': 'scale(0.8)'
+        });
+        
+        setTimeout(() => {
+            $(this).css({
+                'opacity': '1',
+                'transform': 'scale(1)',
+                'transition': 'all 0.5s ease'
+            });
+        }, index * 100);
+    });
+});
+
+$(document).ready(function() {
+    let currentSlide = 0;
+    const totalSlides = $('.review-card').length;
+    let isAnimating = false; // Prevent multiple clicks during animation
+    
+    // Initialize slider
+    function initSlider() {
+        $('.review-card').removeClass('active');
+        $('.review-image').removeClass('active');
+        $('.review-card').eq(currentSlide).addClass('active');
+        $('.review-image').eq(currentSlide).addClass('active');
+    }
+    
+    // Slide to next
+    function slideNext() {
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        const currentCard = $('.review-card.active');
+        const currentImage = $('.review-image.active');
+        const nextIndex = (currentSlide + 1) % totalSlides;
+        const nextCard = $('.review-card').eq(nextIndex);
+        const nextImage = $('.review-image').eq(nextIndex);
+        
+        // Position next elements to the left (off-screen)
+        nextCard.css({
+            'transform': 'translateX(-100%)',
+            'opacity': '0'
+        }).addClass('active');
+        
+        nextImage.css({
+            'transform': 'translateX(-100%)',
+            'opacity': '0'
+        }).addClass('active');
+        
+        // Animate current elements out to the right
+        currentCard.animate({
+            'transform': 'translateX(100%)',
+            'opacity': '0'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+        
+        currentImage.animate({
+            'transform': 'translateX(100%)',
+            'opacity': '0'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+        
+        // Animate next elements in from the left
+        nextCard.animate({
+            'transform': 'translateX(0%)',
+            'opacity': '1'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+        
+        nextImage.animate({
+            'transform': 'translateX(0%)',
+            'opacity': '1'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            },
+            complete: function() {
+                // Clean up after animation
+                currentCard.removeClass('active').css({
+                    'transform': 'translateX(100%)',
+                    'opacity': '0'
+                });
+                currentImage.removeClass('active').css({
+                    'transform': 'translateX(100%)',
+                    'opacity': '0'
+                });
+                
+                currentSlide = nextIndex;
+                isAnimating = false;
+            }
+        });
+    }
+    
+    // Slide to previous
+    function slidePrev() {
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        const currentCard = $('.review-card.active');
+        const currentImage = $('.review-image.active');
+        const prevIndex = currentSlide === 0 ? totalSlides - 1 : currentSlide - 1;
+        const prevCard = $('.review-card').eq(prevIndex);
+        const prevImage = $('.review-image').eq(prevIndex);
+        
+        // Position previous elements to the right (off-screen)
+        prevCard.css({
+            'transform': 'translateX(100%)',
+            'opacity': '0'
+        }).addClass('active');
+        
+        prevImage.css({
+            'transform': 'translateX(100%)',
+            'opacity': '0'
+        }).addClass('active');
+        
+        // Animate current elements out to the left
+        currentCard.animate({
+            'transform': 'translateX(-100%)',
+            'opacity': '0'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+        
+        currentImage.animate({
+            'transform': 'translateX(-100%)',
+            'opacity': '0'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+        
+        // Animate previous elements in from the right
+        prevCard.animate({
+            'transform': 'translateX(0%)',
+            'opacity': '1'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            }
+        });
+        
+        prevImage.animate({
+            'transform': 'translateX(0%)',
+            'opacity': '1'
+        }, {
+            duration: 500,
+            step: function(now, fx) {
+                if (fx.prop === 'transform') {
+                    $(this).css('transform', `translateX(${now}%)`);
+                } else {
+                    $(this).css('opacity', now);
+                }
+            },
+            complete: function() {
+                // Clean up after animation
+                currentCard.removeClass('active').css({
+                    'transform': 'translateX(-100%)',
+                    'opacity': '0'
+                });
+                currentImage.removeClass('active').css({
+                    'transform': 'translateX(-100%)',
+                    'opacity': '0'
+                });
+                
+                currentSlide = prevIndex;
+                isAnimating = false;
+            }
+        });
+    }
+    
+    // Event listeners
+    $('#nextBtn').on('click', function() {
+        slideNext();
+    });
+    
+    $('#prevBtn').on('click', function() {
+        slidePrev();
+    });
+    
+    // Keyboard navigation
+    $(document).on('keydown', function(e) {
+        if (e.key === 'ArrowRight') {
+            slideNext();
+        } else if (e.key === 'ArrowLeft') {
+            slidePrev();
+        }
+    });
+    
+    // Auto-slide functionality (optional - you can remove this if not needed)
+    let autoSlideInterval;
+    
+    function startAutoSlide() {
+        autoSlideInterval = setInterval(slideNext, 5000); // 5 seconds
+    }
+    
+    function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
+    }
+    
+    // Start auto-slide (comment out if you don't want auto-slide)
+    // startAutoSlide();
+    
+    // Pause auto-slide on hover
+    $('.review-content').hover(
+        function() {
+            stopAutoSlide();
+        },
+        function() {
+            // startAutoSlide(); // Uncomment if you want auto-slide
+        }
+    );
+    
+    // Button hover effects
+    $('.slider-btn').hover(
+        function() {
+            $(this).css('transform', 'scale(1.1)');
+        },
+        function() {
+            $(this).css('transform', 'scale(1)');
+        }
+    );
+    
+    // Touch/swipe support for mobile
+    let startX = 0;
+    let endX = 0;
+    
+    $('.review-card-container, .review-image-container').on('touchstart', function(e) {
+        startX = e.originalEvent.touches[0].clientX;
+    });
+    
+    $('.review-card-container, .review-image-container').on('touchend', function(e) {
+        endX = e.originalEvent.changedTouches[0].clientX;
+        handleSwipe();
+    });
+    
+    function handleSwipe() {
+        const threshold = 50; // Minimum swipe distance
+        const diff = startX - endX;
+        
+        if (Math.abs(diff) > threshold) {
+            if (diff > 0) {
+                // Swiped left - go to next
+                slideNext();
+            } else {
+                // Swiped right - go to previous
+                slidePrev();
+            }
+        }
+    }
+    
+    // Initialize the slider
+    initSlider();
+});
+
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const closeMenuBtn = document.getElementById('closeMenuBtn');
+
+  hamburgerBtn.addEventListener('click', () => {
+    mobileMenu.classList.add('open');
+  });
+
+  closeMenuBtn.addEventListener('click', () => {
+    mobileMenu.classList.remove('open');
+  });
+
+  // Import jQuery
+// const $ = require('jquery');
+
+$(document).ready(function() {
+    let isListView = false;
+    let currentFilters = {
+        categories: [],
+        sizes: [],
+        search: '',
+        sort: 'default',
+        onSale: false
+    };
+
+    // Initialize
+    initializeFilters();
+    
+    // Filter Header Click (Collapse/Expand)
+    $('.filter-header').on('click', function() {
+        const target = $(this).data('target');
+        const chevron = $(this).find('.filter-chevron');
+        const content = $(target);
+        
+        if (content.hasClass('show')) {
+            content.removeClass('show').slideUp(300);
+            chevron.css('transform', 'rotate(-90deg)');
+            $(this).attr('aria-expanded', 'false');
+        } else {
+            content.addClass('show').slideDown(300);
+            chevron.css('transform', 'rotate(0deg)');
+            $(this).attr('aria-expanded', 'true');
+        }
+    });
+
+    // View Toggle Button
+    $('#viewToggle').on('click', function() {
+        isListView = !isListView;
+        const grid = $('#productsGrid');
+        const button = $(this);
+        
+        if (isListView) {
+            grid.addClass('list-view');
+            button.addClass('list-view');
+            button.find('i').removeClass('fa-th-large').addClass('fa-list');
+        } else {
+            grid.removeClass('list-view');
+            button.removeClass('list-view');
+            button.find('i').removeClass('fa-list').addClass('fa-th-large');
+        }
+        
+        // Animate the transition
+        $('.product-card').css('opacity', '0.5');
+        setTimeout(() => {
+            $('.product-card').css('opacity', '1');
+        }, 300);
+    });
+
+    // Search Input
+    $('.search-input').on('input', function() {
+        currentFilters.search = $(this).val().toLowerCase();
+        applyFilters();
+    });
+
+    // Category Filters
+    $('.filter-checkbox[data-category]').on('change', function() {
+        const category = $(this).data('category');
+        if ($(this).is(':checked')) {
+            currentFilters.categories.push(category);
+        } else {
+            currentFilters.categories = currentFilters.categories.filter(c => c !== category);
+        }
+        applyFilters();
+    });
+
+    // Size Filters
+    $('.filter-checkbox[data-size]').on('change', function() {
+        const size = $(this).data('size');
+        if ($(this).is(':checked')) {
+            currentFilters.sizes.push(size);
+        } else {
+            currentFilters.sizes = currentFilters.sizes.filter(s => s !== size);
+        }
+        applyFilters();
+    });
+
+    // Sort Filters
+    $('.filter-radio[data-sort]').on('change', function() {
+        if ($(this).is(':checked')) {
+            currentFilters.sort = $(this).data('sort');
+            applyFilters();
+        }
+    });
+
+    // Sort Dropdown
+    $('.sort-dropdown').on('change', function() {
+        currentFilters.sort = $(this).val();
+        applyFilters();
+    });
+
+    // On Sale Filter
+    $('.filter-checkbox[data-stock="sale"]').on('change', function() {
+        currentFilters.onSale = $(this).is(':checked');
+        applyFilters();
+    });
+
+    // Initialize Filters
+    function initializeFilters() {
+        // Set default sort
+        $('.filter-radio[data-sort="popularity"]').prop('checked', true);
+        currentFilters.sort = 'popularity';
+        
+        // Update results count
+        updateResultsCount();
+    }
+
+    // Apply Filters Function
+    function applyFilters() {
+        showLoading();
+        
+        setTimeout(() => {
+            const products = $('.product-card');
+            let visibleCount = 0;
+            
+            products.each(function() {
+                const product = $(this);
+                const productCategory = product.data('category');
+                const productTitle = product.find('.product-title').text().toLowerCase();
+                const productPrice = parseFloat(product.data('price'));
+                
+                let shouldShow = true;
+                
+                // Search filter
+                if (currentFilters.search && !productTitle.includes(currentFilters.search)) {
+                    shouldShow = false;
+                }
+                
+                // Category filter
+                if (currentFilters.categories.length > 0 && !currentFilters.categories.includes(productCategory)) {
+                    shouldShow = false;
+                }
+                
+                // Size filter (simplified - in real app would check product sizes)
+                if (currentFilters.sizes.length > 0) {
+                    // For demo purposes, randomly show/hide based on size filter
+                    shouldShow = shouldShow && Math.random() > 0.3;
+                }
+                
+                // On sale filter
+                if (currentFilters.onSale) {
+                    // For demo purposes, show products under $20 as "on sale"
+                    shouldShow = shouldShow && productPrice < 20;
+                }
+                
+                if (shouldShow) {
+                    product.closest('.product-col').fadeIn(300);
+                    visibleCount++;
+                } else {
+                    product.closest('.product-col').fadeOut(300);
+                }
+            });
+            
+            // Sort products
+            sortProducts();
+            
+            // Update results count
+            updateResultsCount(visibleCount);
+            
+            hideLoading();
+        }, 500);
+    }
+
+    // Sort Products Function
+    function sortProducts() {
+        const container = $('#productsGrid');
+        const products = container.find('.product-col:visible').get();
+        
+        products.sort(function(a, b) {
+            const aCard = $(a).find('.product-card');
+            const bCard = $(b).find('.product-card');
+            const aPrice = parseFloat(aCard.data('price'));
+            const bPrice = parseFloat(bCard.data('price'));
+            const aTitle = aCard.find('.product-title').text();
+            const bTitle = bCard.find('.product-title').text();
+            
+            switch (currentFilters.sort) {
+                case 'price-low':
+                    return aPrice - bPrice;
+                case 'price-high':
+                    return bPrice - aPrice;
+                case 'latest':
+                    return Math.random() - 0.5; // Random for demo
+                case 'popularity':
+                    return aTitle.localeCompare(bTitle);
+                case 'rating':
+                    return Math.random() - 0.5; // Random for demo
+                default:
+                    return 0;
+            }
+        });
+        
+        // Reorder DOM elements
+        $.each(products, function(index, item) {
+            container.append(item);
+        });
+    }
+
+    // Update Results Count
+    function updateResultsCount(count = null) {
+        if (count === null) {
+            count = $('.product-col:visible').length;
+        }
+        $('.results-text').text(`Showing 1-${count} of 136 results`);
+    }
+
+    // Show Loading
+    function showLoading() {
+        if (!$('.products-loading').length) {
+            $('#productsContainer').append(`
+                <div class="products-loading">
+                    <div class="loading-spinner"></div>
+                    <span>Filtering products...</span>
+                </div>
+            `);
+        }
+        $('.products-grid').css('opacity', '0.5');
+    }
+
+    // Hide Loading
+    function hideLoading() {
+        $('.products-loading').remove();
+        $('.products-grid').css('opacity', '1');
+    }
+
+    // Product Card Hover Effects
+    $('.product-card').hover(
+        function() {
+            $(this).find('.product-overlay').css('background', 'rgba(0,0,0,0.8)');
+        },
+        function() {
+            $(this).find('.product-overlay').css('background', 'rgba(0,0,0,0.7)');
+        }
+    );
+
+    // Responsive Sidebar Toggle (for mobile)
+    if ($(window).width() < 768) {
+        $('.product-filters-sidebar').addClass('mobile-sidebar');
+        
+        // Add mobile toggle button
+        // $('.product-top-bar').prepend(`
+        //     <button class="btn btn-outline-secondary mobile-filter-toggle d-md-none">
+        //         <i class="fas fa-filter"></i> Filters
+        //     </button>
+        // `);
+        
+        $('.mobile-filter-toggle').on('click', function() {
+            $('.product-filters-sidebar').toggleClass('show-mobile');
+        });
+    }
+
+    // Window Resize Handler
+    $(window).on('resize', function() {
+        if ($(window).width() >= 768) {
+            $('.product-filters-sidebar').removeClass('show-mobile');
+        }
+    });
+
+    // Smooth Scrolling for Filter Changes
+    $('.filter-checkbox, .filter-radio').on('change', function() {
+        $('html, body').animate({
+            scrollTop: $('.product-content-area').offset().top - 100
+        }, 500);
+    });
+});
+$(".filter_btn").click(function(){
+    console.log("okkkk");
+
+    $(".filter_sidebar_mobile").css('transform', 'translateX(0)');
+});
+$(".cross_icon").click(function(){
+    console.log("okkkk");
+
+    $(".filter_sidebar_mobile").css('transform', 'translateX(-100%)');
+});
+
+$(".filter-checkbox").on("click", function () {
+    $(".filter_sidebar_mobile").css('transform', 'translateX(-100%)');
+});
+
+// $(document).on("click", function (event) {
+//     const isInsideSidebar = $(event.target).closest(".product-filters-sidebar").length > 0;
+//     const isSidebarOpen = $(".filter_sidebar_mobile").css('transform') !== 'matrix(1, 0, 0, 0, 0, 0)'; // optional check
+
+//     if (!isInsideSidebar) {
+//         $(".filter_sidebar_mobile").css('transform', 'translateX(-100%)');
+//     }
+// });
+
+document.addEventListener('DOMContentLoaded', function() {
+  const customApparelBtn = document.getElementById('customApparelBtn');
+  
+  if (customApparelBtn) {
+    customApparelBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Create ripple effect
+      const ripple = this.querySelector('.ripple-effect');
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+      
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = x + 'px';
+      ripple.style.top = y + 'px';
+      ripple.style.transform = 'scale(0)';
+      ripple.style.animation = 'ripple 0.6s linear';
+      
+      // Reset animation
+      setTimeout(() => {
+        ripple.style.animation = '';
+      }, 600);
+      
+      // Add click animation
+      this.style.transform = 'translateY(-1px) scale(0.98)';
+      setTimeout(() => {
+        this.style.transform = '';
+      }, 150);
+      
+      console.log('[v0] Custom apparel button clicked with enhanced effects!');
+      
+      // Enhanced user feedback
+      const originalText = this.querySelector('.btn-text').textContent;
+      this.querySelector('.btn-text').textContent = 'Let\'s Create!';
+      setTimeout(() => {
+        this.querySelector('.btn-text').textContent = originalText;
+      }, 1500);
+      
+      // You can customize this action
+      alert('🎨 Ready to bring your vision to life! Our team will contact you shortly to discuss your custom apparel needs.');
+    });
+    
+    customApparelBtn.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-3px)';
+    });
+    
+    customApparelBtn.addEventListener('mouseleave', function() {
+      this.style.transform = '';
+    });
+  }
+  
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+      }
+    });
+  }, observerOptions);
+  
+  document.querySelectorAll('.fade-in-up').forEach(el => {
+    el.style.animationPlayState = 'paused';
+    observer.observe(el);
+  });
+});
+    </script> -->
+
+    
+</body>
+{% endblock body %}
