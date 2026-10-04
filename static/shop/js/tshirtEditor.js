@@ -473,7 +473,8 @@ $(document).on('click', '#customDesignPopup_confirm', async function () {
     saveCurrentCanvasState(currentView);
 
     let attr_id = $("#product_attr").val();
-    const csrftoken = getCookie('csrftoken');
+    // Fallback to the template's {% csrf_token %} if the cookie is missing
+    const csrftoken = getCookie('csrftoken') || $("[name=csrfmiddlewaretoken]").first().val();
 
     try {
         // ================= SAVE DESIGN =================
@@ -499,8 +500,10 @@ $(document).on('click', '#customDesignPopup_confirm', async function () {
             body: JSON.stringify(designData)
         });
 
-        const saveData = await saveRes.json();
-        if (!saveData.success) throw new Error("Design save failed");
+        const saveData = await saveRes.json().catch(() => ({}));
+        if (!saveRes.ok || !saveData.success) {
+            throw new Error(`Design save failed (HTTP ${saveRes.status}) ${saveData.error || ""}`);
+        }
 
         const uid = saveData.uid;
         btn.text('Capturing Images...');
@@ -614,7 +617,10 @@ $(document).on('click', '#customDesignPopup_confirm', async function () {
             body: formData
         });
 
-        if (!cartRes.ok) throw new Error("Add to cart failed");
+        if (!cartRes.ok) {
+            const cartData = await cartRes.json().catch(() => ({}));
+            throw new Error(`Add to cart failed (HTTP ${cartRes.status}) ${cartData.error || ""}`);
+        }
 
         window.location.href = "/cart/";
 

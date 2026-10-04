@@ -30,7 +30,7 @@ import io
 import base64
 
 from django.core.mail import EmailMultiAlternatives
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
 from django.core.files.base import ContentFile
 import stripe
@@ -1577,6 +1577,7 @@ def rating(request):
 
 
 
+@ensure_csrf_cookie  # editor posts to /save-design/ and /add-to-cart/ via fetch; fresh/incognito visitors have no csrftoken cookie otherwise
 def customizeEditor(request , id , slug , pid):
     
 
@@ -1858,14 +1859,11 @@ def save_design(request):
         back = data.get("back")
         product_id = data.get("product_id")
         mockup_id = data.get("mockup_id")
-        try:
-            get_attr = ProductAttribute.objects.get(id=attr_id)
-
-        except:
-            return redirect('/')
-
-        get_product = Product.objects.get(product_id=product_id)
-        get_mockup = MockUp.objects.get(id=mockup_id)
+        get_attr = ProductAttribute.objects.filter(id=attr_id).first()
+        get_product = Product.objects.filter(product_id=product_id).first()
+        get_mockup = MockUp.objects.filter(id=mockup_id).first()
+        if not (get_attr and get_product and get_mockup):
+            return JsonResponse({"success": False, "error": "Invalid product, attribute or mockup"}, status=400)
         # print("okkkkk", )
 
         design = SavedDesign.objects.create(
@@ -1902,12 +1900,17 @@ def save_design(request):
             reply_to=[email],  # optional
         )
         msg.attach_alternative(html_content, "text/html")
-        msg.send()
+        # Design is already saved; an SMTP hiccup must not block add-to-cart
+        try:
+            msg.send()
+        except Exception as e:
+            print("save_design email failed:", e)
 
         return JsonResponse({"success": True, 'uid':design.uid})
     return JsonResponse({"success": False}, status=400)
 
 
+@ensure_csrf_cookie
 def load_design(request, uid):
     design = get_object_or_404(SavedDesign, uid=uid)
 

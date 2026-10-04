@@ -4509,6 +4509,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- Unique Design Name Popup -->
 <div id="customDesignPopup_wrapper" style="display:none;">
   <div class="customDesignPopup_box">
+    {% csrf_token %}
     <h4 class="customDesignPopup_title">Name Your Design</h4>
     <input type="text" id="customDesignPopup_input" placeholder="Enter design name" class="customDesignPopup_input">
     <input type="email" id="email_input" placeholder="Enter your email" class="customDesignPopup_input">
