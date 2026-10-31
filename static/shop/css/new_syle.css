@@ -2947,3 +2947,9 @@ input[type=number] {
 .smh-mobile .dropdown-content ul { list-style: none; padding-left: 0; margin: 0; }
 .smh-mobile .dropdown-content ul li { margin: 0; padding: 10px 0; border-bottom: 1px solid #EEEAE3; }
 .smh-mobile .dropdown-content ul li a { font-size: 1.05rem; }
+
+/* Menus: hide items whose title is empty in the admin (e.g. a Service with no
+   "title for dropdown") instead of showing a lone icon */
+.smh-list li:has(> a:empty),
+.smh-mobile .dropdown-content ul li:has(> a:empty) { display: none; }
+.smh-panel-learn .smh-list a { line-height: 1.4; }
