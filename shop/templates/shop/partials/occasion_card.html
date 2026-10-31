@@ -1,5 +1,5 @@
-<a href="/shop/{{ occasion.slug }}/" class="sm-occasion-card{% if occasion.image %} has-photo{% elif occasion.text_tone == 'light' %} is-light{% endif %}" style="--card:{{ occasion.card_color }}">
+<a href="/shop/{{ occasion.slug }}/" class="sm-occasion-card{% if occasion.image %} has-photo{% endif %}" style="--card:{{ occasion.card_color }}; --card-ink:{% if occasion.text_tone == 'light' %}#FFFFFF{% else %}#1D1D1B{% endif %}">
     {% if occasion.image %}<img src="{{ occasion.image.url }}" alt="" loading="lazy">{% endif %}
-    <h3 class="sm-serif">{{ occasion.name }}</h3>
-    {% if occasion.subtitle %}<p>{{ occasion.subtitle }}</p>{% endif %}
+    <span class="sm-occasion-name">{{ occasion.name }}</span>
+    {% if occasion.subtitle %}<span class="sm-occasion-line">{{ occasion.subtitle }}</span>{% endif %}
 </a>

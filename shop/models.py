@@ -1451,6 +1451,7 @@ class Occasion(models.Model):
     # Occasion page content (all editable)
     page_title = models.CharField(max_length=255, default='', blank=True, help_text="Page heading, e.g. 'Bridal party shirts' (falls back to the name)")
     page_description = models.TextField(default='', blank=True, help_text="Intro text under the page heading")
+    strip_title = models.CharField(max_length=200, default='', blank=True, help_text="Group quote strip title for this occasion, e.g. 'Dressing the whole wedding party?' (falls back to Shop settings)")
     seo_heading = models.CharField(max_length=255, default='', blank=True, help_text="Heading of the text block at the bottom of the page")
     seo_content = RichTextField(default='', blank=True, help_text="150-300 words about this occasion, shown at the bottom of the page")
     meta_title = models.CharField(max_length=255, default='', blank=True)

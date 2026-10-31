@@ -4,36 +4,39 @@
 {% if design.meta_description %}<meta name="description" content="{{ design.meta_description }}">{% elif design.short_description %}<meta name="description" content="{{ design.short_description }}">{% endif %}
 {% endblock head %}
 {% block body %}
-<main class="sm-shop">
-    <div class="sm-container">
-        <nav class="sm-breadcrumb" aria-label="Breadcrumb">
-            <a href="/shop/">Shop designs</a> &rsaquo;
-            {% if crumb %}<a href="/shop/{{ crumb.slug }}/">{{ crumb.name }}</a> &rsaquo;{% endif %}
-            {{ design.name }}
-        </nav>
+<div class="sm-shop">
+<main class="sm-main sm-pdp-main">
+    <nav class="sm-breadcrumb" aria-label="Breadcrumb">
+        <a href="/shop/">Shop designs</a> &rsaquo;
+        {% if crumb %}<a href="/shop/{{ crumb.slug }}/">{{ crumb.name }}</a> &rsaquo;{% endif %}
+        <span>{{ design.name }}</span>
+    </nav>
 
-        <div class="sm-pdp">
-            <!-- Gallery: hero image per colour (+ back), then extra photos/GIFs -->
-            <div class="sm-gallery">
-                <div class="sm-gallery-main">
-                    {% with first=colors.0 %}
-                    <img id="smMainImg" src="{{ first.hero_image.url }}" alt="{{ design.name }} in {{ first.color.color_name }}">
-                    {% endwith %}
-                </div>
-                <div class="sm-gallery-thumbs" id="smThumbs" aria-label="More photos"></div>
+    <div class="sm-pdp">
+        <!-- Photos: hero image per colour (+ back), then extra photos/GIFs -->
+        <section class="sm-gallery" aria-label="Photos">
+            <div class="sm-gallery-main">
+                {% with first=colors.0 %}
+                <img id="smMainImg" src="{{ first.hero_image.url }}" alt="{{ design.name }} in {{ first.color.color_name }}">
+                {% endwith %}
             </div>
+            <div class="sm-gallery-thumbs" id="smThumbs" aria-label="More photos"></div>
+        </section>
 
-            <div class="sm-pdp-info">
+        <section class="sm-pdp-info" aria-label="Options">
+            <div class="sm-pdp-head">
                 <h1 class="sm-serif">{{ design.name }}</h1>
                 {% if design.short_description %}<p class="sm-pdp-short">{{ design.short_description }}</p>{% endif %}
-                <p class="sm-price">{{ currency }}{{ design.price }} <small>each</small></p>
+                <div class="sm-price">{{ currency }}{{ design.price }} <small>each</small></div>
+            </div>
 
-                <form id="smDesignForm" novalidate>
-                    {% csrf_token %}
-                    <input type="hidden" name="design_id" value="{{ design.id }}">
+            <form id="smDesignForm" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="design_id" value="{{ design.id }}">
 
-                    <!-- Colour -->
-                    <span class="sm-field-label">Colour: <span id="smColorName">{{ colors.0.color.color_name }}</span></span>
+                <!-- Colour -->
+                <fieldset class="sm-fieldset">
+                    <legend class="sm-legend">Colour: <span id="smColorName">{{ colors.0.color.color_name }}</span></legend>
                     <div class="sm-swatches" role="radiogroup" aria-label="Colour">
                         {% for c in colors %}
                         <button type="button" class="sm-swatch{% if forloop.first %} is-active{% endif %}" role="radio"
@@ -42,13 +45,15 @@
                                 data-color="{{ c.color_id }}" style="--sw:{{ c.color.color_code|default:'#ccc' }}"></button>
                         {% endfor %}
                     </div>
-                    <input type="hidden" name="color_id" id="smColorId" value="{{ colors.0.color_id }}">
+                </fieldset>
+                <input type="hidden" name="color_id" id="smColorId" value="{{ colors.0.color_id }}">
 
-                    <!-- Customer photo (one for every piece) -->
-                    {% if design.wants_image %}
-                    <label class="sm-field-label" for="smPhoto">{{ design.image_upload_label|default:"Your photo" }}
+                <!-- Customer photo (one for every piece) -->
+                {% if design.wants_image %}
+                <div class="sm-upload">
+                    <label for="smPhoto">{{ design.image_upload_label|default:"Your photo" }}
                         {% if design.image_upload_help %}<span>({{ design.image_upload_help }})</span>{% endif %}</label>
-                    <div class="sm-upload">
+                    <div class="sm-upload-row">
                         <img id="smPhotoPreview" class="sm-upload-preview" alt="">
                         <input type="file" id="smPhoto" name="personal_image" accept="image/jpeg,image/png,image/webp,image/gif">
                     </div>
@@ -58,67 +63,65 @@
                         <span>Your photo is printed in the marked area.</span>
                     </div>
                     {% endif %}
-                    {% endif %}
-
-                    <!-- Sizes (+ text per piece when personalizable) -->
-                    <div class="sm-perso{% if text_fields %} has-texts{% endif %}"{% if text_fields %} style="--text-cols: repeat({{ text_fields|length }}, minmax(0, 1fr))"{% endif %}>
-                        <h2>{% if text_fields %}{{ shop.personalize_heading }}{% else %}{{ shop.sizes_heading }}{% endif %}</h2>
-                        {% if text_fields %}
-                        <p class="sm-perso-help">
-                            {% for t in text_fields %}<b>{{ t.label }}:</b> {{ t.help_text|default:"" }}{% if t.required %}{% if 'required' not in t.help_text|lower %} (required){% endif %}{% elif 'optional' not in t.help_text|lower %} (optional){% endif %}{% if not forloop.last %} &middot; {% endif %}{% endfor %}.
-                            Add a row for each different name or size.
-                        </p>
-                        {% else %}
-                        <p class="sm-perso-help">Add a row for each size.</p>
-                        {% endif %}
-                        <div class="sm-row-head" aria-hidden="true">
-                            <span>#</span><span>Size</span>
-                            {% for t in text_fields %}<span>{{ t.label }}</span>{% endfor %}
-                            <span>Qty</span><span></span>
-                        </div>
-                        <div id="smRows"></div>
-                        <button type="button" class="sm-add-row" id="smAddRow">+ Add another</button>
-                    </div>
-
-                    <div class="sm-buy">
-                        <div class="sm-buy-total">
-                            <small id="smPieces">1 piece</small>
-                            <strong id="smTotal">{{ currency }}{{ design.price }}</strong>
-                        </div>
-                        <button type="submit" class="sm-btn sm-btn-primary" id="smAddBtn">Add to cart</button>
-                    </div>
-                    <p class="sm-form-msg" id="smMsg" role="status" aria-live="polite"></p>
-                </form>
-
-                {% if features %}
-                <div class="sm-pdp-trust">
-                    {% for f in features %}
-                    <div class="sm-trust-item">
-                        <i class="fa-solid {{ f.icon }}" aria-hidden="true"></i>
-                        <div><strong>{{ f.title }}</strong>{% if f.subtitle %}<span>{{ f.subtitle }}</span>{% endif %}</div>
-                    </div>
-                    {% endfor %}
                 </div>
                 {% endif %}
 
-                {% if design.personalization_gif %}
-                <div class="sm-gif"><img src="{{ design.personalization_gif.url }}" alt="How the personalization looks" loading="lazy"></div>
-                {% endif %}
-
-                <details class="sm-details">
-                    <summary>{{ shop.details_heading }}</summary>
-                    <div class="sm-details-body">
-                        {% if design.description %}{{ design.description|safe }}{% endif %}
-                        {% if design.base_product.fabric_composition %}<p><b>Fabric:</b> {{ design.base_product.fabric_composition }}</p>{% endif %}
-                        {% if design.base_product.fabric_weight %}<p><b>Weight:</b> {{ design.base_product.fabric_weight }}</p>{% endif %}
-                        {% if design.base_product.fit %}<p><b>Fit:</b> {{ design.base_product.fit }}</p>{% endif %}
-                        {% if design.base_product.size_chart_img %}<img src="{{ design.base_product.size_chart_img.url }}" alt="Size chart" loading="lazy">{% endif %}
+                <!-- Sizes (+ text per piece when personalizable) -->
+                <section class="sm-perso{% if text_fields %} has-texts{% endif %}"{% if text_fields %} style="--text-cols: repeat({{ text_fields|length }}, minmax(0, 1fr))"{% endif %} aria-label="{% if text_fields %}Personalize and choose sizes{% else %}Choose sizes{% endif %}">
+                    <div class="sm-perso-head">
+                        <h2>{% if text_fields %}{{ shop.personalize_heading }}{% else %}{{ shop.sizes_heading }}{% endif %}</h2>
+                        <p class="sm-perso-help">
+                            {% for t in text_fields %}<strong>{{ t.label }}:</strong> {{ t.help_text|default:"" }}{% if t.help_text %}.{% endif %} {% endfor %}{% if text_fields %}Add a row for each different name or size.{% else %}Add a row for each size.{% endif %}
+                        </p>
                     </div>
-                </details>
-            </div>
-        </div>
+                    <div class="sm-row-head" aria-hidden="true">
+                        <span>#</span><span>Size</span>
+                        {% for t in text_fields %}<span>{{ t.label }}</span>{% endfor %}
+                        <span>Qty</span><span></span>
+                    </div>
+                    <div id="smRows"></div>
+                    <button type="button" class="sm-add-row" id="smAddRow">+ Add another</button>
+                </section>
+
+                <div class="sm-buy">
+                    <div class="sm-buy-total">
+                        <small id="smPieces">1 piece</small>
+                        <strong id="smTotal">{{ currency }}{{ design.price }}</strong>
+                    </div>
+                    <button type="submit" class="sm-btn sm-btn-primary" id="smAddBtn">Add to cart</button>
+                </div>
+                <p class="sm-form-msg" id="smMsg" role="status" aria-live="polite"></p>
+            </form>
+
+            {% if features %}
+            <ul class="sm-pdp-trust" aria-label="Good to know">
+                {% for f in features %}
+                <li class="sm-trust-item">
+                    {% include 'shop/partials/icon.html' with name=f.icon %}
+                    <span><strong>{{ f.title }}</strong>{% if f.subtitle %}<span>{{ f.subtitle }}</span>{% endif %}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% if design.personalization_gif %}
+            <div class="sm-gif"><img src="{{ design.personalization_gif.url }}" alt="How the personalization looks" loading="lazy"></div>
+            {% endif %}
+
+            <details class="sm-details">
+                <summary>{{ shop.details_heading }}</summary>
+                <div class="sm-details-body">
+                    {% if design.description %}{{ design.description|safe }}{% endif %}
+                    {% if design.base_product.fabric_composition %}<p><b>Fabric:</b> {{ design.base_product.fabric_composition }}</p>{% endif %}
+                    {% if design.base_product.fabric_weight %}<p><b>Weight:</b> {{ design.base_product.fabric_weight }}</p>{% endif %}
+                    {% if design.base_product.fit %}<p><b>Fit:</b> {{ design.base_product.fit }}</p>{% endif %}
+                    {% if design.base_product.size_chart_img %}<img src="{{ design.base_product.size_chart_img.url }}" alt="Size chart" loading="lazy">{% endif %}
+                </div>
+            </details>
+        </section>
     </div>
 </main>
+</div>
 
 {{ page_data|json_script:"smDesignData" }}
 <script>
@@ -197,7 +200,10 @@
         if (rowsBox.children.length >= MAX_ROWS) return;
         var row = el('div', { 'class': 'sm-row' });
         row.appendChild(el('span', { 'class': 'sm-row-num' }));
-        row.appendChild(sizeSelect(current.sizes.length === 1 ? current.sizes[0] : ''));
+        // a new row starts with the previous row's size (as in the client's design)
+        var last = rowsBox.lastElementChild;
+        var startSize = last ? last.querySelector('.sm-size').value : (current.sizes.length === 1 ? current.sizes[0] : '');
+        row.appendChild(sizeSelect(startSize));
         data.textFields.forEach(function (t) {
             var cell = el('div', { 'class': 'sm-cell-text' });
             cell.appendChild(el('input', {
@@ -265,23 +271,29 @@
     // ---- Submit ----
     form.addEventListener('submit', function (e) {
         e.preventDefault();
-        var rows = [], firstBad = null;
+        var rows = [], firstBad = null, firstMsg = '';
         rowsBox.querySelectorAll('.is-invalid').forEach(function (n) { n.classList.remove('is-invalid'); });
-        rowsBox.querySelectorAll('.sm-row').forEach(function (row) {
+        rowsBox.querySelectorAll('.sm-row').forEach(function (row, i) {
             var size = row.querySelector('.sm-size');
             var qty = parseInt(row.querySelector('.sm-qty').value, 10) || 0;
             var texts = {};
-            if (!size.value) { size.classList.add('is-invalid'); firstBad = firstBad || size; }
+            if (!size.value) {
+                size.classList.add('is-invalid');
+                if (!firstBad) { firstBad = size; firstMsg = 'Row ' + (i + 1) + ' needs a size.'; }
+            }
             row.querySelectorAll('.sm-text').forEach(function (input) {
                 var field = data.textFields.filter(function (t) { return String(t.id) === input.dataset.field; })[0];
                 var value = input.value.trim();
-                if (field && field.required && !value) { input.classList.add('is-invalid'); firstBad = firstBad || input; }
+                if (field && field.required && !value) {
+                    input.classList.add('is-invalid');
+                    if (!firstBad) { firstBad = input; firstMsg = 'Row ' + (i + 1) + ' needs ' + field.label + '.'; }
+                }
                 texts[input.dataset.field] = value;
             });
             rows.push({ size: size.value, qty: qty, texts: texts });
         });
         if (firstBad) {
-            showMsg('Please fill in the highlighted fields.', false);
+            showMsg(firstMsg, false);
             firstBad.focus();
             return;
         }

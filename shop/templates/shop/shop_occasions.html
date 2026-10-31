@@ -4,31 +4,35 @@
 {% if shop.occasions_meta_description %}<meta name="description" content="{{ shop.occasions_meta_description }}">{% endif %}
 {% endblock head %}
 {% block body %}
-<main class="sm-shop">
-    <div class="sm-container">
-        <nav class="sm-breadcrumb" aria-label="Breadcrumb"><a href="/shop/">Shop designs</a> &rsaquo; All occasions</nav>
-        <header class="sm-page-head">
-            <h1 class="sm-serif">{{ shop.occasions_page_title }}</h1>
-            {% if shop.occasions_page_intro %}<p>{{ shop.occasions_page_intro }}</p>{% endif %}
-        </header>
+<div class="sm-shop">
+<main class="sm-main sm-occasions">
+    <nav class="sm-breadcrumb" aria-label="Breadcrumb"><a href="/shop/">Shop designs</a> &rsaquo; <span>All occasions</span></nav>
 
+    <div class="sm-page-head" style="max-width:720px">
+        <h1 class="sm-serif">{{ shop.occasions_page_title }}</h1>
+        {% if shop.occasions_page_intro %}<p>{{ shop.occasions_page_intro }}</p>{% endif %}
+    </div>
+
+    <section class="sm-section" style="gap:16px">
+        <h2 class="sm-label">All occasions</h2>
         {% if occasions %}
         <div class="sm-occasion-tiles">
             {% for occasion in occasions %}
-            <a href="/shop/{{ occasion.slug }}/" class="sm-occasion-tile" style="--card:{{ occasion.card_color }}">
-                <div class="sm-tile-media">
+            <a href="/shop/{{ occasion.slug }}/" class="sm-occasion-tile">
+                <span class="sm-tile-media" style="--card:{{ occasion.card_color }}">
                     {% if occasion.image %}<img src="{{ occasion.image.url }}" alt="" loading="lazy">{% endif %}
-                </div>
-                <div class="sm-tile-row">
+                </span>
+                <span class="sm-tile-row">
                     <strong>{{ occasion.name }}</strong>
                     <span>{{ occasion.design_count }} design{{ occasion.design_count|pluralize }}</span>
-                </div>
+                </span>
             </a>
             {% endfor %}
         </div>
         {% else %}
         <div class="sm-empty">Occasions are coming soon.</div>
         {% endif %}
-    </div>
+    </section>
 </main>
+</div>
 {% endblock body %}

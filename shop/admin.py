@@ -869,7 +869,7 @@ class OccasionAdmin(admin.ModelAdmin):
                        ('show_in_menu', 'show_on_shop_page', 'order', 'live')),
         }),
         ("Occasion page", {
-            "fields": ('page_title', 'page_description', 'seo_heading', 'seo_content'),
+            "fields": ('page_title', 'page_description', 'strip_title', 'seo_heading', 'seo_content'),
         }),
         ("SEO", {
             "fields": ('meta_title', 'meta_description'),

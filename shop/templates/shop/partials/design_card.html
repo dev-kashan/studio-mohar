@@ -4,6 +4,6 @@
         <img class="sm-main" src="{{ design.card_main }}" alt="{{ design.name }}" loading="lazy">
         {% if design.card_alt %}<img class="sm-alt" src="{{ design.card_alt }}" alt="" loading="lazy" aria-hidden="true">{% endif %}
     </div>
-    <p class="sm-design-name">{{ design.name }}</p>
-    <p class="sm-design-meta">{{ currency }}{{ design.price }}{% if design.color_count > 1 %} &middot; {{ design.color_count }} colours{% endif %}</p>
+    <span class="sm-design-name">{{ design.name }}</span>
+    <span class="sm-design-meta">{{ currency }}{{ design.price }}{% if not hide_colours and design.color_count > 1 %} &middot; {{ design.color_count }} colours{% endif %}</span>
 </a>
