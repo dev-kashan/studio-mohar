@@ -1,0 +1,5 @@
+<a href="/shop/{{ occasion.slug }}/" class="sm-occasion-card{% if occasion.image %} has-photo{% elif occasion.text_tone == 'light' %} is-light{% endif %}" style="--card:{{ occasion.card_color }}">
+    {% if occasion.image %}<img src="{{ occasion.image.url }}" alt="" loading="lazy">{% endif %}
+    <h3 class="sm-serif">{{ occasion.name }}</h3>
+    {% if occasion.subtitle %}<p>{{ occasion.subtitle }}</p>{% endif %}
+</a>

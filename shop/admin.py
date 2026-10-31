@@ -968,10 +968,61 @@ class ShopDesignAdmin(admin.ModelAdmin):
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
         design = form.instance
+        if design.wants_image and not design.image_position_preview:
+            messages.info(request, f'Tip: add a "position preview" image to "{design}" so customers see where their photo goes.')
         if design.wants_text and not design.text_fields.exists():
             messages.warning(request, f'"{design}" allows text but has no text fields yet - add them at the bottom of the page.')
         if design.live and not design.colors.exists():
             messages.warning(request, f'"{design}" is live but has no colours/hero images, so it will not show on the shop.')
+
+
+class ShopFeatureInline(admin.TabularInline):
+    model = ShopFeature
+    extra = 1
+    fields = ('icon', 'title', 'subtitle', 'order')
+    verbose_name_plural = "Trust strip (shop page + design pages)"
+
+
+@admin.register(ShopSettings)
+class ShopSettingsAdmin(admin.ModelAdmin):
+    inlines = [ShopFeatureInline]
+    fieldsets = [
+        ('Header - "Shop designs" menu banner', {
+            "fields": (('menu_promo_eyebrow', 'menu_promo_button'), 'menu_promo_title',
+                       ('menu_promo_url', 'menu_promo_color'), 'menu_promo_image'),
+        }),
+        ('Header - "Custom merch" menu boxes', {
+            "fields": (('design_box_title', 'design_box_cta'), 'design_box_text', ('design_box_url', 'design_box_color'),
+                       ('idea_box_title', 'idea_box_cta'), 'idea_box_text', ('idea_box_url', 'idea_box_color')),
+        }),
+        ('Shop page (/shop/)', {
+            "fields": (('hero_eyebrow', 'hero_button_text'), 'hero_title', ('hero_button_url', 'hero_color'), 'hero_image',
+                       ('occasions_heading', 'best_sellers_heading', 'new_heading', 'designs_per_row'),
+                       ('group_card_eyebrow', 'group_card_title'), 'group_card_text',
+                       ('group_card_button1', 'group_card_button1_url'), ('group_card_button2', 'group_card_button2_url'),
+                       ('idea_card_eyebrow', 'idea_card_title'), 'idea_card_text',
+                       'shop_meta_title', 'shop_meta_description'),
+        }),
+        ('All occasions page (/shop/occasions/)', {
+            "fields": ('occasions_page_title', 'occasions_page_intro', 'occasions_meta_title', 'occasions_meta_description'),
+        }),
+        ('All designs page (/shop/designs/)', {
+            "fields": ('designs_page_title', 'designs_page_intro', 'designs_meta_title', 'designs_meta_description'),
+        }),
+        ('Group quote strip (occasion pages)', {
+            "fields": ('strip_title', 'strip_text', ('strip_link_text', 'strip_url')),
+        }),
+        ('Design page', {
+            "fields": ('personalize_heading', 'sizes_heading', 'details_heading'),
+        }),
+    ]
+
+    def has_add_permission(self, request):
+        # Only one settings record
+        return not ShopSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 

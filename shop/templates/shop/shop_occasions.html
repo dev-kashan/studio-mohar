@@ -1,0 +1,34 @@
+{% extends 'shop/base.html' %}
+{% block head %}
+<title>{{ shop.occasions_meta_title|default:"Shop by occasion | Studio Mohar" }}</title>
+{% if shop.occasions_meta_description %}<meta name="description" content="{{ shop.occasions_meta_description }}">{% endif %}
+{% endblock head %}
+{% block body %}
+<main class="sm-shop">
+    <div class="sm-container">
+        <nav class="sm-breadcrumb" aria-label="Breadcrumb"><a href="/shop/">Shop designs</a> &rsaquo; All occasions</nav>
+        <header class="sm-page-head">
+            <h1 class="sm-serif">{{ shop.occasions_page_title }}</h1>
+            {% if shop.occasions_page_intro %}<p>{{ shop.occasions_page_intro }}</p>{% endif %}
+        </header>
+
+        {% if occasions %}
+        <div class="sm-occasion-tiles">
+            {% for occasion in occasions %}
+            <a href="/shop/{{ occasion.slug }}/" class="sm-occasion-tile" style="--card:{{ occasion.card_color }}">
+                <div class="sm-tile-media">
+                    {% if occasion.image %}<img src="{{ occasion.image.url }}" alt="" loading="lazy">{% endif %}
+                </div>
+                <div class="sm-tile-row">
+                    <strong>{{ occasion.name }}</strong>
+                    <span>{{ occasion.design_count }} design{{ occasion.design_count|pluralize }}</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="sm-empty">Occasions are coming soon.</div>
+        {% endif %}
+    </div>
+</main>
+{% endblock body %}

@@ -264,6 +264,13 @@ def product_detail(request, id):
 
     
     product = get_object_or_404(Product, product_id=id)
+
+    # Old Shop (specials) products now live as ShopDesigns -> permanent redirect
+    if not product.customize_mockup_template:
+        shop_design = ShopDesign.objects.filter(base_product=product, live=True, colors__isnull=False).first()
+        if shop_design:
+            return redirect('shop_design_detail', slug=shop_design.slug, permanent=True)
+
     competitors = CompetitorProduct.objects.filter(main_product=product)
 
     # get distinct color options for this product
@@ -2348,3 +2355,191 @@ def get_sizes_for_color(request, product_id):
 #     html = render_to_string("shop/partials/products_grid.html", {"products": qs}, request=request)
 #     return JsonResponse({"html": html, "count": qs.count()})
 
+
+
+# =====================================================================
+# SHOP PAGES (2026 redesign): /shop/, /shop/occasions/, /shop/designs/,
+# /shop/<occasion>/ and /shop/design/<slug>/
+# Products here are ShopDesign records (see models.py), not Product.
+# =====================================================================
+
+SHOP_SORTS = (
+    ('best', 'Best selling'),
+    ('new', 'Newest'),
+    ('price_asc', 'Price: low to high'),
+    ('price_desc', 'Price: high to low'),
+)
+
+
+def _shop_designs():
+    """Live designs that have at least one colour/hero image."""
+    return (
+        ShopDesign.objects.filter(live=True, colors__isnull=False)
+        .distinct()
+        .select_related('base_product')
+        .prefetch_related('colors__color', 'gallery', 'text_fields', 'occasions')
+    )
+
+
+def _with_card_data(designs):
+    """Attach the main/hover images and colour count used by the design cards."""
+    designs = list(designs)
+    for d in designs:
+        colors = list(d.colors.all())
+        main = colors[0] if colors else None
+        d.card_main = main.hero_image.url if main else ''
+        alt = ''
+        if main and main.back_image:
+            alt = main.back_image.url
+        elif len(colors) > 1:
+            alt = colors[1].hero_image.url
+        else:
+            gallery = list(d.gallery.all())
+            if gallery:
+                alt = gallery[0].image.url
+        d.card_alt = alt
+        d.color_count = len(colors)
+    return designs
+
+
+def _sort_designs(qs, sort):
+    if sort == 'new':
+        return qs.order_by('-created')
+    if sort == 'price_asc':
+        return qs.order_by('price', 'order')
+    if sort == 'price_desc':
+        return qs.order_by('-price', 'order')
+    return qs.order_by('-is_best_seller', 'order', '-created')
+
+
+def shop_home(request):
+    shop = ShopSettings.load()
+    per_row = shop.designs_per_row or 4
+    designs = _shop_designs()
+    context = {
+        'shop': shop,
+        'features': shop.features.all() if shop.pk else [],
+        'occasions': Occasion.objects.filter(live=True, show_on_shop_page=True),
+        'best_sellers': _with_card_data(designs.filter(is_best_seller=True).order_by('order', '-created')[:per_row]),
+        'new_designs': _with_card_data(designs.order_by('-created')[:per_row]),
+    }
+    return render(request, 'shop/shop_home.html', context)
+
+
+def shop_occasions(request):
+    occasions = Occasion.objects.filter(live=True).annotate(
+        design_count=Count('designs', filter=Q(designs__live=True), distinct=True)
+    )
+    return render(request, 'shop/shop_occasions.html', {'shop': ShopSettings.load(), 'occasions': occasions})
+
+
+def _shop_listing(request, occasion=None):
+    """Shared listing for an occasion page and the all-designs page (GET filters)."""
+    base = _shop_designs()
+    if occasion:
+        base = base.filter(occasions=occasion)
+
+    q = request.GET.get('q', '').strip()[:100]
+    personalizable = request.GET.get('personalizable') == '1'
+    best = request.GET.get('best') == '1'
+    color = request.GET.get('color', '')
+    size = request.GET.get('size', '').strip()[:50]
+    sort = request.GET.get('sort', 'best')
+    if sort not in dict(SHOP_SORTS):
+        sort = 'best'
+
+    # Filter options come from everything on this page (before filtering)
+    color_options = (
+        Color.objects.filter(shopdesigncolor__design__in=base).distinct().order_by('color_name')
+    )
+    size_options = list(
+        ProductAttribute.objects.filter(product__shop_designs__in=base, size__isnull=False)
+        .values_list('size__Size_name', flat=True).distinct().order_by('size__id')
+    )
+    size_options = list(dict.fromkeys(size_options))  # keep order, drop repeats
+
+    designs = base
+    if q:
+        designs = designs.filter(Q(name__icontains=q) | Q(short_description__icontains=q) | Q(occasions__name__icontains=q))
+    if personalizable:
+        designs = designs.filter(is_personalizable=True)
+    if best:
+        designs = designs.filter(is_best_seller=True)
+    if color.isdigit():
+        designs = designs.filter(colors__color_id=int(color))
+    if size:
+        designs = designs.filter(base_product__productattribute__size__Size_name=size)
+    designs = _with_card_data(_sort_designs(designs.distinct(), sort))
+
+    return {
+        'shop': ShopSettings.load(),
+        'occasion': occasion,
+        'designs': designs,
+        'color_options': color_options,
+        'size_options': size_options,
+        'sorts': SHOP_SORTS,
+        'f': {'q': q, 'personalizable': personalizable, 'best': best, 'color': color, 'size': size, 'sort': sort},
+        'filtered': bool(q or personalizable or best or color or size),
+    }
+
+
+def shop_designs(request):
+    return render(request, 'shop/shop_listing.html', _shop_listing(request))
+
+
+def shop_occasion(request, slug):
+    occasion = get_object_or_404(Occasion, slug=slug, live=True)
+    context = _shop_listing(request, occasion)
+    context['faqs'] = occasion.faqs.all()
+    context['more_occasions'] = Occasion.objects.filter(live=True).exclude(id=occasion.id)[:4]
+    return render(request, 'shop/shop_listing.html', context)
+
+
+@ensure_csrf_cookie  # the page posts to /add-to-cart-shop-design/ with fetch
+def shop_design_detail(request, slug):
+    design = get_object_or_404(_shop_designs(), slug=slug)
+    colors = list(design.colors.all())
+
+    # Sizes per colour, from the base product's variations
+    sizes_by_color = {}
+    for a in ProductAttribute.objects.filter(product=design.base_product, size__isnull=False).select_related('size').order_by('size__id'):
+        sizes = sizes_by_color.setdefault(a.color_id, [])
+        if a.size.Size_name not in sizes:
+            sizes.append(a.size.Size_name)
+
+    gallery = list(design.gallery.all())
+    text_fields = list(design.text_fields.all()) if design.wants_text else []
+
+    # Breadcrumb: the occasion the visitor came from, else the first one
+    occasions = list(design.occasions.filter(live=True))
+    crumb = next((o for o in occasions if o.slug == request.GET.get('from')), occasions[0] if occasions else None)
+
+    page_data = {
+        'designId': design.id,
+        'price': float(design.price),
+        'wantsImage': design.wants_image,
+        'colors': [{
+            'id': c.color_id,
+            'name': c.color.color_name,
+            'code': c.color.color_code,
+            'hero': c.hero_image.url,
+            'back': c.back_image.url if c.back_image else '',
+            'sizes': sizes_by_color.get(c.color_id, []),
+        } for c in colors],
+        'gallery': [g.image.url for g in gallery],
+        'textFields': [{'id': t.id, 'label': t.label, 'placeholder': t.placeholder,
+                        'max': t.max_length, 'required': t.required} for t in text_fields],
+    }
+
+    shop = ShopSettings.load()
+    context = {
+        'shop': shop,
+        'design': design,
+        'colors': colors,
+        'gallery': gallery,
+        'text_fields': text_fields,
+        'crumb': crumb,
+        'features': shop.features.all() if shop.pk else [],
+        'page_data': page_data,
+    }
+    return render(request, 'shop/shop_design.html', context)

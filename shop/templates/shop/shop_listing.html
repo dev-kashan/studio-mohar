@@ -1,0 +1,126 @@
+{% extends 'shop/base.html' %}
+{% block head %}
+{% if occasion %}
+<title>{{ occasion.meta_title|default:occasion.name }}{% if not occasion.meta_title %} | Studio Mohar{% endif %}</title>
+{% if occasion.meta_description %}<meta name="description" content="{{ occasion.meta_description }}">{% endif %}
+{% else %}
+<title>{{ shop.designs_meta_title|default:"All designs | Studio Mohar" }}</title>
+{% if shop.designs_meta_description %}<meta name="description" content="{{ shop.designs_meta_description }}">{% endif %}
+{% endif %}
+{% if filtered %}<meta name="robots" content="noindex, follow">{% endif %}
+{% endblock head %}
+{% block body %}
+<main class="sm-shop">
+    <div class="sm-container">
+        <nav class="sm-breadcrumb" aria-label="Breadcrumb">
+            <a href="/shop/">Shop designs</a> &rsaquo;
+            {% if occasion %}<a href="/shop/occasions/">Occasions</a> &rsaquo; {{ occasion.name }}{% else %}All designs{% endif %}
+        </nav>
+
+        <header class="sm-page-head">
+            {% if occasion %}
+            <h1 class="sm-serif">{{ occasion.page_title|default:occasion.name }}</h1>
+            {% if occasion.page_description %}<p>{{ occasion.page_description }}</p>{% endif %}
+            {% else %}
+            <h1 class="sm-serif">{% if f.q %}Results for &ldquo;{{ f.q }}&rdquo;{% else %}{{ shop.designs_page_title }}{% endif %}</h1>
+            {% if shop.designs_page_intro and not f.q %}<p>{{ shop.designs_page_intro }}</p>{% endif %}
+            {% endif %}
+        </header>
+
+        <!-- Filters: plain GET form, so it works without JavaScript; JS just submits on change -->
+        <form class="sm-filters" method="get" id="smFilters">
+            {% if f.q %}<input type="hidden" name="q" value="{{ f.q }}">{% endif %}
+            {% if f.best %}<input type="hidden" name="best" value="1">{% endif %}
+            <label class="sm-check">
+                <input type="checkbox" name="personalizable" value="1" {% if f.personalizable %}checked{% endif %}> Personalizable
+            </label>
+            {% if color_options %}
+            <select name="color" aria-label="Colour">
+                <option value="">Colour: any</option>
+                {% for c in color_options %}
+                <option value="{{ c.id }}" {% if f.color == c.id|stringformat:'s' %}selected{% endif %}>{{ c.color_name }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+            {% if size_options %}
+            <select name="size" aria-label="Size">
+                <option value="">Size: any</option>
+                {% for s in size_options %}
+                <option value="{{ s }}" {% if f.size == s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+            {% if filtered %}<a href="?" class="sm-clear">Clear filters</a>{% endif %}
+            <div class="sm-filter-right">
+                <span>{{ designs|length }} design{{ designs|length|pluralize }}</span>
+                <label for="smSort" class="m-0">Sort</label>
+                <select name="sort" id="smSort">
+                    {% for value, label in sorts %}
+                    <option value="{{ value }}" {% if f.sort == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <noscript><button type="submit" class="sm-btn sm-btn-primary">Apply</button></noscript>
+            </div>
+        </form>
+
+        {% if designs %}
+        <div class="sm-design-grid">
+            {% for design in designs %}
+            {% include 'shop/partials/design_card.html' %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="sm-empty">
+            No designs match these filters yet.
+            {% if filtered %}<a href="?">Clear filters</a>{% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Group quote strip -->
+        <div class="sm-strip">
+            <div>
+                <strong>{{ shop.strip_title }}</strong>
+                {% if shop.strip_text %}<span>{{ shop.strip_text }}</span>{% endif %}
+            </div>
+            <a href="{{ shop.strip_url }}">{{ shop.strip_link_text }} &rarr;</a>
+        </div>
+
+        {% if occasion %}
+        {% if occasion.seo_content or faqs %}
+        <section class="sm-seo">
+            <div>
+                {% if occasion.seo_heading %}<h2 class="sm-serif">{{ occasion.seo_heading }}</h2>{% endif %}
+                <div class="sm-seo-text">{{ occasion.seo_content|safe }}</div>
+            </div>
+            {% if faqs %}
+            <div class="sm-faq">
+                <h2 class="sm-serif">Questions</h2>
+                {% for faq in faqs %}
+                <details>
+                    <summary>{{ faq.question }}</summary>
+                    <p>{{ faq.answer|linebreaksbr }}</p>
+                </details>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </section>
+        {% endif %}
+
+        {% if more_occasions %}
+        <p class="sm-more-links">More occasions:
+            {% for o in more_occasions %}<a href="/shop/{{ o.slug }}/">{{ o.name }}</a>{% if not forloop.last %} &middot;{% endif %}{% endfor %}
+        </p>
+        {% endif %}
+        {% endif %}
+    </div>
+</main>
+
+<script>
+    // Shop filters: submit as soon as a filter changes
+    (function () {
+        var form = document.getElementById('smFilters');
+        if (!form) return;
+        form.addEventListener('change', function () { form.submit(); });
+    })();
+</script>
+{% endblock body %}

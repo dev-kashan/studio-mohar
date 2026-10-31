@@ -1462,8 +1462,16 @@ class Occasion(models.Model):
         ordering = ['order', 'name']
         verbose_name_plural = '26. Shop - Occasions'
 
+    # These slugs are taken by fixed /shop/... pages
+    RESERVED_SLUGS = ('occasions', 'designs', 'design')
+
     def __str__(self):
         return self.name
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.slug in self.RESERVED_SLUGS:
+            raise ValidationError({'slug': f'"{self.slug}" is reserved, please choose another URL.'})
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -1609,6 +1617,120 @@ class ShopDesignTextField(models.Model):
 
     def __str__(self):
         return self.label
+
+
+class ShopSettings(models.Model):
+    """
+    One record that holds every editable text of the new header menus and the
+    Shop pages (menu promo, custom merch boxes, shop home, CTA cards, SEO).
+    Use ShopSettings.load() - it never writes to the database.
+    """
+    # ---- Header: "Shop designs" menu promo banner ----
+    menu_promo_eyebrow = models.CharField(max_length=100, default='The holiday drop', blank=True)
+    menu_promo_title = models.CharField(max_length=200, default='Matching family tees, a name on every one', blank=True)
+    menu_promo_button = models.CharField(max_length=60, default='Shop the drop', blank=True)
+    menu_promo_url = models.CharField(max_length=500, default='/shop/', blank=True)
+    menu_promo_image = models.ImageField(upload_to='shop/settings', max_length=1000, blank=True, null=True)
+    menu_promo_color = ColorField(default='#A63A35')
+
+    # ---- Header: "Custom merch" menu boxes ----
+    design_box_title = models.CharField(max_length=100, default='Design it yourself')
+    design_box_text = models.TextField(default='Open the Design Lab. Pick a product and colour, add your text, logo or art, choose print or embroidery, and see your price as you go.', blank=True)
+    design_box_cta = models.CharField(max_length=60, default='Open the Design Lab')
+    design_box_url = models.CharField(max_length=500, default='', blank=True, help_text="Leave empty to open the Design Lab with the first product")
+    design_box_color = ColorField(default='#F1F2EC')
+
+    idea_box_title = models.CharField(max_length=100, default='Send us your idea')
+    idea_box_text = models.TextField(default='Share a sketch, screenshot or a design you love. We recreate it as your own and send you a free mockup.', blank=True)
+    idea_box_cta = models.CharField(max_length=60, default='Send your idea')
+    idea_box_url = models.CharField(max_length=500, default='/contact_sales/')
+    idea_box_color = ColorField(default='#FFFFFF')
+
+    # ---- Shop home (/shop/) ----
+    shop_meta_title = models.CharField(max_length=255, default='Shop designs | Studio Mohar', blank=True)
+    shop_meta_description = models.TextField(max_length=1000, default='', blank=True)
+    hero_eyebrow = models.CharField(max_length=100, default='The holiday drop', blank=True)
+    hero_title = models.CharField(max_length=200, default='Matching family tees, with your name on them')
+    hero_button_text = models.CharField(max_length=60, default='Shop Christmas designs', blank=True)
+    hero_button_url = models.CharField(max_length=500, default='/shop/designs/', blank=True)
+    hero_image = models.ImageField(upload_to='shop/settings', max_length=1000, blank=True, null=True)
+    hero_color = ColorField(default='#A63A35')
+
+    occasions_heading = models.CharField(max_length=100, default='Shop by occasion')
+    best_sellers_heading = models.CharField(max_length=100, default='Best sellers')
+    new_heading = models.CharField(max_length=100, default='New this week')
+    designs_per_row = models.PositiveIntegerField(default=4, help_text="How many designs show in Best sellers / New this week")
+
+    group_card_eyebrow = models.CharField(max_length=100, default='For clubs, teams and events', blank=True)
+    group_card_title = models.CharField(max_length=200, default='Ordering 20+ or have your own design?')
+    group_card_text = models.TextField(default='Use any design here or bring your own. Free mockup, group pricing, and 15% off 50+ pieces with Wait & Save.', blank=True)
+    group_card_button1 = models.CharField(max_length=60, default='Get a group quote', blank=True)
+    group_card_button1_url = models.CharField(max_length=500, default='/contact_sales/', blank=True)
+    group_card_button2 = models.CharField(max_length=60, default='Explore custom merch', blank=True)
+    group_card_button2_url = models.CharField(max_length=500, default='/all_products/', blank=True)
+
+    idea_card_eyebrow = models.CharField(max_length=100, default="Don't see the one?", blank=True)
+    idea_card_title = models.CharField(max_length=200, default="Send us your idea, we'll make it yours")
+    idea_card_text = models.TextField(default='Share a sketch, a screenshot or a design you love. We recreate it with your names and send you a free mockup.', blank=True)
+
+    # ---- All occasions page (/shop/occasions/) ----
+    occasions_page_title = models.CharField(max_length=200, default='Shop by occasion')
+    occasions_page_intro = models.TextField(default='Designs for every celebration. Most can carry your names.', blank=True)
+    occasions_meta_title = models.CharField(max_length=255, default='Shop by occasion | Studio Mohar', blank=True)
+    occasions_meta_description = models.TextField(max_length=1000, default='', blank=True)
+
+    # ---- All designs page (/shop/designs/) ----
+    designs_page_title = models.CharField(max_length=200, default='All designs')
+    designs_page_intro = models.TextField(default='Ready-made designs, printed in-house. Many can carry your names.', blank=True)
+    designs_meta_title = models.CharField(max_length=255, default='All designs | Studio Mohar', blank=True)
+    designs_meta_description = models.TextField(max_length=1000, default='', blank=True)
+
+    # ---- Group quote strip (occasion + listing pages) ----
+    strip_title = models.CharField(max_length=200, default='Ordering for the whole group?')
+    strip_text = models.CharField(max_length=255, default='20+ shirts or your own design: get a group quote and a free mockup.', blank=True)
+    strip_link_text = models.CharField(max_length=60, default='Get a group quote')
+    strip_url = models.CharField(max_length=500, default='/contact_sales/')
+
+    # ---- Design page ----
+    personalize_heading = models.CharField(max_length=100, default='Personalize & choose sizes')
+    sizes_heading = models.CharField(max_length=100, default='Choose sizes')
+    details_heading = models.CharField(max_length=100, default='Fabric, fit & size chart')
+
+    class Meta:
+        verbose_name = 'Shop settings'
+        verbose_name_plural = '28. Shop - Page & Menu Settings'
+
+    def __str__(self):
+        return 'Shop page & menu settings'
+
+    @classmethod
+    def load(cls):
+        return cls.objects.first() or cls()
+
+
+class ShopFeature(models.Model):
+    """Trust strip items (Printed in Mississauga, Free GTA shipping, ...)."""
+    ICONS = (
+        ('fa-location-dot', 'Location pin'),
+        ('fa-clock', 'Clock'),
+        ('fa-truck', 'Truck'),
+        ('fa-circle-check', 'Check'),
+        ('fa-star', 'Star'),
+        ('fa-heart', 'Heart'),
+        ('fa-leaf', 'Leaf'),
+        ('fa-gift', 'Gift'),
+    )
+    settings = models.ForeignKey(ShopSettings, on_delete=models.CASCADE, related_name='features')
+    icon = models.CharField(max_length=40, choices=ICONS, default='fa-circle-check')
+    title = models.CharField(max_length=100)
+    subtitle = models.CharField(max_length=150, default='', blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return self.title
 
 
 def personalization_as_html(raw):

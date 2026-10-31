@@ -56,6 +56,10 @@ def category_context(request):
             'embroidery_extra': 5.0,
         }
     
+    # New header menus: "Shop designs" occasions + editable menu texts
+    context['shop_settings'] = ShopSettings.load()
+    context['shop_menu_occasions'] = Occasion.objects.filter(live=True, show_in_menu=True)
+
     # mockup = MockUp.objects.filter(Active='Yes')
     # for m in mockup
     return context

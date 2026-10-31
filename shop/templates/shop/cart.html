@@ -2862,10 +2862,13 @@ align-items: center;
           <h1 class="head">
             <strong>{{ i.product_attr.product.product_name }}</strong>
           </h1>
+          {% if i.shop_design %}<p class="cart-shop-design"><strong>Design:</strong> {{ i.shop_design.name }}</p>{% endif %}
           <p>Color - {{ i.product_attr.color }}</p>
+          {% if i.personal_image %}<p class="cart-shop-design">Your photo: <a href="{{ i.personal_image.url }}" target="_blank" rel="noopener">view</a></p>{% endif %}
           <p>Sizes:</p>
           {% for cart_item in i.cart_items.all %}
             <p>{{ cart_item.size }} ({{ cart_item.quantity }}) x C${{ cart_item.unit_price }} = C${{ cart_item.total_price }}</p>
+            {% if cart_item.personalization %}<p class="cart-shop-design cart-personalization">{{ cart_item.personalization_display }}</p>{% endif %}
           {% empty %}
             <p>No sizes added</p>
           {% endfor %}

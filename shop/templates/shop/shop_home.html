@@ -1,0 +1,102 @@
+{% extends 'shop/base.html' %}
+{% block head %}
+<title>{{ shop.shop_meta_title|default:"Shop designs | Studio Mohar" }}</title>
+{% if shop.shop_meta_description %}<meta name="description" content="{{ shop.shop_meta_description }}">{% endif %}
+{% endblock head %}
+{% block body %}
+<main class="sm-shop">
+    <div class="sm-container">
+
+        <!-- Hero banner (editable in Shop settings) -->
+        <section class="sm-hero" style="--hero:{{ shop.hero_color }}">
+            <div>
+                {% if shop.hero_eyebrow %}<p class="sm-eyebrow">{{ shop.hero_eyebrow }}</p>{% endif %}
+                <h1 class="sm-serif">{{ shop.hero_title }}</h1>
+                {% if shop.hero_button_text %}<a href="{{ shop.hero_button_url|default:'/shop/designs/' }}" class="sm-btn sm-btn-light">{{ shop.hero_button_text }}</a>{% endif %}
+            </div>
+            {% if shop.hero_image %}
+            <div class="sm-hero-media"><img src="{{ shop.hero_image.url }}" alt="" fetchpriority="high"></div>
+            {% endif %}
+        </section>
+
+        <!-- Trust strip -->
+        {% if features %}
+        <section class="sm-trust" aria-label="Why order from us">
+            {% for f in features %}
+            <div class="sm-trust-item">
+                <i class="fa-solid {{ f.icon }}" aria-hidden="true"></i>
+                <div><strong>{{ f.title }}</strong>{% if f.subtitle %}<span>{{ f.subtitle }}</span>{% endif %}</div>
+            </div>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        <!-- Shop by occasion -->
+        {% if occasions %}
+        <section class="sm-section">
+            <div class="sm-section-head">
+                <h2 class="sm-serif">{{ shop.occasions_heading }}</h2>
+                <a href="/shop/occasions/">See all occasions</a>
+            </div>
+            <div class="sm-occasion-grid">
+                {% for occasion in occasions %}
+                {% include 'shop/partials/occasion_card.html' %}
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Best sellers -->
+        {% if best_sellers %}
+        <section class="sm-section">
+            <div class="sm-section-head">
+                <h2 class="sm-serif">{{ shop.best_sellers_heading }}</h2>
+                <a href="/shop/designs/?best=1">See all designs</a>
+            </div>
+            <div class="sm-design-grid">
+                {% for design in best_sellers %}
+                {% include 'shop/partials/design_card.html' %}
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- New this week -->
+        {% if new_designs %}
+        <section class="sm-section">
+            <div class="sm-section-head">
+                <h2 class="sm-serif">{{ shop.new_heading }}</h2>
+                <a href="/shop/designs/?sort=new">See what's new</a>
+            </div>
+            <div class="sm-design-grid">
+                {% for design in new_designs %}
+                {% include 'shop/partials/design_card.html' %}
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        {% if not best_sellers and not new_designs %}
+        <section class="sm-section"><div class="sm-empty">New designs are on the way. Check back soon.</div></section>
+        {% endif %}
+
+        <!-- CTA cards -->
+        <section class="sm-section sm-cta-pair">
+            <div class="sm-cta-card sm-cta-dark">
+                {% if shop.group_card_eyebrow %}<p class="sm-eyebrow">{{ shop.group_card_eyebrow }}</p>{% endif %}
+                <h2 class="sm-serif">{{ shop.group_card_title }}</h2>
+                <p>{{ shop.group_card_text }}</p>
+                {% if shop.group_card_button1 %}<a href="{{ shop.group_card_button1_url }}" class="sm-btn sm-btn-light">{{ shop.group_card_button1 }}</a>{% endif %}
+                {% if shop.group_card_button2 %}<a href="{{ shop.group_card_button2_url }}" class="sm-btn sm-btn-outline">{{ shop.group_card_button2 }}</a>{% endif %}
+            </div>
+            <div class="sm-cta-card sm-cta-soft">
+                {% if shop.idea_card_eyebrow %}<p class="sm-eyebrow">{{ shop.idea_card_eyebrow }}</p>{% endif %}
+                <h2 class="sm-serif">{{ shop.idea_card_title }}</h2>
+                <p>{{ shop.idea_card_text }}</p>
+                <a href="{{ shop.idea_box_url }}" class="sm-btn sm-btn-primary">{{ shop.idea_box_cta }}</a>
+                <a href="{% if shop.design_box_url %}{{ shop.design_box_url }}{% else %}/customize-editor/{{ first_mockup_product.customize_mockup_template.id }}/{{ first_mockup_product.customize_mockup_template.MockUp_Name }}/{{ first_mockup_product.product_id }}/?attr_id={{ first_mockup_product.productattribute_set.first.id }}&color_id={{ first_mockup_product.productattribute_set.first.color.id }}&color_code={{ first_mockup_product.productattribute_set.first.color.color_code|urlencode }}{% endif %}" class="sm-btn sm-btn-outline-dark">{{ shop.design_box_title }}</a>
+            </div>
+        </section>
+    </div>
+</main>
+{% endblock body %}

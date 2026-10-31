@@ -21,6 +21,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/shop/css/new_syle.css">
+    <!-- Serif headings for the new header / Shop pages -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -893,259 +897,228 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div> -->
         </div>
 
-    <nav class="navbar-custom">
-        <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center w-100" >
-                <a href="/" class="navbar-brand-custom">
-                    <img src="/media/{{layout.logo}}" alt="">
+    <!-- ============================================================
+         HEADER (desktop) - Shop designs / Custom merch / Instant quote / Learn
+         Mega menus open on hover, focus and click (see "HEADER MENUS" script).
+         ============================================================ -->
+    <nav class="smh-nav d-none d-lg-block" aria-label="Main">
+        <div class="smh-inner">
+            <a href="/" class="smh-logo">
+                <img src="/media/{{layout.logo}}" alt="Studio Mohar">
+            </a>
+
+            <ul class="smh-menu">
+                <!-- Shop designs (ready-made designs by occasion) -->
+                <li class="smh-item smh-has-panel">
+                    <button type="button" class="smh-link" aria-expanded="false" aria-controls="smhShopPanel">
+                        Shop designs <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                    </button>
+                    <div class="smh-panel smh-panel-shop" id="smhShopPanel">
+                        <div class="smh-cols">
+                            <div>
+                                <p class="smh-eyebrow">By occasion</p>
+                                <ul class="smh-list">
+                                    {% for occasion in shop_menu_occasions %}
+                                    <li><a href="/shop/{{ occasion.slug }}/">{{ occasion.name }}</a></li>
+                                    {% endfor %}
+                                    <li><a href="/shop/occasions/" class="smh-more">See all occasions &rarr;</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="smh-eyebrow">Shop</p>
+                                <ul class="smh-list">
+                                    <li><a href="/shop/designs/?best=1">Best sellers</a></li>
+                                    <li><a href="/shop/designs/?sort=new">New this week</a></li>
+                                    <li><a href="/shop/designs/?personalizable=1">Personalized designs</a></li>
+                                    <li><a href="/shop/designs/" class="smh-more">See all designs &rarr;</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        {% if shop_settings.menu_promo_title %}
+                        <a href="{{ shop_settings.menu_promo_url|default:'/shop/' }}" class="smh-promo{% if not shop_settings.menu_promo_image %} no-image{% endif %}" style="--promo:{{ shop_settings.menu_promo_color }}">
+                            {% if shop_settings.menu_promo_image %}
+                            <span class="smh-promo-media"><img src="{{ shop_settings.menu_promo_image.url }}" alt="" loading="lazy"></span>
+                            {% endif %}
+                            <span class="smh-promo-body">
+                                {% if shop_settings.menu_promo_eyebrow %}<span class="smh-promo-eyebrow">{{ shop_settings.menu_promo_eyebrow }}</span>{% endif %}
+                                <span class="smh-promo-title">{{ shop_settings.menu_promo_title }}</span>
+                                {% if shop_settings.menu_promo_button %}<span class="smh-promo-btn">{{ shop_settings.menu_promo_button }} &rarr;</span>{% endif %}
+                            </span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </li>
+
+                <!-- Custom merch (Design Lab / send an idea / blank products) -->
+                <li class="smh-item smh-has-panel">
+                    <button type="button" class="smh-link" aria-expanded="false" aria-controls="smhMerchPanel">
+                        Custom merch <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                    </button>
+                    <div class="smh-panel smh-panel-merch" id="smhMerchPanel">
+                        <p class="smh-eyebrow">How do you want to start?</p>
+                        <div class="smh-choice-grid">
+                            <a class="smh-choice" style="--box:{{ shop_settings.design_box_color }}" href="{% if shop_settings.design_box_url %}{{ shop_settings.design_box_url }}{% else %}/customize-editor/{{ first_mockup_product.customize_mockup_template.id }}/{{ first_mockup_product.customize_mockup_template.MockUp_Name }}/{{ first_mockup_product.product_id }}/?attr_id={{ first_mockup_product.productattribute_set.first.id }}&color_id={{ first_mockup_product.productattribute_set.first.color.id }}&color_code={{ first_mockup_product.productattribute_set.first.color.color_code|urlencode }}{% endif %}">
+                                <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+                                <span class="smh-choice-title">{{ shop_settings.design_box_title }}</span>
+                                <span class="smh-choice-text">{{ shop_settings.design_box_text }}</span>
+                                <span class="smh-choice-cta">{{ shop_settings.design_box_cta }} &rarr;</span>
+                            </a>
+                            <a class="smh-choice" style="--box:{{ shop_settings.idea_box_color }}" href="{{ shop_settings.idea_box_url }}">
+                                <i class="fa-regular fa-image" aria-hidden="true"></i>
+                                <span class="smh-choice-title">{{ shop_settings.idea_box_title }}</span>
+                                <span class="smh-choice-text">{{ shop_settings.idea_box_text }}</span>
+                                <span class="smh-choice-cta">{{ shop_settings.idea_box_cta }} &rarr;</span>
+                            </a>
+                        </div>
+                        <p class="smh-eyebrow mt-3">Start with a product</p>
+                        <ul class="smh-list smh-list-2col">
+                            {% for i in Cate %}
+                            <li><a href="/products/{{i.category_id}}" class="smh-product-link"><img src="/media/{{i.cate_image}}" alt="" loading="lazy">{{i.category_name}}</a></li>
+                            {% endfor %}
+                            <li><a href="/all_products/" class="smh-more">See all products &rarr;</a></li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="smh-item"><a href="#" class="smh-link quote-trigger-btn" onclick="openQuotePopup()">Instant quote</a></li>
+
+                <!-- Learn (services, get apparel for, support, about) -->
+                <li class="smh-item smh-has-panel">
+                    <button type="button" class="smh-link" aria-expanded="false" aria-controls="smhLearnPanel">
+                        Learn <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                    </button>
+                    <div class="smh-panel smh-panel-learn" id="smhLearnPanel">
+                        <div class="smh-cols">
+                            <div>
+                                <p class="smh-eyebrow">Services</p>
+                                <ul class="smh-list">
+                                    {% for i in all_services %}
+                                    <li><i class="{{i.icon_class}}"></i><a href="/service_detail/{{i.id}}">{{i.title_for_dropdown}}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="smh-eyebrow">Get apparel for</p>
+                                <ul class="smh-list">
+                                    {% for i in all_apparel_for %}
+                                    <li><i class="{{i.icon_class}}"></i><a href="/get_apparel_for/{{i.id}}">{{i.title_for_dropdown}}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="smh-eyebrow">Support</p>
+                                <ul class="smh-list">
+                                    <li><a href="/contact_sales/">Contact sales</a></li>
+                                    <li><a href="/contact_support/">Contact support</a></li>
+                                </ul>
+                                <p class="smh-eyebrow mt-3">About us</p>
+                                <ul class="smh-list">
+                                    <li><a href="/our_story/">Our story</a></li>
+                                    <li><a href="/blog/">Blog</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="smh-actions">
+                <div class="smh-item smh-has-panel smh-search">
+                    <button type="button" class="smh-icon-btn" aria-label="Search designs" aria-expanded="false" aria-controls="smhSearchPanel">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                    </button>
+                    <form class="smh-panel smh-panel-search" id="smhSearchPanel" action="/shop/designs/" method="get" role="search">
+                        <input type="search" name="q" placeholder="Search designs" aria-label="Search designs">
+                        <button type="submit">Search</button>
+                    </form>
+                </div>
+                <a href="/retrieve-design/" class="smh-link">My designs</a>
+                <a href="/customize-editor/{{first_mockup_product.customize_mockup_template.id}}/{{first_mockup_product.customize_mockup_template.MockUp_Name}}/{{first_mockup_product.product_id}}/?attr_id={{first_mockup_product.productattribute_set.first.id}}&color_id={{first_mockup_product.productattribute_set.first.color.id}}&color_code={{first_mockup_product.productattribute_set.first.color.color_code|urlencode}}" class="smh-cta">{{layout.header_button_text}}</a>
+                <a href="/cart/" class="smh-cart" aria-label="Cart">
+                    <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                    <span class="smh-cart-count">{{cart_count}}</span>
                 </a>
-
-                <ul class="nav-menu d-none d-lg-flex align-items-center">
-                    <li class="nav-item custom-products-dropdown">
-            <button class="custom-products-btn">
-                Products
-                <svg xmlns="http://www.w3.org/2000/svg" class="mt-1" width="12" height="12" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-                </svg>
-            </button>
-            <div class="custom-products-menu">
-                <div class="custom-products-menu-content">
-
-                <div class="explore-products">
-                    <strong>Explore Products</strong>
-                    <ul>
-                        <li><a href="/all_products/" class="text-white fs-6">All Products</a></li>
-                        <li><a href="/all_products/?is_best_seller=Yes" class="text-white fs-6">Best Seller</a></li>
-                        <li><a href="/all_products/?is_sustainable=Yes" class="text-white fs-6">Trending Now</a></li>
-                    </ul>
-                </div>
-                <div class="categories_and_bottom_text">
-
-                <div class="popular-category">
-                    {% for i in Cate %}
-                    <div class="category-item" onclick="window.location.href='/products/{{i.category_id}}'">
-                        <img src="/media/{{i.cate_image}}" alt="Hoodie">
-                        <div>{{i.category_name}}</div>
-                    </div>
-                    {% endfor %}
-                    <!-- <div class="category-item" onclick="window.location.href='/products/'">
-                        <img src="/static/shop/img/Asset 50 1.svg" alt="Sweatshirts">
-                        <div>Sweatshirts</div>
-                    </div>
-                    <div class="category-item" onclick="window.location.href='/products/'">
-                        <img src="/static/shop/img/Asset 47 1.svg" alt="Top Tanks">
-                        <div>Top Tanks</div>
-                    </div> -->
-                    <!-- <div class="category-item" onclick="window.location.href='/products/'">
-                        <img src="/static/shop/img/dropdown_img/WhatsApp Image 2025-08-22 at 8.54.31 AM (1).jpeg" alt="Hats">
-                        <div>Hats</div>
-                    </div> -->
-                    <!-- <div class="category-item" onclick="window.location.href='/products/'">
-                        <img src="/static/shop/img/Asset 51 1.svg" alt="T-shirts">
-                        <div>Bags</div>
-                    </div>
-                    <div class="category-item" onclick="window.location.href='/products/'">
-                        <img src="/static/shop/img/Asset 49 1.svg" alt="Polos">
-                        <div>Polos</div>
-                    </div>
-                    <div class="category-item" onclick="window.location.href='/products/'">
-                        <img src="/static/shop/img/Asset 49 1.svg" alt="Women">
-                        <div>Women</div>
-                    </div>
-                    <div class="category-item" onclick="window.location.href='/products/'">
-                        <img src="/static/shop/img/hoodie_nav_7-removebg-preview.png" alt="Bags">
-                        <div>T-Shirts</div>
-                    </div> -->
-                </div>
-                </div>
-                </div>
-
-            <div class="bottom-text">
-                Don’t see your product? We can arrange it for you!
-            </div>
-
-            </div>
-        </li>
-                    <!-- <li><a href="#">Learn</a></li> -->
-                     <li class="nav-item dropdown learn-menu">
-        <a class="nav-link" href="#">Learn <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-                </svg></a>
-      <div class="learn-dropdown">
-  <div class="container py-2">
-    <div class="row g-4">
-
-      <!-- First Row -->
-      <div class="col-md-6 col-sm-6">
-        <h6 class="mb-3 text-uppercase" style="font-weight:700; font-size:20px;">Services</h6>
-
-
-        <ul class="list-unstyled m-0 learn_pc_options">
-            {% for i in all_services %}
-          <li class="mb-2"><i class="{{i.icon_class}}"></i><a href="/service_detail/{{i.id}}">{{i.title_for_dropdown}}</a></li>
-          {% endfor %}
-          <!-- <li class="mb-2"><i class="fa-solid fa-print me-2 text-success"></i><a href="/service_detail/">DTG</a></li>
-          <li class="mb-2"><i class="fa-solid fa-layer-group me-2 text-success"></i><a href="/service_detail/">Screen Printing</a></li>
-          <li class="mb-2"><i class="fa-solid fa-print me-2 text-success"></i><a href="/service_detail/">ePrinting</a></li>
-          <li class="mb-2"><i class="fa-solid fa-pen-nib me-2 text-success"></i><a href="/service_detail/">Embroidery</a></li>
-          <li class="mb-2"><i class="fa-solid fa-fire me-2 text-success"></i><a href="/service_detail/">Sublimation</a></li> -->
-        </ul>
-      </div>
-
-      <div class="col-md-6 col-sm-6">
-        <h6 class="mb-3 text-uppercase" style="font-weight:700; font-size:20px;">Get Apparel For</h6>
-        <ul class="list-unstyled m-0 learn_pc_options">
-          {% for i in all_apparel_for %}
-            <li class="mb-2"><i class="{{i.icon_class}}"></i><a href="/get_apparel_for/{{i.id}}">{{i.title_for_dropdown}}</a></li>
-          {% endfor %}
-          <!-- <li class="mb-2"><i class="fa-solid fa-users me-2 text-success"></i><a href="/get_apparel_for/">Clubs</a></li>
-          <li class="mb-2"><i class="fa-solid fa-calendar me-2 text-success"></i><a href="/get_apparel_for/">Events & Conferences</a></li>
-          <li class="mb-2"><i class="fa-solid fa-basketball me-2 text-success"></i><a href="/get_apparel_for/">Sports</a></li>
-          <li class="mb-2"><i class="fa-solid fa-briefcase me-2 text-success"></i><a href="/get_apparel_for/">Business</a></li>
-          <li class="mb-2"><i class="fa-solid fa-utensils me-2 text-success"></i><a href="/get_apparel_for/">Restaurants</a></li>
-          <li class="mb-2"><i class="fa-solid fa-user me-2 text-success"></i><a href="/get_apparel_for/">Personal Style</a></li>
-          <li class="mb-2"><i class="fa-solid fa-dollar-sign me-2 text-success"></i><a href="/get_apparel_for/">Fundraising</a></li> -->
-        </ul>
-      </div>
-
-      <div class="border-line"></div>
-
-      <!-- Second Row -->
-      <div class="col-md-6 col-sm-6">
-        <h6 class="mb-3 text-uppercase" style="font-weight:700; font-size:20px;">Support</h6>
-        <ul class="list-unstyled m-0 learn_pc_options">
-          <li class="mb-2"><i class="fa-solid fa-phone me-2 text-success"></i><a href="/contact_sales/">Contact Sales</a></li>
-          <li class="mb-2"><i class="fa-solid fa-headset me-2 text-success"></i><a href="/contact_support/">Contact Support</a></li>
-          <!-- <li class="mb-2"><i class="fa-solid fa-file me-2 text-success"></i><a href="#">Retrieve Design</a></li> -->
-        </ul>
-      </div>
-
-      <div class="col-md-6 col-sm-6">
-  <h6 class="mb-3 text-uppercase" style="font-weight:700; font-size:20px;">About Us</h6>
-  <ul class="list-inline m-0">
-    <li class="list-inline-item">
-      <i class="fa-solid fa-circle-info me-2 text-success"></i>
-      <a href="/our_story/">Our Story</a>
-    </li>
-    <li class="list-inline-item">
-      <i class="fa-solid fa-blog me-2 text-success"></i>
-      <a href="/blog/">Blog</a>
-    </li>
-    <!-- <li class="list-inline-item">
-      <i class="fa-solid fa-blog me-2 text-success"></i>
-      <a href="/retrieve-design/">Retrieve Design</a>
-    </li> -->
-  </ul>
-</div>
-
-
-    </div>
-  </div>
-</div>
-
-
-
-      </li>
-                    <!-- <li><a href="#">Instant Quote</a></li> -->
-                     <li><a href="#" class="quote-trigger-btn" onclick="openQuotePopup()">Instant Quote</a></li>
-                    <li><a href="/specials/">Shop</a></li>
-                    <li><a href="/blog/">Blog</a></li>
-                    <li><a href="/retrieve-design/">Retrieve Design</a></li>
-                    <!-- <li><a href="/cart/">Cart</a></li> -->
-                </ul>
-                <!-- Quote Popup Overlay -->
-
-
-
-                <!-- <a href="#" class="btn-start-designing">Start Designing Now</a> -->
-                 <div class="mai_utto_ad_ixo">
-
-                <a href="/customize-editor/{{first_mockup_product.customize_mockup_template.id}}/{{first_mockup_product.customize_mockup_template.MockUp_Name}}/{{first_mockup_product.product_id}}/?attr_id={{first_mockup_product.productattribute_set.first.id}}&color_id={{first_mockup_product.productattribute_set.first.color.id}}&color_code={{first_mockup_product.productattribute_set.first.color.color_code|urlencode}}" class="btn-get-started">{{layout.header_button_text}}</a>
-
-                <div class="cart_icons" onclick="window.location.href='/cart/'">
-                    <div class="cart_count">{{cart_count}}</div>
-                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-                </div>
-                 </div>
-
-
             </div>
         </div>
     </nav>
 
-    <nav class="mobile-navbar d-lg-none">
+    <!-- ============================================================
+         HEADER (mobile) - keeps the old ids/classes so the existing
+         hamburger + accordion script keeps working.
+         ============================================================ -->
+    <nav class="mobile-navbar smh-mobile d-lg-none" aria-label="Main">
   <div class="mobile-navbar-header d-flex justify-content-between align-items-center px-3 py-2">
     <a href="/" class="mobile-logo">
-      <img src="/media/{{layout.logo}}" alt="Logo" height="40">
+      <img src="/media/{{layout.logo}}" alt="Studio Mohar" height="40">
     </a>
     <div class="mai_utto_ad_ixo">
-
+        <a href="/shop/designs/" class="smh-icon-btn" aria-label="Search designs"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></a>
         <div class="cart_icons" onclick="window.location.href='/cart/'">
             <div class="cart_count">{{cart_count}}</div>
             <i class="fa fa-shopping-cart" aria-hidden="true"></i>
         </div>
-        <button class="hamburger-btn" id="hamburgerBtn">&#9776;</button>
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu">&#9776;</button>
     </div>
   </div>
 
   <div class="mobile-menu-overlay" id="mobileMenu">
     <div class="mobile-menu-header d-flex justify-content-between align-items-center px-3 py-3">
       <a href="/" class="mobile-logo">
-        <img src="/media/{{layout.logo}}" alt="Logo" height="40">
+        <img src="/media/{{layout.logo}}" alt="Studio Mohar" height="40">
       </a>
-      <button class="close-btn" id="closeMenuBtn">&times;</button>
+      <button class="close-btn" id="closeMenuBtn" aria-label="Close menu">&times;</button>
     </div>
 
     <ul class="mobile-nav-links list-unstyled">
 
-      <!-- Products Dropdown -->
+      <!-- Shop designs -->
       <li class="mobile-dropdown">
-        <button class="dropdown-toggle">Products</button>
+        <button class="dropdown-toggle">Shop designs</button>
         <div class="dropdown-content">
-          <strong>Explore Products</strong>
+          <strong>By occasion</strong>
           <ul>
-            <li><a href="/all_products/">All Products</a></li>
-            <li><a href="/all_products/?is_best_seller=Yes">Best Seller</a></li>
-            <li><a href="/all_products/?is_sustainable=Yes">Sustainable</a></li>
-          </ul>
-
-          <strong>Popular Categories</strong>
-          <div class="mobile-categories-grid">
-            {% for i in Cate %}
-            <div class="mobile-category-item" onclick="window.location.href='/products/{{i.category_id}}'">
-              <img src="/media/{{i.cate_image}}" alt="Hoodie">
-              <div>{{i.category_name}}</div>
-            </div>
+            {% for occasion in shop_menu_occasions %}
+            <li><a href="/shop/{{ occasion.slug }}/">{{ occasion.name }}</a></li>
             {% endfor %}
-            <!-- <div class="mobile-category-item" onclick="window.location.href='/products/'">
-              <img src="/static/shop/img/dropdown_img/WhatsApp Image 2025-08-22 at 8.54.29 AM.jpeg" alt="Sweatshirts">
-              <div>Sweatshirts</div>
-            </div>
-            <div class="mobile-category-item" onclick="window.location.href='/products/'">
-              <img src="/static/shop/img/dropdown_img/WhatsApp Image 2025-08-22 at 8.54.30 AM.jpeg" alt="Top Tanks">
-              <div>Top Tanks</div>
-            </div>
-            <div class="mobile-category-item" onclick="window.location.href='/products/'">
-              <img src="/static/shop/img/dropdown_img/WhatsApp Image 2025-08-22 at 8.54.31 AM.jpeg" alt="T-shirts">
-              <div>T-shirts</div>
-            </div>
-            <div class="mobile-category-item" onclick="window.location.href='/products/'">
-              <img src="/static/shop/img/dropdown_img/WhatsApp Image 2025-08-22 at 8.54.32 AM.jpeg" alt="Polos">
-              <div>Polos</div>
-            </div>
-            <div class="mobile-category-item" onclick="window.location.href='/products/'">
-              <img src="/static/shop/img/dropdown_img/WhatsApp Image 2025-08-22 at 8.54.32 AMa.jpeg" alt="Women">
-              <div>Women</div>
-            </div>
-            <div class="mobile-category-item" onclick="window.location.href='/products/'">
-              <img src="/static/shop/img/dropdown_img/WhatsApp Image 2025-08-22 at 8.54.31 AM (1).jpeg" alt="Bags">
-              <div>Bags</div>
-            </div> -->
-          </div>
+            <li><a href="/shop/occasions/">See all occasions &rarr;</a></li>
+          </ul>
+          <strong>Shop</strong>
+          <ul>
+            <li><a href="/shop/designs/?best=1">Best sellers</a></li>
+            <li><a href="/shop/designs/?sort=new">New this week</a></li>
+            <li><a href="/shop/designs/?personalizable=1">Personalized designs</a></li>
+            <li><a href="/shop/designs/">See all designs &rarr;</a></li>
+          </ul>
         </div>
       </li>
 
-      <!-- Learn Dropdown -->
+      <!-- Custom merch -->
+      <li class="mobile-dropdown">
+        <button class="dropdown-toggle">Custom merch</button>
+        <div class="dropdown-content">
+          <a class="smh-choice smh-choice-mobile" style="--box:{{ shop_settings.idea_box_color }}" href="{{ shop_settings.idea_box_url }}">
+            <span class="smh-choice-title">{{ shop_settings.idea_box_title }}</span>
+            <span class="smh-choice-text">{{ shop_settings.idea_box_text }}</span>
+            <span class="smh-choice-cta">{{ shop_settings.idea_box_cta }} &rarr;</span>
+          </a>
+          <strong>Start with a product</strong>
+          <div class="mobile-categories-grid">
+            {% for i in Cate %}
+            <div class="mobile-category-item" onclick="window.location.href='/products/{{i.category_id}}'">
+              <img src="/media/{{i.cate_image}}" alt="">
+              <div>{{i.category_name}}</div>
+            </div>
+            {% endfor %}
+          </div>
+          <ul>
+            <li><a href="/all_products/">See all products &rarr;</a></li>
+          </ul>
+        </div>
+      </li>
+
+      <li onclick="openQuotePopup()"><a href="#">Instant quote</a></li>
+
+      <!-- Learn -->
       <li class="mobile-dropdown">
         <button class="dropdown-toggle">Learn</button>
         <div class="dropdown-content">
@@ -1154,48 +1127,69 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             {% for i in all_services %}
             <li><a href="/service_detail/{{i.id}}">{{i.title_for_dropdown}}</a></li>
             {% endfor %}
-            <!-- <li><a href="/service_detail/">DTG</a></li>
-            <li><a href="/service_detail/">Screen Printing</a></li>
-            <li><a href="/service_detail/">Embroidery</a></li>
-            <li><a href="/service_detail/">Sublimation</a></li> -->
           </ul>
           <strong>Get Apparel For</strong>
           <ul>
             {% for i in all_apparel_for %}
             <li><a href="/get_apparel_for/{{i.id}}">{{i.title_for_dropdown}}</a></li>
             {% endfor %}
-            <!-- <li><a href="/get_apparel_for/">Marathons</a></li>
-            <li><a href="/get_apparel_for/">Clubs</a></li>
-            <li><a href="/get_apparel_for/">Events & Conferences</a></li>
-            <li><a href="/get_apparel_for/">Sports</a></li>
-            <li><a href="/get_apparel_for/">Business</a></li>
-            <li><a href="/get_apparel_for/">Restaurants</a></li>
-            <li><a href="/get_apparel_for/">Personal Style</a></li>
-            <li><a href="/get_apparel_for/">Fundraising</a></li> -->
           </ul>
           <strong>Support</strong>
           <ul>
             <li><a href="/contact_sales/">Contact Sales</a></li>
             <li><a href="/contact_support/">Contact Support</a></li>
-            <!-- <li><a href="#">Retrieve Design</a></li> -->
           </ul>
           <strong>About Us</strong>
           <ul>
             <li><a href="/our_story/">Our Story</a></li>
-            <li><a href="#">Blog</a></li>
+            <li><a href="/blog/">Blog</a></li>
           </ul>
         </div>
       </li>
 
-      <li onclick="openQuotePopup()"><a href="#">Instant Quote</a></li>
-      <li><a href="/specials/">Shop</a></li>
-      <li><a href="/blog/">Blog</a></li>
-      <li><a href="/retrieve-design/">Retrieve Design</a></li>
-      <!-- <li><a href="/cart/">Cart</a></li> -->
+      <li><a href="/retrieve-design/" class="smh-mobile-mydesigns">My designs</a></li>
       <li><a href="/customize-editor/{{first_mockup_product.customize_mockup_template.id}}/{{first_mockup_product.customize_mockup_template.MockUp_Name}}/{{first_mockup_product.product_id}}/?attr_id={{first_mockup_product.productattribute_set.first.id}}&color_id={{first_mockup_product.productattribute_set.first.color.id}}&color_code={{first_mockup_product.productattribute_set.first.color.color_code|urlencode}}" class="btn-start-designing mt-3 d-inline-block">{{layout.header_button_text}}</a></li>
     </ul>
   </div>
 </nav>
+
+<script>
+    /* ===== HEADER MENUS (desktop mega menus) =====
+       Hover opens them on mouse devices (CSS); this adds click/tap,
+       keyboard (Enter/Space/Escape) and closing when clicking outside. */
+    (function () {
+        var items = document.querySelectorAll('.smh-nav .smh-has-panel');
+        function closeAll(except) {
+            items.forEach(function (item) {
+                if (item === except) return;
+                item.classList.remove('is-open');
+                var b = item.querySelector('[aria-expanded]');
+                if (b) b.setAttribute('aria-expanded', 'false');
+            });
+        }
+        items.forEach(function (item) {
+            var btn = item.querySelector('[aria-expanded]');
+            if (!btn) return;
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var open = !item.classList.contains('is-open');
+                closeAll(item);
+                item.classList.toggle('is-open', open);
+                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (open && item.classList.contains('smh-search')) {
+                    var input = item.querySelector('input');
+                    if (input) input.focus();
+                }
+            });
+        });
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.smh-has-panel')) closeAll();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeAll();
+        });
+    })();
+</script>
 
 <script>
     // Global variables

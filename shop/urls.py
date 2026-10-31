@@ -1,5 +1,6 @@
 # from django.contrib import admin
 from django.urls import path
+from django.views.generic import RedirectView
 from . import views
 
 urlpatterns = [
@@ -18,7 +19,15 @@ urlpatterns = [
     path('contact_sales/', views.contact_sales , name="contact_sales"),
     path('contact_support/', views.contact_support , name="contact_support"),
     path('our_story/', views.our_story , name="our_story"),
-    path('specials/', views.specials , name="specials"),
+    # Old Shop page -> new Shop page (permanent, keeps Google rankings)
+    path('specials/', RedirectView.as_view(url='/shop/', permanent=True, query_string=True), name="specials"),
+
+    # Shop pages (ShopDesign). Fixed paths first, then /shop/<occasion-slug>/
+    path('shop/', views.shop_home, name="shop_home"),
+    path('shop/occasions/', views.shop_occasions, name="shop_occasions"),
+    path('shop/designs/', views.shop_designs, name="shop_designs"),
+    path('shop/design/<slug:slug>/', views.shop_design_detail, name="shop_design_detail"),
+    path('shop/<slug:slug>/', views.shop_occasion, name="shop_occasion"),
     path('product/<int:myid>', views.product , name="product"),
     path('category/', views.category , name="category"),
     path('checkout/', views.checkout , name="checkout"),

@@ -1,0 +1,9 @@
+<a href="/shop/design/{{ design.slug }}/{% if occasion %}?from={{ occasion.slug }}{% endif %}" class="sm-design-card">
+    <div class="sm-design-media{% if design.card_alt %} has-alt{% endif %}">
+        {% if design.personalization_badge %}<span class="sm-badge">{{ design.personalization_badge }}</span>{% endif %}
+        <img class="sm-main" src="{{ design.card_main }}" alt="{{ design.name }}" loading="lazy">
+        {% if design.card_alt %}<img class="sm-alt" src="{{ design.card_alt }}" alt="" loading="lazy" aria-hidden="true">{% endif %}
+    </div>
+    <p class="sm-design-name">{{ design.name }}</p>
+    <p class="sm-design-meta">{{ currency }}{{ design.price }}{% if design.color_count > 1 %} &middot; {{ design.color_count }} colours{% endif %}</p>
+</a>

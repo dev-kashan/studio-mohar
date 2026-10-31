@@ -1,0 +1,326 @@
+{% extends 'shop/base.html' %}
+{% block head %}
+<title>{{ design.meta_title|default:design.name }}{% if not design.meta_title %} | Studio Mohar{% endif %}</title>
+{% if design.meta_description %}<meta name="description" content="{{ design.meta_description }}">{% elif design.short_description %}<meta name="description" content="{{ design.short_description }}">{% endif %}
+{% endblock head %}
+{% block body %}
+<main class="sm-shop">
+    <div class="sm-container">
+        <nav class="sm-breadcrumb" aria-label="Breadcrumb">
+            <a href="/shop/">Shop designs</a> &rsaquo;
+            {% if crumb %}<a href="/shop/{{ crumb.slug }}/">{{ crumb.name }}</a> &rsaquo;{% endif %}
+            {{ design.name }}
+        </nav>
+
+        <div class="sm-pdp">
+            <!-- Gallery: hero image per colour (+ back), then extra photos/GIFs -->
+            <div class="sm-gallery">
+                <div class="sm-gallery-main">
+                    {% with first=colors.0 %}
+                    <img id="smMainImg" src="{{ first.hero_image.url }}" alt="{{ design.name }} in {{ first.color.color_name }}">
+                    {% endwith %}
+                </div>
+                <div class="sm-gallery-thumbs" id="smThumbs" aria-label="More photos"></div>
+            </div>
+
+            <div class="sm-pdp-info">
+                <h1 class="sm-serif">{{ design.name }}</h1>
+                {% if design.short_description %}<p class="sm-pdp-short">{{ design.short_description }}</p>{% endif %}
+                <p class="sm-price">{{ currency }}{{ design.price }} <small>each</small></p>
+
+                <form id="smDesignForm" novalidate>
+                    {% csrf_token %}
+                    <input type="hidden" name="design_id" value="{{ design.id }}">
+
+                    <!-- Colour -->
+                    <span class="sm-field-label">Colour: <span id="smColorName">{{ colors.0.color.color_name }}</span></span>
+                    <div class="sm-swatches" role="radiogroup" aria-label="Colour">
+                        {% for c in colors %}
+                        <button type="button" class="sm-swatch{% if forloop.first %} is-active{% endif %}" role="radio"
+                                aria-checked="{% if forloop.first %}true{% else %}false{% endif %}"
+                                aria-label="{{ c.color.color_name }}" title="{{ c.color.color_name }}"
+                                data-color="{{ c.color_id }}" style="--sw:{{ c.color.color_code|default:'#ccc' }}"></button>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="color_id" id="smColorId" value="{{ colors.0.color_id }}">
+
+                    <!-- Customer photo (one for every piece) -->
+                    {% if design.wants_image %}
+                    <label class="sm-field-label" for="smPhoto">{{ design.image_upload_label|default:"Your photo" }}
+                        {% if design.image_upload_help %}<span>({{ design.image_upload_help }})</span>{% endif %}</label>
+                    <div class="sm-upload">
+                        <img id="smPhotoPreview" class="sm-upload-preview" alt="">
+                        <input type="file" id="smPhoto" name="personal_image" accept="image/*">
+                    </div>
+                    {% if design.image_position_preview %}
+                    <div class="sm-position-preview">
+                        <img src="{{ design.image_position_preview.url }}" alt="Where your photo goes" loading="lazy">
+                        <span>Your photo is printed in the marked area.</span>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+
+                    <!-- Sizes (+ text per piece when personalizable) -->
+                    <div class="sm-perso" style="--texts:{{ text_fields|length }}">
+                        <h2>{% if text_fields %}{{ shop.personalize_heading }}{% else %}{{ shop.sizes_heading }}{% endif %}</h2>
+                        {% if text_fields %}
+                        <p class="sm-perso-help">
+                            {% for t in text_fields %}<b>{{ t.label }}:</b> {{ t.help_text|default:"" }}{% if t.required %} (required){% else %} (optional){% endif %}{% if not forloop.last %} &middot; {% endif %}{% endfor %}.
+                            Add a row for each different name or size.
+                        </p>
+                        {% else %}
+                        <p class="sm-perso-help">Add a row for each size.</p>
+                        {% endif %}
+                        <div class="sm-row-head" aria-hidden="true">
+                            <span>#</span><span>Size</span>
+                            {% for t in text_fields %}<span>{{ t.label }}</span>{% endfor %}
+                            <span>Qty</span><span></span>
+                        </div>
+                        <div id="smRows"></div>
+                        <button type="button" class="sm-add-row" id="smAddRow">+ Add another</button>
+                    </div>
+
+                    <div class="sm-buy">
+                        <div class="sm-buy-total">
+                            <small id="smPieces">1 piece</small>
+                            <strong id="smTotal">{{ currency }}{{ design.price }}</strong>
+                        </div>
+                        <button type="submit" class="sm-btn sm-btn-primary" id="smAddBtn">Add to cart</button>
+                    </div>
+                    <p class="sm-form-msg" id="smMsg" role="status" aria-live="polite"></p>
+                </form>
+
+                {% if features %}
+                <div class="sm-pdp-trust">
+                    {% for f in features %}
+                    <div class="sm-trust-item">
+                        <i class="fa-solid {{ f.icon }}" aria-hidden="true"></i>
+                        <div><strong>{{ f.title }}</strong>{% if f.subtitle %}<span>{{ f.subtitle }}</span>{% endif %}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if design.personalization_gif %}
+                <div class="sm-gif"><img src="{{ design.personalization_gif.url }}" alt="How the personalization looks" loading="lazy"></div>
+                {% endif %}
+
+                <details class="sm-details">
+                    <summary>{{ shop.details_heading }}</summary>
+                    <div class="sm-details-body">
+                        {% if design.description %}{{ design.description|safe }}{% endif %}
+                        {% if design.base_product.fabric_composition %}<p><b>Fabric:</b> {{ design.base_product.fabric_composition }}</p>{% endif %}
+                        {% if design.base_product.fabric_weight %}<p><b>Weight:</b> {{ design.base_product.fabric_weight }}</p>{% endif %}
+                        {% if design.base_product.fit %}<p><b>Fit:</b> {{ design.base_product.fit }}</p>{% endif %}
+                        {% if design.base_product.size_chart_img %}<img src="{{ design.base_product.size_chart_img.url }}" alt="Size chart" loading="lazy">{% endif %}
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+</main>
+
+{{ page_data|json_script:"smDesignData" }}
+<script>
+/* ===== SHOP DESIGN PAGE =====
+   Colour swatches swap the gallery; rows = size + text per piece + qty;
+   the total is only a preview - the server sets the real price. */
+(function () {
+    var data = JSON.parse(document.getElementById('smDesignData').textContent);
+    var currency = '{{ currency|escapejs }}' || 'C$';
+    var form = document.getElementById('smDesignForm');
+    var rowsBox = document.getElementById('smRows');
+    var mainImg = document.getElementById('smMainImg');
+    var thumbs = document.getElementById('smThumbs');
+    var msg = document.getElementById('smMsg');
+    var addBtn = document.getElementById('smAddBtn');
+    var current = data.colors[0];
+    var MAX_ROWS = 100, MAX_QTY = 999;
+
+    function el(tag, attrs, text) {
+        var n = document.createElement(tag);
+        Object.keys(attrs || {}).forEach(function (k) { n.setAttribute(k, attrs[k]); });
+        if (text != null) n.textContent = text;
+        return n;
+    }
+
+    // ---- Gallery ----
+    function renderThumbs() {
+        var images = [current.hero];
+        if (current.back) images.push(current.back);
+        images = images.concat(data.gallery);
+        thumbs.innerHTML = '';
+        if (images.length < 2) return;
+        images.forEach(function (src, i) {
+            var b = el('button', { type: 'button', 'class': 'sm-thumb' + (i === 0 ? ' is-active' : ''), 'aria-label': 'Photo ' + (i + 1) });
+            b.appendChild(el('img', { src: src, alt: '', loading: 'lazy' }));
+            b.addEventListener('click', function () {
+                mainImg.src = src;
+                thumbs.querySelectorAll('.sm-thumb').forEach(function (t) { t.classList.remove('is-active'); });
+                b.classList.add('is-active');
+            });
+            thumbs.appendChild(b);
+        });
+    }
+
+    // ---- Colour ----
+    document.querySelectorAll('.sm-swatch').forEach(function (sw) {
+        sw.addEventListener('click', function () {
+            var id = parseInt(sw.dataset.color, 10);
+            current = data.colors.filter(function (c) { return c.id === id; })[0] || current;
+            document.querySelectorAll('.sm-swatch').forEach(function (s) {
+                s.classList.toggle('is-active', s === sw);
+                s.setAttribute('aria-checked', s === sw ? 'true' : 'false');
+            });
+            document.getElementById('smColorId').value = current.id;
+            document.getElementById('smColorName').textContent = current.name;
+            mainImg.src = current.hero;
+            mainImg.alt = mainImg.alt.replace(/ in .*$/, '') + ' in ' + current.name;
+            renderThumbs();
+            refreshSizes();
+        });
+    });
+
+    // ---- Rows (size, texts, qty) ----
+    function sizeSelect(selected) {
+        var s = el('select', { 'aria-label': 'Size', 'class': 'sm-size' });
+        s.appendChild(el('option', { value: '' }, 'Size'));
+        current.sizes.forEach(function (name) {
+            var o = el('option', { value: name }, name);
+            if (name === selected) o.selected = true;
+            s.appendChild(o);
+        });
+        return s;
+    }
+
+    function addRow(focus) {
+        if (rowsBox.children.length >= MAX_ROWS) return;
+        var row = el('div', { 'class': 'sm-row' });
+        row.appendChild(el('span', { 'class': 'sm-row-num' }));
+        row.appendChild(sizeSelect(current.sizes.length === 1 ? current.sizes[0] : ''));
+        data.textFields.forEach(function (t) {
+            var cell = el('div', { 'class': 'sm-cell-text' });
+            cell.appendChild(el('input', {
+                type: 'text', 'class': 'sm-text', 'data-field': t.id, maxlength: t.max,
+                placeholder: t.placeholder || (t.required ? t.label : 'Optional'), 'aria-label': t.label
+            }));
+            row.appendChild(cell);
+        });
+        var step = el('div', { 'class': 'sm-stepper' });
+        var minus = el('button', { type: 'button', 'aria-label': 'Less' }, '−');
+        var qty = el('input', { type: 'number', min: 1, max: MAX_QTY, value: 1, 'class': 'sm-qty', 'aria-label': 'Quantity', inputmode: 'numeric' });
+        var plus = el('button', { type: 'button', 'aria-label': 'More' }, '+');
+        minus.addEventListener('click', function () { qty.value = Math.max(1, (parseInt(qty.value, 10) || 1) - 1); update(); });
+        plus.addEventListener('click', function () { qty.value = Math.min(MAX_QTY, (parseInt(qty.value, 10) || 0) + 1); update(); });
+        qty.addEventListener('input', update);
+        step.appendChild(minus); step.appendChild(qty); step.appendChild(plus);
+        row.appendChild(step);
+        var rm = el('button', { type: 'button', 'class': 'sm-row-remove', 'aria-label': 'Remove row' }, '×');
+        rm.addEventListener('click', function () {
+            if (rowsBox.children.length > 1) { row.remove(); update(); }
+        });
+        row.appendChild(rm);
+        rowsBox.appendChild(row);
+        update();
+        if (focus) row.querySelector('select').focus();
+    }
+
+    function refreshSizes() {
+        rowsBox.querySelectorAll('.sm-row').forEach(function (row) {
+            var old = row.querySelector('.sm-size');
+            var keep = current.sizes.indexOf(old.value) > -1 ? old.value : '';
+            old.replaceWith(sizeSelect(keep));
+        });
+    }
+
+    function update() {
+        var pieces = 0;
+        rowsBox.querySelectorAll('.sm-row').forEach(function (row, i) {
+            row.querySelector('.sm-row-num').textContent = i + 1;
+            pieces += Math.max(0, parseInt(row.querySelector('.sm-qty').value, 10) || 0);
+        });
+        document.getElementById('smPieces').textContent = pieces + (pieces === 1 ? ' piece' : ' pieces');
+        document.getElementById('smTotal').textContent = currency + (pieces * data.price).toFixed(2);
+    }
+
+    // ---- Customer photo preview ----
+    var photo = document.getElementById('smPhoto');
+    if (photo) {
+        photo.addEventListener('change', function () {
+            var prev = document.getElementById('smPhotoPreview');
+            if (photo.files && photo.files[0]) {
+                prev.src = URL.createObjectURL(photo.files[0]);
+                prev.style.display = 'block';
+            } else {
+                prev.style.display = 'none';
+            }
+        });
+    }
+
+    function showMsg(text, ok) {
+        msg.textContent = text;
+        msg.className = 'sm-form-msg ' + (ok ? 'is-success' : 'is-error');
+    }
+
+    // ---- Submit ----
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var rows = [], firstBad = null;
+        rowsBox.querySelectorAll('.is-invalid').forEach(function (n) { n.classList.remove('is-invalid'); });
+        rowsBox.querySelectorAll('.sm-row').forEach(function (row) {
+            var size = row.querySelector('.sm-size');
+            var qty = parseInt(row.querySelector('.sm-qty').value, 10) || 0;
+            var texts = {};
+            if (!size.value) { size.classList.add('is-invalid'); firstBad = firstBad || size; }
+            row.querySelectorAll('.sm-text').forEach(function (input) {
+                var field = data.textFields.filter(function (t) { return String(t.id) === input.dataset.field; })[0];
+                var value = input.value.trim();
+                if (field && field.required && !value) { input.classList.add('is-invalid'); firstBad = firstBad || input; }
+                texts[input.dataset.field] = value;
+            });
+            rows.push({ size: size.value, qty: qty, texts: texts });
+        });
+        if (firstBad) {
+            showMsg('Please fill in the highlighted fields.', false);
+            firstBad.focus();
+            return;
+        }
+
+        var body = new FormData();
+        body.append('design_id', data.designId);
+        body.append('color_id', current.id);
+        body.append('rows', JSON.stringify(rows));
+        if (photo && photo.files && photo.files[0]) body.append('personal_image', photo.files[0]);
+
+        addBtn.disabled = true;
+        addBtn.textContent = 'Adding...';
+        fetch('/add-to-cart-shop-design/', {
+            method: 'POST',
+            body: body,
+            headers: { 'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value },
+            credentials: 'same-origin'
+        })
+            .then(function (r) { return r.json().catch(function () { return { success: false }; }); })
+            .then(function (res) {
+                if (res.success) {
+                    showMsg('Added to your cart. Taking you there...', true);
+                    window.location.href = '/cart/';
+                } else {
+                    showMsg(res.error || 'Something went wrong. Please try again.', false);
+                    addBtn.disabled = false;
+                    addBtn.textContent = 'Add to cart';
+                }
+            })
+            .catch(function () {
+                showMsg('Could not reach the server. Please check your connection and try again.', false);
+                addBtn.disabled = false;
+                addBtn.textContent = 'Add to cart';
+            });
+    });
+
+    document.getElementById('smAddRow').addEventListener('click', function () { addRow(true); });
+    renderThumbs();
+    addRow(false);
+})();
+</script>
+{% endblock body %}
