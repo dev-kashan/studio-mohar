@@ -1163,6 +1163,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
        keyboard (Enter/Space/Escape) and closing when clicking outside. */
     (function () {
         var items = document.querySelectorAll('.smh-nav .smh-has-panel');
+        var EDGE = 16; // keep panels at least this far from the window edges
+
+        // Shift an open panel back inside the window on narrow screens
+        function keepInView(item) {
+            var panel = item.querySelector('.smh-panel');
+            if (!panel) return;
+            panel.style.marginLeft = '';
+            requestAnimationFrame(function () {
+                var r = panel.getBoundingClientRect();
+                if (!r.width) return; // closed
+                var vw = document.documentElement.clientWidth;
+                var shift = 0;
+                if (r.right > vw - EDGE) shift = (vw - EDGE) - r.right;
+                if (r.left + shift < EDGE) shift = EDGE - r.left;
+                if (shift) panel.style.marginLeft = shift + 'px';
+            });
+        }
+        items.forEach(function (item) {
+            item.addEventListener('mouseenter', function () { keepInView(item); });
+            item.addEventListener('focusin', function () { keepInView(item); });
+        });
+
         function closeAll(except) {
             items.forEach(function (item) {
                 if (item === except) return;
@@ -1180,6 +1202,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 closeAll(item);
                 item.classList.toggle('is-open', open);
                 btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (open) keepInView(item);
                 if (open && item.classList.contains('smh-search')) {
                     var input = item.querySelector('input');
                     if (input) input.focus();

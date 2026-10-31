@@ -2414,13 +2414,15 @@ input[type=number] {
     border-radius: 12px;
     box-shadow: 0 16px 40px rgba(29, 29, 27, .10);
     padding: 28px;
-    max-width: calc(100vw - 48px);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(6px);
-    transition: opacity .18s ease, transform .18s ease, visibility .18s;
+    max-width: calc(100vw - 32px);
+    /* Closed panels are display:none (not just invisible) so they never widen
+       the page and cause a sideways scrollbar. They fade in on open and close
+       instantly (no fading "ghost" left behind). */
+    display: none;
+    flex-direction: column;
     z-index: 1001;
 }
+@keyframes smhPanelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .smh-panel::before { /* hover bridge between the button and the panel */
     content: '';
     position: absolute;
@@ -2430,12 +2432,12 @@ input[type=number] {
     height: 14px;
 }
 .smh-item.is-open > .smh-panel,
-.smh-item:focus-within > .smh-panel { opacity: 1; visibility: visible; transform: none; }
+.smh-item:focus-within > .smh-panel { display: flex; animation: smhPanelIn .18s ease; }
 @media (hover: hover) {
-    .smh-has-panel:hover > .smh-panel { opacity: 1; visibility: visible; transform: none; }
+    .smh-has-panel:hover > .smh-panel { display: flex; animation: smhPanelIn .18s ease; }
 }
-.smh-panel-shop { width: 620px; display: flex; flex-direction: column; gap: 22px; }
-.smh-panel-merch { width: 620px; display: flex; flex-direction: column; gap: 26px; }
+.smh-panel-shop { width: 620px; gap: 22px; }
+.smh-panel-merch { width: 620px; gap: 26px; }
 .smh-panel-learn { width: 720px; }
 .smh-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 .smh-panel-learn .smh-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -2529,7 +2531,7 @@ input[type=number] {
 }
 .smh-icon-btn:hover { background: var(--sm-bg); color: var(--sm-ink); }
 .smh-actions > .smh-link { padding: 0 10px; }
-.smh-panel-search { left: auto; right: 0; width: 340px; padding: 12px; display: flex; gap: 8px; }
+.smh-panel-search { left: auto; right: 0; width: 340px; padding: 12px; flex-direction: row; gap: 8px; }
 .smh-panel-search input { flex: 1; min-width: 0; height: 44px; border: 1px solid var(--sm-field); border-radius: 8px; padding: 0 12px; font: inherit; }
 .smh-panel-search button { height: 44px; border: 0; border-radius: 8px; background: var(--sm-green); color: #FFFFFF; padding: 0 16px; font: inherit; font-weight: 600; }
 .smh-cart-count {
@@ -2687,7 +2689,7 @@ input[type=number] {
 .smh-mobile .dropdown-content ul li:has(> a:empty) { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-    .smh-panel, .smh-choice, .smh-promo-btn { transition: none; }
+    .smh-panel, .smh-choice, .smh-promo-btn { transition: none; animation: none !important; }
 }
 
 
@@ -3177,3 +3179,14 @@ input[type=number] {
 @media (prefers-reduced-motion: reduce) {
     .sm-occasion-card, .sm-occasion-card img, .sm-design-media img, .sm-tile-media img, .sm-btn { transition: none; }
 }
+
+
+/* ---------- No sideways scroll (2026 audit) ----------
+   Bootstrap .row has negative side margins; inside a parent without padding
+   it sticks out of the window and adds a horizontal scrollbar. */
+.container.px-0 > .row.mob-mt { margin-left: 0; margin-right: 0; }   /* cart page */
+@media (max-width: 575px) {
+    .row.products-grid { margin-left: 0; margin-right: 0; }            /* homepage products */
+}
+/* Safety net: clip (not hidden) keeps the sticky header working */
+html, body { overflow-x: clip; }
