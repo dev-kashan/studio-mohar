@@ -2862,7 +2862,10 @@ input[type=number] {
 .sm-perso { margin-top: 18px; background: var(--sm-card); border: 1px solid var(--sm-line); border-radius: 12px; padding: 16px; }
 .sm-perso h2 { font-size: 16px; font-weight: 700; margin: 0 0 4px; font-family: inherit; }
 .sm-perso-help { font-size: 13px; color: var(--sm-muted); margin: 0 0 12px; }
-.sm-row-head, .sm-row { display: grid; grid-template-columns: 24px 84px repeat(var(--texts, 0), minmax(0, 1fr)) 112px 28px; gap: 8px; align-items: center; }
+/* Row columns: # | size | text fields (any number) | qty | remove.
+   --text-cols is only set when the design has text fields: repeat(0, ...) is invalid CSS. */
+.sm-row-head, .sm-row { display: grid; grid-template-columns: 24px minmax(84px, 140px) var(--text-cols,) 112px 28px; gap: 8px; align-items: center; }
+.sm-perso.has-texts .sm-row-head, .sm-perso.has-texts .sm-row { grid-template-columns: 24px 84px var(--text-cols) 112px 28px; }
 .sm-row-head { font-size: 12px; font-weight: 600; color: var(--sm-muted); padding-bottom: 6px; }
 .sm-row { padding: 6px 0; }
 .sm-row-num { font-size: 13px; color: var(--sm-muted); }
@@ -2925,7 +2928,7 @@ input[type=number] {
     .sm-pdp-trust { grid-template-columns: 1fr; }
     /* Personalization rows stack into small cards on phones */
     .sm-row-head { display: none; }
-    .sm-row {
+    .sm-perso .sm-row, .sm-perso.has-texts .sm-row {
         grid-template-columns: 1fr 1fr;
         border: 1px solid var(--sm-line);
         border-radius: 10px;

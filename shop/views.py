@@ -2174,6 +2174,7 @@ def add_to_cart_special(request):
 SHOP_DESIGN_MAX_IMAGE_MB = 15
 SHOP_DESIGN_MAX_ROWS = 100
 SHOP_DESIGN_MAX_QTY = 999
+SHOP_DESIGN_IMAGE_FORMATS = {"JPEG", "PNG", "WEBP", "GIF"}
 
 
 def add_to_cart_shop_design(request):
@@ -2188,11 +2189,16 @@ def add_to_cart_shop_design(request):
     if request.method != "POST":
         return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)
 
-    design = ShopDesign.objects.filter(id=request.POST.get("design_id"), live=True).select_related("base_product").first()
+    design_id = request.POST.get("design_id", "")
+    color_id = request.POST.get("color_id", "")
+    if not design_id.isdigit() or not color_id.isdigit():
+        return JsonResponse({"success": False, "error": "Invalid data."}, status=400)
+
+    design = ShopDesign.objects.filter(id=int(design_id), live=True).select_related("base_product").first()
     if not design:
         return JsonResponse({"success": False, "error": "This design is not available."}, status=400)
 
-    design_color = design.colors.filter(color_id=request.POST.get("color_id")).select_related("color").first()
+    design_color = design.colors.filter(color_id=int(color_id)).select_related("color").first()
     if not design_color:
         return JsonResponse({"success": False, "error": "Please choose a colour."}, status=400)
 
@@ -2241,10 +2247,19 @@ def add_to_cart_shop_design(request):
 
     personal_image = request.FILES.get("personal_image") if design.wants_image else None
     if personal_image:
-        if not (personal_image.content_type or "").startswith("image/"):
-            return JsonResponse({"success": False, "error": "Please upload an image file."}, status=400)
         if personal_image.size > SHOP_DESIGN_MAX_IMAGE_MB * 1024 * 1024:
             return JsonResponse({"success": False, "error": f"Image must be under {SHOP_DESIGN_MAX_IMAGE_MB} MB."}, status=400)
+        # Only real raster photos. SVG/HTML could carry scripts that would run
+        # when the team opens the file from the admin, so they are refused.
+        try:
+            with Image.open(personal_image) as img:
+                img_format = (img.format or "").upper()
+                img.verify()
+        except Exception:
+            img_format = ""
+        if img_format not in SHOP_DESIGN_IMAGE_FORMATS:
+            return JsonResponse({"success": False, "error": "Please upload a JPG, PNG, WEBP or GIF photo."}, status=400)
+        personal_image.seek(0)
 
     if not request.session.session_key:
         request.session.create()

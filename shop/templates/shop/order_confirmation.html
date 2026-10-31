@@ -523,6 +523,7 @@ a.continue_shopping {
                                                         Size: 
                                                         {% for cart_item in i.sizes.all %}
                                                             <p>{{ cart_item.size }} ({{ cart_item.quantity }}) x C${{ cart_item.unit_price }} = C${{ cart_item.total_price }}</p>
+                                {% if cart_item.personalization %}<p class="cart-shop-design">{{ cart_item.personalization_display }}</p>{% endif %}
                                                         {% empty %}
                                                             <p>No sizes added</p>
                                                         {% endfor %}

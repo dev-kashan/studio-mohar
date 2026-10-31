@@ -2860,9 +2860,9 @@ align-items: center;
 
         <div class="product_vari" bis_skin_checked="1">
           <h1 class="head">
-            <strong>{{ i.product_attr.product.product_name }}</strong>
+            <strong>{% if i.shop_design %}{{ i.shop_design.name }}{% else %}{{ i.product_attr.product.product_name }}{% endif %}</strong>
           </h1>
-          {% if i.shop_design %}<p class="cart-shop-design"><strong>Design:</strong> {{ i.shop_design.name }}</p>{% endif %}
+          {% if i.shop_design %}<p class="cart-shop-design">Printed on: {{ i.product_attr.product.product_name }}</p>{% endif %}
           <p>Color - {{ i.product_attr.color }}</p>
           {% if i.personal_image %}<p class="cart-shop-design">Your photo: <a href="{{ i.personal_image.url }}" target="_blank" rel="noopener">view</a></p>{% endif %}
           <p>Sizes:</p>
@@ -2893,9 +2893,18 @@ align-items: center;
               <span class="sr-only">Remove</span>
             </a>
           </div>
+          {% elif i.shop_design %}
+          <div class="remove" bis_skin_checked="1">
+            <a href="/shop/design/{{ i.shop_design.slug }}/"
+              class="btn text-white fa fa-edit edit_btn"
+              data-cart-id="{{i.id}}"
+              title="View this design">
+              <span class="sr-only">View design</span>
+            </a>
+          </div>
           {% else %}
           <div class="remove" bis_skin_checked="1">
-            <a href="/product_detail/{{i.product_attr.product.product_id}}" 
+            <a href="/product_detail/{{i.product_attr.product.product_id}}"
               class="btn text-white fa fa-edit edit_btn"
               
               data-cart-id="{{i.id}}"

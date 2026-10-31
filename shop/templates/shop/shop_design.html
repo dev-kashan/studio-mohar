@@ -50,7 +50,7 @@
                         {% if design.image_upload_help %}<span>({{ design.image_upload_help }})</span>{% endif %}</label>
                     <div class="sm-upload">
                         <img id="smPhotoPreview" class="sm-upload-preview" alt="">
-                        <input type="file" id="smPhoto" name="personal_image" accept="image/*">
+                        <input type="file" id="smPhoto" name="personal_image" accept="image/jpeg,image/png,image/webp,image/gif">
                     </div>
                     {% if design.image_position_preview %}
                     <div class="sm-position-preview">
@@ -61,11 +61,11 @@
                     {% endif %}
 
                     <!-- Sizes (+ text per piece when personalizable) -->
-                    <div class="sm-perso" style="--texts:{{ text_fields|length }}">
+                    <div class="sm-perso{% if text_fields %} has-texts{% endif %}"{% if text_fields %} style="--text-cols: repeat({{ text_fields|length }}, minmax(0, 1fr))"{% endif %}>
                         <h2>{% if text_fields %}{{ shop.personalize_heading }}{% else %}{{ shop.sizes_heading }}{% endif %}</h2>
                         {% if text_fields %}
                         <p class="sm-perso-help">
-                            {% for t in text_fields %}<b>{{ t.label }}:</b> {{ t.help_text|default:"" }}{% if t.required %} (required){% else %} (optional){% endif %}{% if not forloop.last %} &middot; {% endif %}{% endfor %}.
+                            {% for t in text_fields %}<b>{{ t.label }}:</b> {{ t.help_text|default:"" }}{% if t.required %}{% if 'required' not in t.help_text|lower %} (required){% endif %}{% elif 'optional' not in t.help_text|lower %} (optional){% endif %}{% if not forloop.last %} &middot; {% endif %}{% endfor %}.
                             Add a row for each different name or size.
                         </p>
                         {% else %}
