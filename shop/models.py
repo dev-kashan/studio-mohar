@@ -588,6 +588,7 @@ STATUS = (
 ORDER_TYPE = (
     ('Customize', 'Customize'),
     ('Normal', 'Normal'),
+    ('Shop Design', 'Shop Design'),
 )
 
 
@@ -619,6 +620,10 @@ class OrderItem(models.Model):
     Back_Desgin_Image = models.ImageField(upload_to='shop/images', max_length=1000, default='', blank=True, null=True)
     Left_Desgin_Image = models.ImageField(upload_to='shop/images', max_length=1000, default='', blank=True, null=True)
     Right_Desgin_Image = models.ImageField(upload_to='shop/images', max_length=1000, default='', blank=True, null=True)
+
+    # Shop designs only (empty for Design Lab / old orders)
+    shop_design = models.ForeignKey('ShopDesign', on_delete=models.SET_NULL, null=True, blank=True)
+    personal_image = models.FileField(upload_to='order_personal_images/', max_length=1000, blank=True, null=True, verbose_name='Customer photo')
     # Front_Text = models.CharField(max_length=255, default="", blank=True, null=True)
     # Back_Text = models.CharField(max_length=255, default="", blank=True, null=True)
 
@@ -751,6 +756,8 @@ class OrderItemSize(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     unit_price = models.FloatField(default=0)
     total_price = models.FloatField(default=0)
+    # Shop designs: this piece's text as JSON [{"label": "Text 1", "value": "Sara"}, ...]
+    personalization = models.TextField(default='', blank=True)
 
     def save(self, *args, **kwargs):
         self.total_price = self.unit_price * self.quantity
@@ -758,6 +765,10 @@ class OrderItemSize(models.Model):
 
     def __str__(self):
         return f"{self.size} - {self.quantity}"
+
+    def personalization_display(self):
+        return personalization_as_html(self.personalization)
+    personalization_display.short_description = "Personalization"
 
 
 # Order_Update
@@ -1080,6 +1091,10 @@ class GuestCart(models.Model):
     price_of_each = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     total_price = models.DecimalField(max_digits=15, decimal_places=2, default=0)
 
+    # Shop designs only (empty for Design Lab / old items)
+    shop_design = models.ForeignKey('ShopDesign', on_delete=models.SET_NULL, null=True, blank=True)
+    personal_image = models.FileField(upload_to='cart_personal_images/', max_length=1000, blank=True, null=True, help_text="Customer photo for a personalizable shop design (same for every piece)")
+
     def __str__(self):
         return f"GuestCart {self.session_id} - {self.product_attr}"
 
@@ -1091,6 +1106,8 @@ class GuestCartItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     unit_price = models.FloatField(default=0)
     total_price = models.FloatField(default=0)
+    # Shop designs: this piece's text as JSON [{"label": "Text 1", "value": "Sara"}, ...]
+    personalization = models.TextField(default='', blank=True)
 
     def save(self, *args, **kwargs):
         self.total_price = self.unit_price * self.quantity
@@ -1098,6 +1115,10 @@ class GuestCartItem(models.Model):
 
     def __str__(self):
         return f"{self.size} × {self.quantity}"
+
+    def personalization_display(self):
+        return personalization_as_html(self.personalization)
+    personalization_display.short_description = "Personalization"
   
 class CartUploadedFile(models.Model):
     cart = models.ForeignKey(
@@ -1396,7 +1417,214 @@ class InstagramPost(models.Model):
 
     class Meta:
         verbose_name_plural = '25. Instagram Posts'
-    
+
+
+# =====================================================================
+# SHOP DESIGNS (ready-made designs sold on the Shop page)
+# ---------------------------------------------------------------------
+# Separate from Product on purpose: a Product is a blank garment that
+# customers design on in the Design Lab. A ShopDesign is a finished
+# design printed on one of those blanks (base_product), sold at a fixed
+# price, optionally personalizable (customer text and/or one photo).
+# Personalization never changes the product images; it only travels
+# with the cart/order so the team can see what to print.
+# =====================================================================
+
+class Occasion(models.Model):
+    TEXT_TONE = (
+        ('dark', 'Dark text (for light card colours)'),
+        ('light', 'Light text (for dark card colours)'),
+    )
+
+    name = models.CharField(max_length=120)
+    slug = models.SlugField(max_length=150, unique=True, help_text="URL part, e.g. bridal-party-shirts → /shop/bridal-party-shirts/")
+    subtitle = models.CharField(max_length=255, default='', blank=True, help_text="Short line on the card, e.g. 'Bride, bridesmaids, bachelorette'")
+    image = models.ImageField(upload_to='shop/occasions', max_length=1000, blank=True, null=True, help_text="Card photo (optional - the card colour shows if empty)")
+    card_color = ColorField(default='#EFE9E2', help_text="Card background colour")
+    text_tone = models.CharField(max_length=10, choices=TEXT_TONE, default='dark')
+
+    show_in_menu = models.BooleanField(default=True, help_text="Show under 'By occasion' in the Shop designs menu")
+    show_on_shop_page = models.BooleanField(default=True, help_text="Show in 'Shop by occasion' on the shop page")
+    order = models.PositiveIntegerField(default=0, help_text="Lower numbers show first")
+    live = models.BooleanField(default=True)
+
+    # Occasion page content (all editable)
+    page_title = models.CharField(max_length=255, default='', blank=True, help_text="Page heading, e.g. 'Bridal party shirts' (falls back to the name)")
+    page_description = models.TextField(default='', blank=True, help_text="Intro text under the page heading")
+    seo_heading = models.CharField(max_length=255, default='', blank=True, help_text="Heading of the text block at the bottom of the page")
+    seo_content = RichTextField(default='', blank=True, help_text="150-300 words about this occasion, shown at the bottom of the page")
+    meta_title = models.CharField(max_length=255, default='', blank=True)
+    meta_description = models.TextField(max_length=1000, default='', blank=True)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', 'name']
+        verbose_name_plural = '26. Shop - Occasions'
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def card_preview(self):
+        if self.image:
+            return mark_safe('<img src="%s" class="admin_Category_image_per"/>' % (self.image.url))
+        return mark_safe('<div style="width:50px;height:50px;border-radius:6px;background:%s;"></div>' % (self.card_color))
+    card_preview.short_description = "Card"
+
+
+class OccasionFaq(models.Model):
+    occasion = models.ForeignKey(Occasion, on_delete=models.CASCADE, related_name='faqs')
+    question = models.CharField(max_length=255)
+    answer = models.TextField()
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return self.question
+
+
+class ShopDesign(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=220, unique=True, help_text="URL part of the design page, e.g. bride-crew-tee")
+    base_product = models.ForeignKey(
+        Product, on_delete=models.PROTECT, related_name='shop_designs',
+        help_text="The blank garment this design is printed on. Sizes, stock, fabric and size chart come from it.",
+    )
+    occasions = models.ManyToManyField(Occasion, blank=True, related_name='designs')
+
+    short_description = models.CharField(max_length=255, default='', blank=True, help_text="One line under the title on the design page")
+    description = RichTextField(default='', blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text="Fixed price per piece")
+
+    is_best_seller = models.BooleanField(default=False)
+    live = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0, help_text="Lower numbers show first")
+
+    # Personalization
+    is_personalizable = models.BooleanField(default=False)
+    allow_image_upload = models.BooleanField(default=False, help_text="Customer can upload one photo (used on every piece)")
+    image_upload_label = models.CharField(max_length=255, default='Replace the photo', blank=True)
+    image_upload_help = models.CharField(max_length=255, default='Optional, applies to every piece', blank=True)
+    image_position_preview = models.ImageField(upload_to='shop/designs', max_length=1000, blank=True, null=True, help_text="Picture showing where the customer's photo goes")
+    allow_text = models.BooleanField(default=False, help_text="Customer can add text - add the text fields below")
+    personalization_gif = models.FileField(upload_to='shop/designs', max_length=1000, blank=True, null=True, help_text="GIF showing how personalization looks (instead of a live preview)")
+
+    meta_title = models.CharField(max_length=255, default='', blank=True)
+    meta_description = models.TextField(max_length=1000, default='', blank=True)
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order', '-created']
+        verbose_name_plural = '27. Shop - Designs'
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    @property
+    def wants_image(self):
+        return self.is_personalizable and self.allow_image_upload
+
+    @property
+    def wants_text(self):
+        return self.is_personalizable and self.allow_text
+
+    def personalization_badge(self):
+        """Small label on product cards: 'Add a name' / 'Add a photo'."""
+        if self.wants_text:
+            return 'Add a name'
+        if self.wants_image:
+            return 'Add a photo'
+        return ''
+
+    def default_color(self):
+        colors = list(self.colors.all())
+        for c in colors:
+            if c.is_default:
+                return c
+        return colors[0] if colors else None
+
+    def preview(self):
+        c = self.default_color()
+        if c and c.hero_image:
+            return mark_safe('<img src="%s" width="50" height="50" style="object-fit:cover"/>' % (c.hero_image.url))
+        return mark_safe('<img src="/media/shop/images/noperview.jpg" width="50" height="50"/>')
+
+
+class ShopDesignColor(models.Model):
+    design = models.ForeignKey(ShopDesign, on_delete=models.CASCADE, related_name='colors')
+    color = models.ForeignKey(Color, on_delete=models.PROTECT, help_text="Must be a colour the base product has")
+    hero_image = models.ImageField(upload_to='shop/designs', max_length=1000)
+    back_image = models.ImageField(upload_to='shop/designs', max_length=1000, blank=True, null=True, help_text="Optional - only if the design is printed on the back too")
+    is_default = models.BooleanField(default=False, help_text="Shown first on cards and the design page")
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['-is_default', 'order', 'id']
+        unique_together = ('design', 'color')
+
+    def __str__(self):
+        return f'{self.design.name} - {self.color}'
+
+
+class ShopDesignImage(models.Model):
+    """Extra gallery photos/GIFs (lifestyle shots etc.), not tied to a colour."""
+    design = models.ForeignKey(ShopDesign, on_delete=models.CASCADE, related_name='gallery')
+    image = models.FileField(upload_to='shop/designs', max_length=1000, help_text="JPG, PNG, WEBP or GIF")
+    alt_text = models.CharField(max_length=255, default='', blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return f'{self.design.name} - image {self.order}'
+
+
+class ShopDesignTextField(models.Model):
+    """One text box the customer fills per piece (Text 1, Text 2, ...)."""
+    design = models.ForeignKey(ShopDesign, on_delete=models.CASCADE, related_name='text_fields')
+    label = models.CharField(max_length=100, help_text="e.g. 'Text 1' or 'Name on front'")
+    help_text = models.CharField(max_length=255, default='', blank=True, help_text="e.g. 'Name on the front, up to 12 letters'")
+    placeholder = models.CharField(max_length=100, default='', blank=True, help_text="e.g. 'e.g. Sara'")
+    max_length = models.PositiveIntegerField(default=12)
+    required = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return self.label
+
+
+def personalization_as_html(raw):
+    """Render the stored personalization JSON ([{label, value}, ...]) for admin/emails.
+    Values are typed by customers, so they are always escaped."""
+    import json
+    from django.utils.html import format_html_join
+    if not raw:
+        return '-'
+    try:
+        rows = json.loads(raw)
+    except (TypeError, ValueError):
+        return '-'
+    rows = [(r.get('label', ''), r.get('value', '')) for r in rows if isinstance(r, dict) and r.get('value')]
+    return format_html_join(mark_safe('<br>'), '<b>{}:</b> {}', rows) if rows else '-'
+
 
 
 

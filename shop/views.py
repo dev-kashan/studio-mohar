@@ -942,16 +942,26 @@ def stripe_success(request):
         left_design_image = base64_to_image_file(item.left_design_image, f"back_design_{product.product_id}")
         right_design_image = base64_to_image_file(item.right_design_image, f"back_design_{product.product_id}")
 
+        shop_design = item.shop_design  # set only for Shop page designs
+        if mockup:
+            order_type = 'Customize'
+        elif shop_design:
+            order_type = 'Shop Design'
+        else:
+            order_type = 'Normal'
+
         order_item = OrderItem.objects.create(
             order_by=order,
             order_item=product,
-            product_name=product.product_name,
+            product_name=shop_design.name if shop_design else product.product_name,
             color=str(product_attr.color) if product_attr.color else "",
             unity_price=float(item.price_of_each),
             item_total=float(item.total_price),
             image=item.front_image or '',
             Mockup=mockup,
-            Order_Type='Customize' if mockup else 'Normal',
+            Order_Type=order_type,
+            shop_design=shop_design,
+            personal_image=item.personal_image or None,  # same physical file as the cart upload
             Front_Image=front_design_file,
             Back_Image=back_design_file,
             Left_Image=left_design_file,
@@ -980,6 +990,7 @@ def stripe_success(request):
                 size=cart_size_item.size,
                 quantity=cart_size_item.quantity,
                 unit_price=cart_size_item.unit_price,
+                personalization=cart_size_item.personalization,
             )
 
             product_attr_obj = ProductAttribute.objects.filter(
@@ -2150,6 +2161,111 @@ def add_to_cart_special(request):
         )
 
     return JsonResponse({"success": True})
+
+
+# Shop designs: personalization upload limits
+SHOP_DESIGN_MAX_IMAGE_MB = 15
+SHOP_DESIGN_MAX_ROWS = 100
+SHOP_DESIGN_MAX_QTY = 999
+
+
+def add_to_cart_shop_design(request):
+    """
+    Add a Shop page design to the cart (multipart POST).
+      design_id, color_id    - the design and the chosen colour
+      rows                   - JSON: [{"size": "M", "qty": 2, "texts": {"<text_field_id>": "Sara"}}, ...]
+      personal_image (file)  - optional customer photo, used on every piece
+    The price always comes from the design (fixed), never from the browser.
+    Each add creates its own cart line, because every line can carry different text.
+    """
+    if request.method != "POST":
+        return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)
+
+    design = ShopDesign.objects.filter(id=request.POST.get("design_id"), live=True).select_related("base_product").first()
+    if not design:
+        return JsonResponse({"success": False, "error": "This design is not available."}, status=400)
+
+    design_color = design.colors.filter(color_id=request.POST.get("color_id")).select_related("color").first()
+    if not design_color:
+        return JsonResponse({"success": False, "error": "Please choose a colour."}, status=400)
+
+    # Sizes available for this colour on the base product
+    color_attrs = ProductAttribute.objects.filter(product=design.base_product, color=design_color.color).select_related("size")
+    sizes_available = {a.size.Size_name for a in color_attrs if a.size}
+    product_attr = color_attrs.first()
+    if not product_attr:
+        return JsonResponse({"success": False, "error": "This colour is not available right now."}, status=400)
+
+    try:
+        rows = json.loads(request.POST.get("rows", "[]"))
+    except json.JSONDecodeError:
+        return JsonResponse({"success": False, "error": "Invalid data."}, status=400)
+    if not isinstance(rows, list) or not rows or len(rows) > SHOP_DESIGN_MAX_ROWS:
+        return JsonResponse({"success": False, "error": "Please add at least one size."}, status=400)
+
+    text_fields = list(design.text_fields.all()) if design.wants_text else []
+
+    clean_rows = []
+    for n, row in enumerate(rows, start=1):
+        if not isinstance(row, dict):
+            return JsonResponse({"success": False, "error": "Invalid data."}, status=400)
+        size = str(row.get("size", "")).strip()
+        if size not in sizes_available:
+            return JsonResponse({"success": False, "error": f"Row {n}: please choose a size."}, status=400)
+        try:
+            qty = int(row.get("qty", 0))
+        except (TypeError, ValueError):
+            qty = 0
+        if qty < 1 or qty > SHOP_DESIGN_MAX_QTY:
+            return JsonResponse({"success": False, "error": f"Row {n}: quantity must be between 1 and {SHOP_DESIGN_MAX_QTY}."}, status=400)
+
+        texts = row.get("texts") or {}
+        if not isinstance(texts, dict):
+            texts = {}
+        personalization = []
+        for tf in text_fields:
+            value = str(texts.get(str(tf.id), "")).strip()
+            if tf.required and not value:
+                return JsonResponse({"success": False, "error": f"Row {n}: {tf.label} is required."}, status=400)
+            if len(value) > tf.max_length:
+                return JsonResponse({"success": False, "error": f"Row {n}: {tf.label} can be up to {tf.max_length} letters."}, status=400)
+            personalization.append({"label": tf.label, "value": value})
+        clean_rows.append((size, qty, personalization))
+
+    personal_image = request.FILES.get("personal_image") if design.wants_image else None
+    if personal_image:
+        if not (personal_image.content_type or "").startswith("image/"):
+            return JsonResponse({"success": False, "error": "Please upload an image file."}, status=400)
+        if personal_image.size > SHOP_DESIGN_MAX_IMAGE_MB * 1024 * 1024:
+            return JsonResponse({"success": False, "error": f"Image must be under {SHOP_DESIGN_MAX_IMAGE_MB} MB."}, status=400)
+
+    if not request.session.session_key:
+        request.session.create()
+
+    unit_price = design.price
+    total_qty = sum(q for _, q, _ in clean_rows)
+
+    with transaction.atomic():
+        cart = GuestCart.objects.create(
+            session_id=request.session.session_key,
+            product_attr=product_attr,
+            shop_design=design,
+            front_image=design_color.hero_image.url,
+            back_image=design_color.back_image.url if design_color.back_image else "",
+            price_of_each=unit_price,
+            total_price=unit_price * total_qty,
+            personal_image=personal_image,
+        )
+        for size, qty, personalization in clean_rows:
+            GuestCartItem.objects.create(
+                cart=cart,
+                size=size,
+                quantity=qty,
+                unit_price=float(unit_price),
+                personalization=json.dumps(personalization) if any(p["value"] for p in personalization) else "",
+            )
+
+    return JsonResponse({"success": True, "cart_id": cart.id})
 
 
 @csrf_exempt

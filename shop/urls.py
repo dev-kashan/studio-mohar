@@ -57,6 +57,7 @@ urlpatterns = [
     path('loadmore-sticker/', views.loadmore_sticker , name="loadmore_sticker"),
     path('add-to-cart/', views.add_to_cart , name="add_to_cart"),
     path('add-to-cart-special/', views.add_to_cart_special , name="add_to_cart"),
+    path('add-to-cart-shop-design/', views.add_to_cart_shop_design , name="add_to_cart_shop_design"),
     path('delete-cart-item/<int:cart_id>/', views.delete_cart_item, name='delete_cart_item'),
     path('get-sizes/<int:product_id>/', views.get_sizes_for_color, name='get_sizes_for_color'),
 

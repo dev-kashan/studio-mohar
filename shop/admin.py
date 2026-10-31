@@ -39,7 +39,8 @@ class OrderItemUploadedFileInline(admin.TabularInline):
 class OrderItemSizeInline(admin.TabularInline):
     model = OrderItemSize
     extra = 0
-    fields = ('size', 'unit_price','quantity','total_price')
+    fields = ('size', 'unit_price','quantity','total_price', 'personalization_display')
+    readonly_fields = ('personalization_display',)  # shop designs: customer text per piece
 
 # ---------------- OrderItem Inline in OrderAdmin ----------------
 class OrderItemInline(admin.StackedInline):
@@ -54,6 +55,7 @@ class OrderItemInline(admin.StackedInline):
         ('Order_Type', 'unity_price', 'item_total'),
 
         ('Mockup', 'order_item'),
+        ('shop_design', 'personal_image'),
         ('Front_Image', 'Back_Image', 'Left_Image', 'Right_Image'),
         ('Front_Desgin_Image', 'Back_Desgin_Image', 'Left_Desgin_Image', 'Right_Desgin_Image'),
 
@@ -296,6 +298,7 @@ admin.site.register(Order,OrderAdmin)
 class OrderItemAdmin(admin.ModelAdmin):
     fields = (
         ('image_thumbnail', 'order_by', 'order_item', 'product_name'),
+        ('Order_Type', 'shop_design', 'personal_image'),
         ('color', 'order_status', 'status'),
         ('unity_price', 'item_total', 'date', 'Active'),
     )
@@ -780,8 +783,8 @@ class SavedDesignAdmin(admin.ModelAdmin):
 class GuestCartItemInline(admin.TabularInline):
     model = GuestCartItem
     extra = 0  # no empty rows by default
-    fields = ['size', 'quantity']
-    readonly_fields = []  # you can add fields here to make them non-editable if needed
+    fields = ['size', 'quantity', 'personalization_display']
+    readonly_fields = ['personalization_display']  # shop designs: customer text per piece
 
 # @admin.register(GuestCart)
 class GuestCartAdmin(admin.ModelAdmin):
@@ -833,6 +836,142 @@ class ServiceAdmin(admin.ModelAdmin):
 # class ServiceSectionAdmin(admin.ModelAdmin):
 #     list_display = ('service', 'title')
 #     search_fields = ('title', 'subtitle')
+
+
+# =====================================================================
+# SHOP DESIGNS (Shop page products) + OCCASIONS
+# =====================================================================
+from django import forms
+from django.forms.models import BaseInlineFormSet
+
+
+class OccasionFaqInline(admin.TabularInline):
+    model = OccasionFaq
+    extra = 1
+    fields = ('question', 'answer', 'order')
+
+
+@admin.register(Occasion)
+class OccasionAdmin(admin.ModelAdmin):
+    list_display = ('card_preview', 'name', 'slug', 'show_in_menu', 'show_on_shop_page', 'order', 'live')
+    list_display_links = ('card_preview', 'name')
+    list_editable = ('show_in_menu', 'show_on_shop_page', 'order', 'live')
+    prepopulated_fields = {"slug": ("name",)}
+    search_fields = ('name', 'subtitle')
+    readonly_fields = ('card_preview',)
+    inlines = [OccasionFaqInline]
+    fieldsets = [
+        ("Card", {
+            "fields": (('name', 'slug'),
+                       'subtitle',
+                       ('card_preview', 'image'),
+                       ('card_color', 'text_tone'),
+                       ('show_in_menu', 'show_on_shop_page', 'order', 'live')),
+        }),
+        ("Occasion page", {
+            "fields": ('page_title', 'page_description', 'seo_heading', 'seo_content'),
+        }),
+        ("SEO", {
+            "fields": ('meta_title', 'meta_description'),
+        }),
+    ]
+
+
+class ShopDesignColorFormSet(BaseInlineFormSet):
+    """Colours must exist on the base product, and only one can be the default."""
+
+    def clean(self):
+        super().clean()
+        base = self.instance.base_product if self.instance.base_product_id else None
+        allowed = set(ProductAttribute.objects.filter(product=base).values_list('color_id', flat=True)) if base else set()
+        defaults = 0
+        for form in self.forms:
+            if not form.cleaned_data or form.cleaned_data.get('DELETE'):
+                continue
+            color = form.cleaned_data.get('color')
+            if base and color and color.id not in allowed:
+                form.add_error('color', f'"{color}" is not a colour of {base}. Add it to the base product first.')
+            if form.cleaned_data.get('is_default'):
+                defaults += 1
+        if defaults > 1:
+            raise forms.ValidationError('Only one colour can be the default.')
+
+
+class ShopDesignColorInline(admin.TabularInline):
+    model = ShopDesignColor
+    formset = ShopDesignColorFormSet
+    extra = 1
+    fields = ('color', 'hero_image', 'back_image', 'is_default', 'order')
+
+
+class ShopDesignImageInline(admin.TabularInline):
+    model = ShopDesignImage
+    extra = 1
+    fields = ('image', 'alt_text', 'order')
+    verbose_name_plural = "Gallery (extra photos / GIFs)"
+
+
+class ShopDesignTextFieldInline(admin.TabularInline):
+    model = ShopDesignTextField
+    extra = 0
+    fields = ('label', 'help_text', 'placeholder', 'max_length', 'required', 'order')
+    verbose_name_plural = "Personalization text fields (Text 1, Text 2, ...)"
+
+
+class ShopDesignForm(forms.ModelForm):
+    class Meta:
+        model = ShopDesign
+        fields = '__all__'
+
+    def clean(self):
+        data = super().clean()
+        if data.get('is_personalizable') and not (data.get('allow_image_upload') or data.get('allow_text')):
+            raise forms.ValidationError('A personalizable design needs "Allow image upload", "Allow text", or both.')
+        return data
+
+
+@admin.register(ShopDesign)
+class ShopDesignAdmin(admin.ModelAdmin):
+    form = ShopDesignForm
+    list_display = ('preview', 'name', 'base_product', 'price', 'is_personalizable', 'is_best_seller', 'order', 'live', 'created')
+    list_display_links = ('preview', 'name')
+    list_editable = ('is_best_seller', 'order', 'live')
+    list_filter = ('live', 'is_best_seller', 'is_personalizable', 'occasions', 'base_product')
+    search_fields = ('name', 'short_description')
+    prepopulated_fields = {"slug": ("name",)}
+    filter_horizontal = ('occasions',)
+    inlines = [ShopDesignColorInline, ShopDesignImageInline, ShopDesignTextFieldInline]
+    fieldsets = [
+        ("Design", {
+            "fields": (('name', 'slug'),
+                       ('base_product', 'price'),
+                       'occasions',
+                       'short_description',
+                       'description',
+                       ('is_best_seller', 'order', 'live')),
+        }),
+        ("Personalization", {
+            "description": "Turn on 'Is personalizable', then choose image upload, text, or both. "
+                           "For text, add the text fields at the bottom of this page. "
+                           "Customer text/photos only go with the order - product images never change.",
+            "fields": ('is_personalizable',
+                       ('allow_image_upload', 'image_upload_label', 'image_upload_help'),
+                       'image_position_preview',
+                       'allow_text',
+                       'personalization_gif'),
+        }),
+        ("SEO", {
+            "fields": ('meta_title', 'meta_description'),
+        }),
+    ]
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        design = form.instance
+        if design.wants_text and not design.text_fields.exists():
+            messages.warning(request, f'"{design}" allows text but has no text fields yet - add them at the bottom of the page.')
+        if design.live and not design.colors.exists():
+            messages.warning(request, f'"{design}" is live but has no colours/hero images, so it will not show on the shop.')
 
 
 
