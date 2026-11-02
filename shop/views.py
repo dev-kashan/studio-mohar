@@ -2,6 +2,8 @@ from django.contrib.messages.api import error
 from django.http import request
 from django.shortcuts import redirect, render, HttpResponse, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound, Http404
+from django.views.decorators.http import require_POST
+import os
 from .models import *
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -577,7 +579,9 @@ def index(request):
     i_posts = InstagramPost.objects.all() 
 
 
-    mockup_products = Product.objects.filter(customize_mockup_template__isnull=False, live=True)
+    # Homepage "Our Products" shows the first 3: lowest style order first, mixed across categories
+    mockup_products = (Product.objects.filter(customize_mockup_template__isnull=False, live=True, categories__active=True)
+                       .order_by('display_order', 'categories__display_order', 'product_id'))
     # print(MyCategory,"cacaca")
 
 
@@ -2714,3 +2718,66 @@ def style_page(request, cat_slug, style_slug):
         'competitors': CompetitorProduct.objects.filter(main_product=product),
         'page_data': page_data,
     })
+
+
+@require_POST
+def inspo_request(request):
+    """'Upload inspo & we'll recreate it': save the request, email the team and the customer."""
+    from django.core.validators import validate_email
+    from django.core.exceptions import ValidationError as _VE
+
+    if request.POST.get('website'):            # honeypot field, hidden from people
+        return JsonResponse({'success': True})
+    description = request.POST.get('description', '').strip()[:5000]
+    email = request.POST.get('email', '').strip()[:254]
+    page = request.POST.get('page', '').strip()[:300]
+    if not description:
+        return JsonResponse({'success': False, 'field': 'description', 'error': ProductPageSettings.load().inspo_error}, status=400)
+    try:
+        validate_email(email)
+    except _VE:
+        return JsonResponse({'success': False, 'field': 'email', 'error': 'Please enter a valid email address.'}, status=400)
+
+    image = request.FILES.get('image')
+    if image:
+        if image.size > SHOP_DESIGN_MAX_IMAGE_MB * 1024 * 1024:
+            return JsonResponse({'success': False, 'field': 'image', 'error': f'Image must be under {SHOP_DESIGN_MAX_IMAGE_MB} MB.'}, status=400)
+        try:
+            with Image.open(image) as img:
+                fmt = (img.format or '').upper()
+                img.verify()
+        except Exception:
+            fmt = ''
+        if fmt not in SHOP_DESIGN_IMAGE_FORMATS:
+            return JsonResponse({'success': False, 'field': 'image', 'error': 'Please upload a JPG, PNG, WEBP or GIF image.'}, status=400)
+        image.seek(0)
+
+    req = InspoRequest.objects.create(image=image, description=description, email=email, page=page)
+
+    # Emails: team gets the request (+ image), customer gets a confirmation. A mail
+    # problem must not lose the request - it is already saved in the admin.
+    try:
+        admin_url = request.build_absolute_uri(f'/admin/shop/insporequest/{req.id}/change/')
+        team = EmailMultiAlternatives(
+            subject=f'New inspo request from {email}',
+            body=f'Email: {email}\nPage: {page}\n\nIdea:\n{description}\n\nOpen in admin: {admin_url}',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=list(getattr(settings, 'SALES_EMAILS', [])) or [settings.DEFAULT_FROM_EMAIL],
+            reply_to=[email],
+        )
+        if req.image:
+            req.image.open('rb')
+            team.attach(os.path.basename(req.image.name), req.image.read(), getattr(image, 'content_type', None))
+            req.image.close()
+        team.send()
+        EmailMultiAlternatives(
+            subject='We got your idea - Studio Mohar',
+            body=(f'Hi,\n\nThanks for sending us your idea. Our art team will make a free mockup and email it to you.\n\n'
+                  f'Your idea:\n{description}\n\nStudio Mohar'),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[email],
+        ).send()
+    except Exception as exc:
+        print(f'Inspo request {req.id}: email not sent: {exc}')
+
+    return JsonResponse({'success': True, 'message': ProductPageSettings.load().inspo_success})

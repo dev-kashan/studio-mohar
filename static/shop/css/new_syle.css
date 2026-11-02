@@ -3424,20 +3424,16 @@ html, body { overflow-x: clip; }
 }
 
 
-/* Homepage "Our Products": one row that scrolls sideways, last card = See all */
-.home-products-row {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: thin;
-    padding-bottom: 8px;
-    margin-left: 0;
-    margin-right: 0;
-}
-.home-products-row > .product-col { scroll-snap-align: start; flex-shrink: 0; }
+/* Homepage "Our Products": first 3 products + a "See all" card, same size, no scrollbar */
+.home-products-row { margin-left: 0; margin-right: 0; }
+.home-products-row > .product-col { display: flex; }
+.home-products-row .product-card { width: 100%; display: flex; flex-direction: column; }
+.home-products-row .product-image { aspect-ratio: 4 / 5; height: auto !important; overflow: hidden; border-radius: 16px; background: #f2f2ef; }
+.home-products-row .product-image .product-img { width: 100%; height: 100%; object-fit: cover; }
 .home-see-all {
-    height: 100%;
-    min-height: 260px;
+    width: 100%;
+    height: 100%;          /* same height as the product cards next to it */
+    min-height: 180px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -3445,8 +3441,10 @@ html, body { overflow-x: clip; }
     gap: 12px;
     border: 1px dashed #7E9479;
     border-radius: 16px;
+    background: #FFFFFF;
     color: #3E4F38;
     font-weight: 600;
+    text-align: center;
     text-decoration: none;
     transition: background .2s ease;
 }
@@ -3464,11 +3462,11 @@ html, body { overflow-x: clip; }
     transition: transform .2s ease;
 }
 .home-see-all:hover .home-see-all-arrow { transform: translateX(4px); }
-@media (max-width: 767px) {
-    .home-products-row > .product-col { width: 75%; }
+@media (max-width: 575px) {
+    .home-see-all-arrow { width: 44px; height: 44px; font-size: 20px; }
+    .home-see-all { font-size: 14px; }
 }
 @media (prefers-reduced-motion: reduce) { .home-see-all, .home-see-all-arrow { transition: none; } }
-
 
 /* Instant Quote: product list that expands into styles (replaces the dropdown;
    the dropdown stays in the page, hidden, and still drives the price script) */
@@ -3509,3 +3507,109 @@ html, body { overflow-x: clip; }
 }
 .qp-style:hover { border-color: #5A6F52; }
 .qp-style.is-on { background: #5A6F52; border-color: #5A6F52; color: #FFFFFF; font-weight: 600; }
+
+
+/* =====================================================================
+   UPLOAD INSPO card + popup (freshprints-style). Classes: .pl-inspo-*, .inspo-*
+   ===================================================================== */
+.pl-inspo-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-height: 100%;
+    aspect-ratio: auto;
+    padding: 24px;
+    border: 2px dashed #9DB096;
+    border-radius: 14px;
+    background: #FFFFFF;
+    color: #3E4F38;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+.pl-inspo-card:hover { border-color: #5A6F52; background: #F4F6F1; transform: translateY(-2px); }
+.pl-inspo-card:focus-visible { outline: 2px solid #5A6F52; outline-offset: 3px; }
+.pl-inspo-text { max-width: 180px; }
+
+.inspo-overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(29, 29, 27, .45); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.inspo-overlay[hidden] { display: none; }
+.inspo-modal {
+    position: relative;
+    width: 100%;
+    max-width: 780px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    background: #FFFFFF;
+    border-radius: 24px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .25);
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 28px;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: #1D1D1B;
+    animation: smhPanelIn .18s ease;
+}
+.inspo-close { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border: 0; border-radius: 50%; background: #F2F2EF; font-size: 20px; line-height: 1; color: #5E5E58; cursor: pointer; }
+.inspo-preview {
+    border: 2px dashed #9DB096;
+    border-radius: 18px;
+    background: #FAFAF8;
+    min-height: 300px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+}
+.inspo-preview[hidden], .inspo-form[hidden], .inspo-done[hidden], .inspo-error[hidden], .inspo-preview img[hidden], .inspo-preview-empty[hidden] { display: none; }
+.inspo-preview img { width: 100%; height: 100%; max-height: 360px; object-fit: contain; }
+.inspo-preview-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #3E4F38; }
+.inspo-form { display: flex; flex-direction: column; gap: 22px; padding-top: 8px; }
+.inspo-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.inspo-step { display: grid; grid-template-columns: 30px 1fr; gap: 14px; position: relative; }
+.inspo-step:first-child::after { content: ''; position: absolute; left: 14px; top: 34px; bottom: -22px; width: 2px; background: #E2DED4; }
+.inspo-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; background: #EEF2EB; color: #5A6F52; position: relative; z-index: 1; }
+.inspo-num.is-on { background: #5A6F52; color: #FFFFFF; box-shadow: 0 0 0 4px #DDE6D8; }
+.inspo-step-body h2 { margin: 3px 0 4px; font-size: 18px; font-weight: 700; font-family: inherit; color: #1D1D1B; }
+.inspo-help { margin: 0 0 10px; font-size: 13px; color: #5E5E58; line-height: 1.45; }
+.inspo-textarea-wrap { position: relative; }
+.inspo-textarea-wrap textarea {
+    width: 100%;
+    min-height: 120px;
+    resize: vertical;
+    border: 1.5px solid #CFCABD;
+    border-radius: 10px;
+    padding: 12px 44px 12px 12px;
+    font: inherit;
+    font-size: 15px;
+}
+.inspo-step input[type=email] { width: 100%; max-width: 300px; height: 44px; border: 1.5px solid #CFCABD; border-radius: 10px; padding: 0 12px; font: inherit; font-size: 15px; }
+.inspo-textarea-wrap textarea:focus, .inspo-step input[type=email]:focus { outline: 2px solid #5A6F52; outline-offset: 1px; border-color: #5A6F52; }
+.inspo-form .is-invalid { border-color: #C8323A !important; background: #FFF8F8; }
+.inspo-attach { position: absolute; right: 10px; bottom: 12px; width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #9DB096; background: #F4F6F1; color: #3E4F38; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.inspo-error { margin: 6px 0 0; font-size: 13px; color: #C8323A; }
+.inspo-actions { display: flex; align-items: center; gap: 18px; margin-top: 14px; }
+.inspo-submit { height: 44px; padding: 0 22px; border: 0; border-radius: 999px; background: #5A6F52; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: background .2s ease; }
+.inspo-submit:hover { background: #3E4F38; }
+.inspo-submit[disabled] { opacity: .6; cursor: progress; }
+.inspo-cancel { border: 0; background: none; padding: 0; font: inherit; font-size: 14px; color: #5E5E58; text-decoration: underline; cursor: pointer; }
+.inspo-note { margin: 8px 0 0; font-size: 12px; color: #5A6F52; }
+.inspo-done { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 16px; text-align: center; font-size: 17px; }
+.inspo-done-icon { width: 56px; height: 56px; border-radius: 50%; background: #5A6F52; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 680px) {
+    .inspo-modal { grid-template-columns: 1fr; padding: 20px 16px; gap: 18px; border-radius: 18px; }
+    .inspo-preview { min-height: 180px; }
+    .inspo-preview img { max-height: 220px; }
+    .pl-inspo-card { font-size: 14px; padding: 16px; }
+    .pl-inspo-icon svg { width: 48px; height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) { .inspo-modal { animation: none; } .pl-inspo-card { transition: none; } }

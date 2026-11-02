@@ -1,0 +1,153 @@
+{% if page.inspo_on %}
+<!-- ============================================================
+     UPLOAD INSPO POPUP (freshprints-style): image on the left,
+     1) describe the idea, 2) email -> saved in admin + emailed to the team.
+     ============================================================ -->
+<input type="file" id="inspoFile" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+<div class="inspo-overlay" id="inspoOverlay" hidden>
+    <div class="inspo-modal" role="dialog" aria-modal="true" aria-labelledby="inspoTitle1">
+        <button type="button" class="inspo-close" id="inspoClose" aria-label="Close">&times;</button>
+        <button type="button" class="inspo-preview" id="inspoPreview" aria-label="Change image">
+            <img id="inspoImg" alt="Your inspiration image" hidden>
+            <span class="inspo-preview-empty" id="inspoEmpty">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#5A6F52" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/></svg>
+                Add an image
+            </span>
+        </button>
+
+        <form class="inspo-form" id="inspoForm" novalidate>
+            {% csrf_token %}
+            <input type="text" name="website" class="inspo-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <div class="inspo-step">
+                <span class="inspo-num is-on">1</span>
+                <div class="inspo-step-body">
+                    <h2 id="inspoTitle1">{{ page.inspo_title1 }}</h2>
+                    {% if page.inspo_help1 %}<p class="inspo-help">{{ page.inspo_help1 }}</p>{% endif %}
+                    <div class="inspo-textarea-wrap">
+                        <textarea name="description" id="inspoDesc" rows="5" maxlength="5000" placeholder="{{ page.inspo_placeholder }}" aria-describedby="inspoDescErr"></textarea>
+                        <button type="button" class="inspo-attach" id="inspoAttach" aria-label="Upload an image">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
+                        </button>
+                    </div>
+                    <p class="inspo-error" id="inspoDescErr" hidden>{{ page.inspo_error }}</p>
+                </div>
+            </div>
+            <div class="inspo-step">
+                <span class="inspo-num">2</span>
+                <div class="inspo-step-body">
+                    <h2>{{ page.inspo_title2 }}</h2>
+                    {% if page.inspo_help2 %}<p class="inspo-help">{{ page.inspo_help2 }}</p>{% endif %}
+                    <label class="visually-hidden" for="inspoEmail">Email</label>
+                    <input type="email" name="email" id="inspoEmail" placeholder="Email" autocomplete="email" maxlength="254" aria-describedby="inspoEmailErr">
+                    <p class="inspo-error" id="inspoEmailErr" hidden>Please enter a valid email address.</p>
+                    <div class="inspo-actions">
+                        <button type="submit" class="inspo-submit" id="inspoSubmit">{{ page.inspo_button }} <span aria-hidden="true">&rsaquo;</span></button>
+                        <button type="button" class="inspo-cancel" id="inspoCancel">Cancel</button>
+                    </div>
+                    {% if page.inspo_note %}<p class="inspo-note">{{ page.inspo_note }}</p>{% endif %}
+                    <p class="inspo-error" id="inspoFormErr" role="alert" hidden></p>
+                </div>
+            </div>
+        </form>
+
+        <div class="inspo-done" id="inspoDone" hidden>
+            <span class="inspo-done-icon" aria-hidden="true">&#10003;</span>
+            <p id="inspoDoneMsg">{{ page.inspo_success }}</p>
+            <button type="button" class="inspo-submit" id="inspoDoneClose">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ===== UPLOAD INSPO ===== */
+(function () {
+    var overlay = document.getElementById('inspoOverlay');
+    if (!overlay) return;
+    var fileInput = document.getElementById('inspoFile');
+    var form = document.getElementById('inspoForm');
+    var img = document.getElementById('inspoImg'), empty = document.getElementById('inspoEmpty');
+    var desc = document.getElementById('inspoDesc'), email = document.getElementById('inspoEmail');
+    var lastFocus = null, chosen = null, openAfterPick = false;
+
+    function show(el, on) { el.hidden = !on; }
+    function setImage(file) {
+        chosen = file || null;
+        if (chosen) { img.src = URL.createObjectURL(chosen); }
+        show(img, !!chosen); show(empty, !chosen);
+    }
+    function open() {
+        lastFocus = document.activeElement;
+        show(overlay, true);
+        document.body.style.overflow = 'hidden';
+        setTimeout(function () { desc.focus(); }, 50);
+    }
+    function close() {
+        show(overlay, false);
+        document.body.style.overflow = '';
+        if (lastFocus) lastFocus.focus();
+    }
+    function pick(thenOpen) { openAfterPick = thenOpen; fileInput.value = ''; fileInput.click(); }
+
+    document.querySelectorAll('[data-inspo-open]').forEach(function (b) {
+        b.addEventListener('click', function () { pick(true); });
+    });
+    fileInput.addEventListener('change', function () {
+        if (fileInput.files && fileInput.files[0]) {
+            setImage(fileInput.files[0]);
+            if (openAfterPick && overlay.hidden) open();
+        }
+    });
+    document.getElementById('inspoPreview').addEventListener('click', function () { pick(false); });
+    document.getElementById('inspoAttach').addEventListener('click', function () { pick(false); });
+    document.getElementById('inspoClose').addEventListener('click', close);
+    document.getElementById('inspoCancel').addEventListener('click', close);
+    document.getElementById('inspoDoneClose').addEventListener('click', close);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !overlay.hidden) close(); });
+
+    desc.addEventListener('input', function () { if (desc.value.trim()) { desc.classList.remove('is-invalid'); show(document.getElementById('inspoDescErr'), false); } });
+    email.addEventListener('input', function () { email.classList.remove('is-invalid'); show(document.getElementById('inspoEmailErr'), false); });
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var bad = false;
+        if (!desc.value.trim()) { desc.classList.add('is-invalid'); show(document.getElementById('inspoDescErr'), true); bad = bad || desc; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) { email.classList.add('is-invalid'); show(document.getElementById('inspoEmailErr'), true); bad = bad || email; }
+        if (bad) { bad.focus(); return; }
+        var body = new FormData(form);
+        body.append('page', window.location.pathname);
+        if (chosen) body.append('image', chosen);
+        var btn = document.getElementById('inspoSubmit');
+        btn.disabled = true;
+        show(document.getElementById('inspoFormErr'), false);
+        fetch('/inspo-request/', { method: 'POST', body: body, credentials: 'same-origin',
+                                   headers: { 'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value } })
+            .then(function (r) { return r.json().catch(function () { return { success: false }; }); })
+            .then(function (res) {
+                btn.disabled = false;
+                if (res.success) {
+                    if (res.message) document.getElementById('inspoDoneMsg').textContent = res.message;
+                    show(form, false); show(document.getElementById('inspoPreview'), false); show(document.getElementById('inspoDone'), true);
+                    form.reset(); setImage(null);
+                } else {
+                    var err = document.getElementById('inspoFormErr');
+                    err.textContent = res.error || 'Something went wrong. Please try again.';
+                    show(err, true);
+                }
+            })
+            .catch(function () {
+                btn.disabled = false;
+                var err = document.getElementById('inspoFormErr');
+                err.textContent = 'Could not send. Please check your connection and try again.';
+                show(err, true);
+            });
+    });
+    // reopen fresh after a successful send
+    document.querySelectorAll('[data-inspo-open]').forEach(function (b) {
+        b.addEventListener('click', function () {
+            show(form, true); show(document.getElementById('inspoPreview'), true); show(document.getElementById('inspoDone'), false);
+        });
+    });
+})();
+</script>
+{% endif %}

@@ -1096,6 +1096,10 @@ class ProductPageSettingsAdmin(admin.ModelAdmin):
         ('All products page', {
             "fields": ('all_title', 'all_intro', 'styles_label', 'all_meta_title', 'all_meta_description'),
         }),
+        ('Upload inspo card + popup', {
+            "fields": ('inspo_on', 'inspo_card_text', 'inspo_title1', 'inspo_help1', 'inspo_placeholder', 'inspo_error',
+                       'inspo_title2', 'inspo_help2', ('inspo_button', 'inspo_note'), 'inspo_success'),
+        }),
         ('Product page', {
             "fields": ('includes_text',
                        ('delivery_min_days', 'delivery_max_days', 'delivery_region'), 'delivery_note',
@@ -1109,4 +1113,38 @@ class ProductPageSettingsAdmin(admin.ModelAdmin):
         return not ProductPageSettings.objects.exists()
 
     def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(InspoRequest)
+class InspoRequestAdmin(admin.ModelAdmin):
+    list_display = ('thumb', 'email', 'short_idea', 'status', 'page', 'created')
+    list_display_links = ('thumb', 'email')
+    list_editable = ('status',)
+    list_filter = ('status', 'created')
+    search_fields = ('email', 'description')
+    readonly_fields = ('thumb_large', 'image_link', 'email', 'description', 'page', 'created')
+    fields = ('thumb_large', 'image_link', 'email', 'description', 'page', 'created', 'status', 'staff_note')
+
+    def thumb(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="width:50px;height:50px;object-fit:cover;border-radius:6px">', obj.image.url)
+        return '-'
+    thumb.short_description = 'Image'
+
+    def thumb_large(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="max-width:320px;max-height:320px;border-radius:8px">', obj.image.url)
+        return 'No image'
+    thumb_large.short_description = 'Image'
+
+    def image_link(self, obj):
+        return format_html('<a href="{}" target="_blank" rel="noopener" download>Download</a>', obj.image.url) if obj.image else '-'
+    image_link.short_description = 'File'
+
+    def short_idea(self, obj):
+        return (obj.description[:70] + '...') if len(obj.description) > 70 else obj.description
+    short_idea.short_description = 'Idea'
+
+    def has_add_permission(self, request):
         return False

@@ -1880,6 +1880,19 @@ class ProductPageSettings(models.Model):
     details_heading = models.CharField(max_length=100, default='Product details')
     size_chart_heading = models.CharField(max_length=100, default='Size chart')
 
+    # "Upload inspo & we'll recreate it" card + popup (All products / styles pages)
+    inspo_on = models.BooleanField(default=True, help_text="Show the Upload inspo card")
+    inspo_card_text = models.CharField(max_length=120, default="Upload inspo & we'll recreate it.")
+    inspo_title1 = models.CharField(max_length=120, default="Describe What You'd Like to See")
+    inspo_help1 = models.CharField(max_length=255, default="Our Art team can do anything! We'll send you a free mockup and then revise it till you love it.", blank=True)
+    inspo_placeholder = models.CharField(max_length=255, default="e.g. Turn our logo into a vintage badge, change the blue colour to dark yellow.", blank=True)
+    inspo_error = models.CharField(max_length=200, default="Please share your ideas, & we'll bring your vision to life!")
+    inspo_title2 = models.CharField(max_length=120, default="Where should we send the mockup?")
+    inspo_help2 = models.CharField(max_length=255, default="We'll email it within one business day. This won't take more than two mins.", blank=True)
+    inspo_button = models.CharField(max_length=60, default="Submit Request")
+    inspo_note = models.CharField(max_length=120, default="Free mockup within one business day", blank=True)
+    inspo_success = models.CharField(max_length=255, default="Thanks! Our art team is on it. Your free mockup will be in your inbox soon.")
+
     class Meta:
         verbose_name = 'Product page settings'
         verbose_name_plural = '29. Products - Page Settings'
@@ -1890,6 +1903,26 @@ class ProductPageSettings(models.Model):
     @classmethod
     def load(cls):
         return cls.objects.first() or cls()
+
+
+class InspoRequest(models.Model):
+    """'Upload inspo & we'll recreate it' requests from the product pages."""
+    STATUS = (('new', 'New'), ('mockup_sent', 'Mockup sent'), ('done', 'Done'))
+    image = models.FileField(upload_to='inspo_requests/', max_length=1000, blank=True, null=True)
+    description = models.TextField()
+    email = models.EmailField()
+    page = models.CharField(max_length=300, default='', blank=True, help_text="Page the request was sent from")
+    status = models.CharField(max_length=20, choices=STATUS, default='new')
+    staff_note = models.TextField(default='', blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created']
+        verbose_name = 'Inspo request'
+        verbose_name_plural = '30. Products - Inspo Requests'
+
+    def __str__(self):
+        return f'{self.email} ({self.created:%Y-%m-%d})'
 
 
 class ProductTrustItem(models.Model):

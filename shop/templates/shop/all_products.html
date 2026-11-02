@@ -17,6 +17,7 @@
 
     {% if categories %}
     <div class="pl-cat-grid">
+        {% include 'shop/partials/inspo_card.html' %}
         {% for cat in categories %}
         <a href="{{ cat.get_absolute_url }}" class="pl-cat-card">
             <span class="pl-cat-media">
@@ -34,4 +35,5 @@
     {% endif %}
 </main>
 </div>
+{% include 'shop/partials/inspo_modal.html' %}
 {% endblock body %}

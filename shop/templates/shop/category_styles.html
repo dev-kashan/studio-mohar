@@ -39,6 +39,7 @@
 
     {% if cards %}
     <div class="pl-style-grid">
+        {% include 'shop/partials/inspo_card.html' %}
         {% for card in cards %}
         <a href="{{ card.url }}" class="pl-style-card">
             <span class="pl-style-media">
@@ -59,4 +60,5 @@
     {% endif %}
 </main>
 </div>
+{% include 'shop/partials/inspo_modal.html' %}
 {% endblock body %}
