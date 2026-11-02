@@ -89,9 +89,37 @@ class StickerType(models.Model):
 
 
 
+def slug_is_taken_by_site(slug):
+    """True if /<slug>/ is already one of the site's own pages (cart, blog, admin...),
+    so a product category can't take that URL."""
+    from django.urls import resolve, Resolver404
+    if slug in ('admin', 'jet', 'media', 'static', 'shop', 'design'):
+        return True
+    try:
+        match = resolve(f'/{slug}/')
+    except Resolver404:
+        return False
+    return match.url_name != 'category_styles'
+
+
+COLOR_FAMILIES = (
+    # value, label, swatch shown in the colour filter
+    ('black', 'Black'), ('white', 'White'), ('grey', 'Grey'), ('red', 'Red'), ('pink', 'Pink'),
+    ('orange', 'Orange'), ('yellow', 'Yellow'), ('green', 'Green'), ('blue', 'Blue'),
+    ('purple', 'Purple'), ('brown', 'Brown'), ('natural', 'Natural / Beige'), ('multi', 'Multi / Other'),
+)
+COLOR_FAMILY_SWATCH = {
+    'black': '#1D1D1B', 'white': '#FFFFFF', 'grey': '#A6A6A2', 'red': '#C8323A', 'pink': '#EDB5C4',
+    'orange': '#E07B2E', 'yellow': '#F2C94C', 'green': '#2F6B45', 'blue': '#2B5BA8', 'purple': '#6B4C9A',
+    'brown': '#7A5134', 'natural': '#E8DFCC', 'multi': 'conic-gradient(#C8323A, #F2C94C, #2F6B45, #2B5BA8, #C8323A)',
+}
+
+
 class Color(models.Model):
     color_code = ColorField(default='' , blank=True , null=True)
     color_name = models.CharField(max_length=255 , default='' , blank=True , null=True)
+    # Shade group for filters: Cardinal Red, Dark Red, Blood Red... all belong to "Red"
+    family = models.CharField(max_length=20, choices=COLOR_FAMILIES, default='', blank=True, help_text="Colour group used by the shop colour filter")
     Available = models.CharField(choices=YES_OR_NO , default="Yes" , max_length=255)
     date = models.DateTimeField(auto_now_add=True)
 
@@ -172,7 +200,17 @@ class Category(models.Model):
         upload_to="shop/images", default="shop/images/noperview.jpg", blank=True, null=True)
     pub_date = models.DateField(auto_now_add=True ,  blank=True, null=True)
     active = models.BooleanField(default=False)
-    
+
+    # Custom URL + styles page (e.g. /tshirts/ lists every T-shirt style)
+    slug = models.SlugField(max_length=120, unique=True, null=True, blank=True, help_text="URL of this product's page, e.g. tshirts → /tshirts/")
+    page_title = models.CharField(max_length=200, default='', blank=True, help_text="Heading on the styles page (falls back to the name)")
+    page_description = models.TextField(default='', blank=True, help_text="Text under the heading on the styles page")
+    meta_title = models.CharField(max_length=255, default='', blank=True)
+    meta_description = models.TextField(max_length=1000, default='', blank=True)
+    # All products page
+    is_pinned = models.BooleanField(default=False, help_text="Show in the first row of the All products page")
+    display_order = models.PositiveIntegerField(default=0, help_text="Lower numbers show first")
+
     # def save(self, *args, **kwargs):
     #     super().save(*args, **kwargs)
     #     imag = Image.open(self.cate_image.path)
@@ -189,6 +227,18 @@ class Category(models.Model):
 
     def __str__(self):
         return self.category_name
+
+    def get_absolute_url(self):
+        return f'/{self.slug}/' if self.slug else f'/products/{self.category_id}/'
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.slug and slug_is_taken_by_site(self.slug):
+            raise ValidationError({'slug': f'"/{self.slug}/" is already a page on the site - please choose another URL.'})
+
+    def live_styles(self):
+        """Design Lab products (styles) of this category that are live."""
+        return self.product_set.filter(live=True, customize_mockup_template__isnull=False)
 
     class Meta:
         verbose_name_plural = '01. Category'
@@ -311,9 +361,35 @@ class Product(models.Model):
     durability = models.CharField(max_length=50, blank=True, null=True)
 
 
+    # Product (style) page
+    promo_percent = models.DecimalField(max_digits=5, decimal_places=2, default=0, help_text="Discount % for colours marked 'Promo' below (0 = no promo)")
+    display_order = models.PositiveIntegerField(default=0, help_text="Lower numbers show first on the styles page")
+
     def save(self, *args, **kwargs):
-        self.Slug = slugify(self.product_name)
+        # Only fill the URL when empty, so a custom URL typed in the admin is kept
+        if not self.Slug:
+            self.Slug = slugify(self.product_name)
         super(Product, self).save(*args, **kwargs)
+
+    def card_photo(self):
+        """Picture for product cards: the first real colour photo, else the old blank mockup."""
+        pc = self.color_photos.filter(front_image__isnull=False).exclude(front_image='').first()
+        if pc:
+            return pc.front_image.url
+        return f'/media/{self.blank_image}' if self.blank_image else '/media/shop/images/noperview.jpg'
+
+    def get_absolute_url(self):
+        cat = self.categories
+        if cat and cat.slug and self.Slug:
+            return f'/{cat.slug}/{self.Slug}/'
+        return f'/product_detail/{self.product_id}/'
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.Slug and self.categories_id:
+            clash = Product.objects.filter(categories_id=self.categories_id, Slug=self.Slug).exclude(pk=self.pk)
+            if clash.exists():
+                raise ValidationError({'Slug': f'Another product in this category already uses "{self.Slug}".'})
     
 
     def stock(self):
@@ -373,6 +449,52 @@ class Product(models.Model):
 
     class Meta:
         verbose_name_plural = '02. Products'
+
+class ProductColor(models.Model):
+    """Real product photos for one colour of a style (replaces the tinted mockup
+    on the product page). Sizes, prices and stock stay in Product Variations."""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='color_photos')
+    color = models.ForeignKey(Color, on_delete=models.PROTECT, help_text="Must be a colour this product has in its variations")
+    is_promo = models.BooleanField(default=False, help_text="Show under 'Promo colours' with the product's promo discount")
+    front_image = models.ImageField(upload_to='shop/product_colors', max_length=1000, blank=True, null=True)
+    back_image = models.ImageField(upload_to='shop/product_colors', max_length=1000, blank=True, null=True)
+    left_image = models.ImageField(upload_to='shop/product_colors', max_length=1000, blank=True, null=True, verbose_name='Left sleeve image')
+    right_image = models.ImageField(upload_to='shop/product_colors', max_length=1000, blank=True, null=True, verbose_name='Right sleeve image')
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+        unique_together = ('product', 'color')
+        verbose_name = 'Colour photos'
+        verbose_name_plural = 'Colour photos'
+
+    def __str__(self):
+        return f'{self.product} - {self.color}'
+
+    def views(self):
+        """[(label, url), ...] for the gallery, in display order."""
+        out = []
+        for label, field in (('Front', self.front_image), ('Back', self.back_image),
+                             ('Left sleeve', self.left_image), ('Right sleeve', self.right_image)):
+            if field:
+                out.append((label, field.url))
+        return out
+
+
+class ProductPhoto(models.Model):
+    """Extra gallery photos (On model, Fabric...). Leave colour empty to show for every colour."""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='photos')
+    color = models.ForeignKey(Color, on_delete=models.SET_NULL, null=True, blank=True, help_text="Empty = show for all colours")
+    image = models.ImageField(upload_to='shop/product_photos', max_length=1000)
+    label = models.CharField(max_length=60, default='', blank=True, help_text="e.g. On model, Fabric")
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return f'{self.product} - {self.label or "photo"}'
+
 
 class ProductPreview(models.Model):
     VIEW_CHOICES = [
@@ -1732,6 +1854,64 @@ class ShopFeature(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class ProductPageSettings(models.Model):
+    """Editable texts for the All products page, the styles pages and the product
+    (style) page. Use ProductPageSettings.load() - it never writes to the database."""
+    # All products page
+    all_title = models.CharField(max_length=200, default='All products')
+    all_intro = models.TextField(default='Premium blanks, printed or embroidered in-house in Mississauga.', blank=True)
+    all_meta_title = models.CharField(max_length=255, default='Complete Custom Apparel Collection | Shirts, Hoodies, Bags & More | Studio Mohar', blank=True)
+    all_meta_description = models.TextField(max_length=1000, default="Explore Studio Mohar's complete custom apparel collection. Premium t-shirts, hoodies, polos, hats, bags & more. Multiple decoration techniques & bulk discounts available.", blank=True)
+    styles_label = models.CharField(max_length=40, default='styles', help_text="Shown under a category name: '4 styles'")
+
+    # Product page
+    includes_text = models.CharField(max_length=200, default='Includes a full-colour front print')
+    delivery_min_days = models.PositiveIntegerField(default=5, help_text="Arrives = today + this many days ...")
+    delivery_max_days = models.PositiveIntegerField(default=10, help_text="... to today + this many days")
+    delivery_region = models.CharField(max_length=60, default='Ontario', blank=True)
+    delivery_note = models.CharField(max_length=200, default='Need it sooner? Rush is available at checkout.', blank=True)
+    request_colour_text = models.CharField(max_length=100, default="Don't see your colour?", blank=True)
+    request_colour_link = models.CharField(max_length=60, default='Request a colour')
+    request_colour_url = models.CharField(max_length=500, default='/contact_sales/')
+    quote_link_text = models.CharField(max_length=100, default='Quote extra prints & embroidery')
+    cta_text = models.CharField(max_length=60, default='Add your design')
+    details_heading = models.CharField(max_length=100, default='Product details')
+    size_chart_heading = models.CharField(max_length=100, default='Size chart')
+
+    class Meta:
+        verbose_name = 'Product page settings'
+        verbose_name_plural = '29. Products - Page Settings'
+
+    def __str__(self):
+        return 'Product page settings'
+
+    @classmethod
+    def load(cls):
+        return cls.objects.first() or cls()
+
+
+class ProductTrustItem(models.Model):
+    """Small icons under 'Add your design' (Canadian-owned, Premium blanks...)."""
+    ICONS = (
+        ('maple', 'Maple leaf'),
+        ('award', 'Award ribbon'),
+        ('fa-truck', 'Truck'),
+        ('fa-circle-check', 'Check'),
+        ('fa-location-dot', 'Location pin'),
+        ('fa-clock', 'Clock'),
+    )
+    settings = models.ForeignKey(ProductPageSettings, on_delete=models.CASCADE, related_name='trust_items')
+    icon = models.CharField(max_length=30, choices=ICONS, default='fa-circle-check')
+    text = models.CharField(max_length=100)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return self.text
 
 
 def personalization_as_html(raw):

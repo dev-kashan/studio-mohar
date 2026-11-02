@@ -303,15 +303,16 @@ Use our online design lab to create unique t-shirts, hoodies & more.">
             <p class="section-subtitle">Easily create custom T-shirts, hoodies, polos, hats and more online.</p>
         </div>
         
-                            <div class="row products-grid" id="productsGrid">
+                            <!-- One row that scrolls sideways; the last card links to All products -->
+                            <div class="row products-grid home-products-row" id="productsGrid">
                                 <!-- Product 1 -->
 
                                 {% for i in mockup_products %}
                                 <div class="col-lg-3 col-md-6 col-sm-6 product-col">
-                                    <div class="product-card" onclick="window.location.href='/product_detail/{{i.product_id}}'" data-category="women" data-price="24.00">
+                                    <div class="product-card" onclick="window.location.href='{{ i.get_absolute_url }}'" data-category="women" data-price="24.00">
                                         <div class="product-image">
-                                            <img src="/media/{{i.blank_image}}" alt="{{i.product_name}}" class="product-img default-img">
-                                            <img src="/media/{{i.printed_image}}" alt="{{i.product_name}}" class="product-img hover-img">
+                                            <img src="{{ i.card_photo }}" alt="{{i.product_name}}" class="product-img default-img">
+                                            {% if i.printed_image %}<img src="/media/{{i.printed_image}}" alt="{{i.product_name}}" class="product-img hover-img">{% endif %}
                                             <!-- <div class="product-overlay">
                                                 <span class="product-overlay-text">YOUR<br>DESIGN<br>HERE</span>
                                             </div> -->
@@ -323,6 +324,12 @@ Use our online design lab to create unique t-shirts, hoodies & more.">
                                     </div>
                                 </div>
                                 {% endfor %}
+                                <div class="col-lg-3 col-md-6 col-sm-6 product-col home-products-more">
+                                    <a href="/all_products/" class="home-see-all" aria-label="See all products">
+                                        <span class="home-see-all-arrow" aria-hidden="true">&rarr;</span>
+                                        <span>See all products</span>
+                                    </a>
+                                </div>
 
 
                                 {% comment %} <!-- Product 2 -->

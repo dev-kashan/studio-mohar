@@ -83,3 +83,10 @@ urlpatterns = [
 
  
 ]
+
+# Product pages with custom URLs - must stay LAST so they never hide a real page:
+# /<category-slug>/ lists the styles, /<category-slug>/<style-slug>/ is the product page.
+urlpatterns += [
+    path('<slug:cat_slug>/', views.category_styles, name='category_styles'),
+    path('<slug:cat_slug>/<slug:style_slug>/', views.style_page, name='style_page'),
+]

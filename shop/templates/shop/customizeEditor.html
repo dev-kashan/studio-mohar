@@ -6645,5 +6645,34 @@ $(window).on("click", function (e) {
 <img src="/static/shop/img/png mockup/mens_longsleeve_front.png" alt="">
 <img src="/static/shop/img/png mockup/womens_crew_front.png" alt=""> -->
 
+<script>
+/* Prefill sizes coming from the product page ("Add your design"):
+   ?sizes=S:5,M:2  -> sets those quantities in the size rows. */
+(function () {
+  var raw = new URLSearchParams(window.location.search).get('sizes');
+  if (!raw) return;
+  // "Small" and "S" are the same size (the editor shows full names, the product page short ones)
+  var SHORT = { SMALL: 'S', MEDIUM: 'M', LARGE: 'L', XXL: '2XL', XXXL: '3XL' };
+  function norm(s) { s = String(s || '').trim().toUpperCase(); return SHORT[s] || s; }
+  var wanted = {};
+  raw.split(',').forEach(function (pair) {
+    var bits = pair.split(':'), n = parseInt(bits[1], 10);
+    if (bits[0] && n > 0) wanted[norm(bits[0])] = Math.min(n, 9999);
+  });
+  function fill() {
+    document.querySelectorAll('.size-row').forEach(function (row) {
+      var label = row.querySelector('.size-label'), input = row.querySelector('.qty-control input');
+      if (!label || !input) return;
+      var n = wanted[norm(label.textContent)];
+      if (!n) return;
+      var max = parseInt(input.getAttribute('max'), 10) || Infinity;
+      input.value = Math.min(n, max);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  }
+  window.addEventListener('load', function () { setTimeout(fill, 600); });
+})();
+</script>
+
   </body>
 </html>

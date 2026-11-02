@@ -1,7 +1,7 @@
 from django.contrib.messages.api import error
 from django.http import request
 from django.shortcuts import redirect, render, HttpResponse, get_object_or_404
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, Http404
 from .models import *
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -208,6 +208,11 @@ def verify_design_code(request):
 
 
 def products(request, id):
+    # Categories now have custom URLs: /<slug>/
+    category = Category.objects.filter(category_id=id).first()
+    if category and category.slug:
+        return redirect(category.get_absolute_url(), permanent=True)
+
     mockup_products = Product.objects.filter(customize_mockup_template__isnull=False, live=True, categories__category_id=id)
     total_count = mockup_products.count()
 
@@ -224,33 +229,8 @@ def products(request, id):
 
     return render(request, 'shop/products.html', context)
 
-def all_products(request):
-    is_sustainable = request.GET.get('is_sustainable', '')
-    is_best_seller = request.GET.get('is_best_seller', '')
-
-    # Base query
-    mockup_products = Product.objects.filter(customize_mockup_template__isnull=False, live=True)
-
-    # Apply filters based on GET parameters
-    if is_best_seller == 'Yes':
-        mockup_products = mockup_products.filter(is_best_seller=True)
-    if is_sustainable == 'Yes':
-        mockup_products = mockup_products.filter(is_sustainable=True)
-
-    total_count = mockup_products.count()
-
-    # Pagination or visible range
-    showing_start = 1
-    showing_end = min(16, total_count)
-
-    context = {
-        'mockup_products': mockup_products[:16],
-        'total_count': total_count,
-        'showing_start': showing_start,
-        'showing_end': showing_end,
-    }
-
-    return render(request, 'shop/all_products.html', context)
+# all_products() moved to the "PRODUCT PAGES" section at the end of this file
+# (best seller / sustainable filters removed as per the brief).
 
 
 def get_apparel_for(request, id):
@@ -270,6 +250,9 @@ def product_detail(request, id):
         shop_design = ShopDesign.objects.filter(base_product=product, live=True, colors__isnull=False).first()
         if shop_design:
             return redirect('shop_design_detail', slug=shop_design.slug, permanent=True)
+    # Design Lab products now have custom URLs: /<category>/<style>/
+    elif product.live and product.categories and product.categories.slug and product.Slug:
+        return redirect(product.get_absolute_url(), permanent=True)
 
     competitors = CompetitorProduct.objects.filter(main_product=product)
 
@@ -2558,3 +2541,176 @@ def shop_design_detail(request, slug):
         'page_data': page_data,
     }
     return render(request, 'shop/shop_design.html', context)
+
+
+# =====================================================================
+# PRODUCT PAGES (2026 redesign): /all_products/, /<category>/ (styles)
+# and /<category>/<style>/ (product page). Products here are the blank
+# garments of the Design Lab (Product with a mockup template).
+# =====================================================================
+
+SIZE_ORDER = ['XXS', '2XS', 'XS', 'S', 'SMALL', 'M', 'MEDIUM', 'L', 'LARGE', 'XL', 'XXL', '2XL', 'XXXL', '3XL',
+              '4XL', '5XL', '6XL', 'OS', 'ONE SIZE']
+
+
+SIZE_SHORT = {'SMALL': 'S', 'MEDIUM': 'M', 'LARGE': 'L', 'XXL': '2XL', 'XXXL': '3XL'}
+
+
+def _size_key(name):
+    n = (name or '').strip().upper()
+    return (SIZE_ORDER.index(n) if n in SIZE_ORDER else len(SIZE_ORDER), n)
+
+
+def _size_label(name):
+    """Short label shown on the page, e.g. 'Small' -> 'S' (same as the Instant Quote)."""
+    n = (name or '').strip()
+    return SIZE_SHORT.get(n.upper(), n)
+
+
+def _design_lab_products():
+    return Product.objects.filter(live=True, customize_mockup_template__isnull=False)
+
+
+def _product_colors(product):
+    """Colours of a product, in admin order: [{id, name, hex, family, is_promo, photos, attr_id, sizes}]"""
+    attrs = (ProductAttribute.objects.filter(product=product, color__isnull=False)
+             .select_related('color', 'size').order_by('id'))
+    photos = {pc.color_id: pc for pc in product.color_photos.all()}
+    extras = list(product.photos.all())
+    colors = {}
+    for a in attrs:
+        c = colors.get(a.color_id)
+        if not c:
+            pc = photos.get(a.color_id)
+            c = colors[a.color_id] = {
+                'id': a.color_id, 'name': a.color.color_name or '', 'hex': a.color.color_code or '#cccccc',
+                'family': a.color.family, 'is_promo': bool(pc and pc.is_promo),
+                'order': (pc.order if pc else 9999, a.color.color_name or ''),
+                'photos': (pc.views() if pc else []) + [(p.label or 'Photo', p.image.url) for p in extras if p.color_id in (None, a.color_id)],
+                'attr_id': a.id, 'sizes': {},
+            }
+        if a.size:
+            price = a.discount_price if a.discount_price and a.discount_price > 0 else a.price
+            c['sizes'].setdefault(a.size.Size_name, {'attr_id': a.id, 'price': float(price or 0), 'max': a.Max_Qty or 0})
+    out = sorted(colors.values(), key=lambda c: c['order'])
+    for c in out:
+        c['sizes'] = [dict(name=k, label=_size_label(k), **v) for k, v in sorted(c['sizes'].items(), key=lambda kv: _size_key(kv[0]))]
+        del c['order']
+    return out
+
+
+def _price_tiers():
+    pricing = DesignPricing.objects.first()
+    tiers = [{'min': t.min_qty, 'max': t.max_qty, 'pct': float(t.discount_percent)}
+             for t in (pricing.discount_tiers.all() if pricing else [])]
+    return float(pricing.front_price) if pricing else 10.0, tiers
+
+
+def all_products(request):
+    """All product categories (coastalreign-style cards). Pinned ones first."""
+    settings_ = ProductPageSettings.load()
+    categories = []
+    for cat in Category.objects.filter(active=True).order_by('-is_pinned', 'display_order', 'category_name'):
+        styles = cat.live_styles()
+        n = styles.count()
+        if not n:
+            continue
+        cat.style_count = n
+        # Card image: the category image, or (if missing) the first style's photo
+        cat.card_image = ''
+        if cat.cate_image and 'noperview' not in cat.cate_image.name and cat.cate_image.storage.exists(cat.cate_image.name):
+            cat.card_image = cat.cate_image.url
+        else:
+            pc = (ProductColor.objects.filter(product__in=styles, front_image__isnull=False).exclude(front_image='')
+                  .order_by('product__display_order', 'order').first())
+            if pc:
+                cat.card_image = pc.front_image.url
+        categories.append(cat)
+    return render(request, 'shop/all_products.html', {'page': settings_, 'categories': categories})
+
+
+def category_styles(request, cat_slug):
+    """Every live style of one category, with a colour-family filter."""
+    category = get_object_or_404(Category, slug=cat_slug, active=True)
+    styles = list(category.live_styles().order_by('display_order', 'product_name'))
+    family = request.GET.get('color', '')
+
+    cards, families = [], {}
+    for p in styles:
+        colors = _product_colors(p)
+        for c in colors:
+            if c['family']:
+                families[c['family']] = families.get(c['family'], 0) + 1
+        if family and not any(c['family'] == family for c in colors):
+            continue
+        first = None
+        if colors:
+            first = next((c for c in colors if c['family'] == family), colors[0])
+        cards.append({
+            'product': p,
+            'url': p.get_absolute_url() + (f'?color={first["id"]}' if family and first else ''),
+            'photo': first['photos'][0][1] if first and first['photos'] else '',
+            'hex': first['hex'] if first else '#ffffff',
+            'fabric': p.fabric_composition or strip_tags(p.short_desc or '')[:90],
+            'swatches': colors[:5],
+            'more': max(0, len(colors) - 5),
+        })
+
+    family_options = [(k, label, COLOR_FAMILY_SWATCH.get(k, '#ccc')) for k, label in COLOR_FAMILIES if k in families]
+    others = Category.objects.filter(active=True).exclude(pk=category.pk).order_by('-is_pinned', 'display_order')
+    others = [c for c in others if c.slug and c.live_styles().exists()]
+    return render(request, 'shop/category_styles.html', {
+        'category': category, 'cards': cards, 'family_options': family_options, 'family': family,
+        'others': others, 'page': ProductPageSettings.load(),
+    })
+
+
+def style_page(request, cat_slug, style_slug):
+    """The product (style) page from the client's 'Signature Tee' design."""
+    product = get_object_or_404(_design_lab_products().select_related('categories', 'customize_mockup_template'),
+                                categories__slug=cat_slug, Slug=style_slug)
+    colors = _product_colors(product)
+    if not colors:
+        raise Http404("This product has no colours yet")
+    front_price, tiers = _price_tiers()
+    page = ProductPageSettings.load()
+
+    start = colors[0]
+    want = request.GET.get('color', '')
+    if want.isdigit():
+        start = next((c for c in colors if c['id'] == int(want)), start)
+
+    today = date.today()
+    first_day = today + timedelta(days=page.delivery_min_days)
+    last_day = today + timedelta(days=page.delivery_max_days)
+    if first_day.month == last_day.month:
+        arrives = f'{first_day:%b} {first_day.day}–{last_day.day}'
+    else:
+        arrives = f'{first_day:%b} {first_day.day} – {last_day:%b} {last_day.day}'
+
+    mockup = product.customize_mockup_template
+    promo_on = bool(product.promo_percent and product.promo_percent > 0)
+    page_data = {
+        'productId': product.product_id,
+        'productName': product.product_name,
+        'frontPrice': front_price,
+        'promoPct': float(product.promo_percent or 0) if promo_on else 0,
+        'tiers': tiers,
+        'startColor': start['id'],
+        'colors': colors,
+        'blank': f'/media/{product.blank_image}' if product.blank_image else '',
+        'editorBase': f'/customize-editor/{mockup.id}/{mockup.MockUp_Name}/{product.product_id}/' if mockup else '',
+    }
+    return render(request, 'shop/product_page.html', {
+        'product': product,
+        'category': product.categories,
+        'colors': colors,
+        'start': start,
+        'promo_colors': [c for c in colors if c['is_promo']] if promo_on else [],
+        'other_colors': [c for c in colors if not (c['is_promo'] and promo_on)],
+        'page': page,
+        'trust': page.trust_items.all() if page.pk else [],
+        'arrives': arrives,
+        'competitors': CompetitorProduct.objects.filter(main_product=product),
+        'page_data': page_data,
+    })

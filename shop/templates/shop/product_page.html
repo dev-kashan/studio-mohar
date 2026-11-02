@@ -1,0 +1,358 @@
+{% extends 'shop/base.html' %}
+{% block head %}
+<title>{{ product.Meta_title|default:product.product_name }}{% if not product.Meta_title %} | Studio Mohar{% endif %}</title>
+{% if product.Meta_description %}<meta name="description" content="{{ product.Meta_description }}">{% endif %}
+<link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ product.get_absolute_url }}">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+{% endblock head %}
+{% block body %}
+{% load size_filters %}
+<!-- ============================================================
+     PRODUCT PAGE - matches the client's "Signature Tee" design.
+     Price = (size price + front print) x promo x quantity tier, the same
+     formula as the Instant Quote and the Design Lab.
+     ============================================================ -->
+<div class="pp">
+<main class="pp-main">
+    <div class="pp-top">
+
+        <!-- Gallery: real photos per colour (falls back to the tinted blank) -->
+        <section class="pp-gallery" aria-label="Photos">
+            <div class="pp-photo" id="ppPhoto" style="--tint:{{ start.hex }}">
+                {% if start.photos %}
+                <img id="ppMainImg" src="{{ start.photos.0.1 }}" alt="{{ product.product_name }}, {{ start.photos.0.0 }} view, {{ start.name }}">
+                {% else %}
+                <img id="ppMainImg" class="is-blank" src="/media/{{ product.blank_image }}" alt="{{ product.product_name }} in {{ start.name }}">
+                {% endif %}
+            </div>
+            <div class="pp-thumbs" id="ppThumbs" aria-label="More photos"></div>
+        </section>
+
+        <section class="pp-info" aria-label="Options">
+            <div class="pp-head">
+                <nav class="pp-breadcrumb" aria-label="Breadcrumb">
+                    <a href="/">Home</a><span aria-hidden="true">/</span>
+                    {% if category %}<a href="{{ category.get_absolute_url }}">{{ category.category_name }}</a><span aria-hidden="true">/</span>{% endif %}
+                    <span class="is-current">{{ product.product_name }}</span>
+                </nav>
+                <h1>{{ product.product_name }}</h1>
+                <p class="pp-sub">
+                    {% if product.fabric_composition %}{{ product.fabric_composition }}{% else %}{{ product.short_desc|striptags|truncatechars:120 }}{% endif %}
+                    <a href="#details" class="pp-link" data-tab="details">Details &darr;</a>
+                </p>
+            </div>
+
+            <!-- Colours -->
+            <div class="pp-colours">
+                {% if promo_colors %}
+                <div>
+                    <p class="pp-label is-promo">Promo colours</p>
+                    <div class="pp-swatches" role="group" aria-label="Promo colours">
+                        {% for c in promo_colors %}
+                        <button type="button" class="pp-swatch{% if c.id == start.id %} is-on{% endif %}" data-color="{{ c.id }}" aria-pressed="{% if c.id == start.id %}true{% else %}false{% endif %}" aria-label="{{ c.name }}, on promotion">
+                            <span class="pp-dot" style="background:{{ c.hex }}"></span><span class="pp-swatch-name">{{ c.name }}</span>
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                <div>
+                    <p class="pp-label">{% if promo_colors %}More colours{% else %}Colours{% endif %}</p>
+                    <div class="pp-swatches" role="group" aria-label="Colours">
+                        {% for c in other_colors %}
+                        <button type="button" class="pp-swatch{% if c.id == start.id %} is-on{% endif %}" data-color="{{ c.id }}" aria-pressed="{% if c.id == start.id %}true{% else %}false{% endif %}" aria-label="{{ c.name }}">
+                            <span class="pp-dot" style="background:{{ c.hex }}"></span><span class="pp-swatch-name">{{ c.name }}</span>
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% if page.request_colour_link %}
+                <p class="pp-note">{{ page.request_colour_text }} <a href="{{ page.request_colour_url }}?product={{ product.product_name|urlencode }}" class="pp-link">{{ page.request_colour_link }} &rarr;</a></p>
+                {% endif %}
+            </div>
+
+            <!-- Sizes -->
+            <div class="pp-sizes">
+                <div class="pp-sizes-head">
+                    <p class="pp-sizes-title">Sizes</p>
+                    {% if product.size_chart_img %}<a href="#details" class="pp-link pp-chart-link" data-tab="sizechart">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h18v8H3z"/><path d="M7 8v3M11 8v4M15 8v3M19 8v4"/></svg>
+                        {{ page.size_chart_heading }}</a>{% endif %}
+                </div>
+                <div class="pp-size-grid" id="ppSizes"></div>
+            </div>
+
+            <!-- Price + delivery -->
+            <section class="pp-price" aria-label="Price and delivery" aria-live="polite">
+                <div id="ppPriceOn" hidden>
+                    <div class="pp-price-row">
+                        <span class="pp-each" id="ppEach"></span>
+                        <s class="pp-reg" id="ppReg" hidden></s>
+                        <span class="pp-for">each &middot; <strong id="ppTotal"></strong> for <span id="ppPieces"></span></span>
+                    </div>
+                    <p class="pp-includes">{{ page.includes_text }} &middot; <span class="pp-nudge" id="ppNudge"></span></p>
+                    <p class="pp-saving" id="ppSaving" hidden></p>
+                </div>
+                <div id="ppPriceOff">
+                    <span class="pp-empty-title">Add sizes to see your price</span>
+                    <p class="pp-includes" id="ppFrom"></p>
+                </div>
+                <div class="pp-divider"></div>
+                <div class="pp-delivery">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3f443d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h12v10H2z"/><path d="M14 9h4l4 4v3h-8z"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="18" cy="17.5" r="1.8"/></svg>
+                    <div>
+                        <p><strong>Arrives {{ arrives }}</strong>{% if page.delivery_region %} in {{ page.delivery_region }}{% endif %}</p>
+                        {% if page.delivery_note %}<p class="pp-muted">{{ page.delivery_note }}</p>{% endif %}
+                    </div>
+                </div>
+                <a href="#" class="pp-quote-link" id="ppQuote">
+                    <span>{{ page.quote_link_text }}</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+            </section>
+
+            <div class="pp-cta-wrap">
+                <!-- On phones this bar sticks to the bottom of the screen -->
+                <div class="pp-cta-bar">
+                    <div class="pp-cta-total"><span id="ppBarPieces">0 pieces</span><strong id="ppBarTotal">&ndash;</strong></div>
+                    <a href="#" class="pp-cta" id="ppCta">{{ page.cta_text }}
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    </a>
+                </div>
+                {% if trust %}
+                <ul class="pp-trust" aria-label="Why order from Studio Mohar">
+                    {% for t in trust %}
+                    <li>
+                        {% if t.icon == 'maple' %}<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3f443d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l1.6 3.4 2-1-.6 4.1 3-2.1.6 2 2.6-.5-1 3.1 1.6 1L16 15.6l.5 2.1-4-.8V22h-1v-5.1l-4 .8.5-2.1L2.2 12l1.6-1-1-3.1 2.6.5.6-2 3 2.1-.6-4.1 2 1z"/></svg>
+                        {% elif t.icon == 'award' %}<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3f443d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/></svg>
+                        {% else %}<span class="pp-trust-icon">{% include 'shop/partials/icon.html' with name=t.icon %}</span>{% endif %}
+                        <span>{{ t.text }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+
+    <!-- Details + size chart tabs ("Details" and "Size chart" links open them) -->
+    <section id="details" class="pp-details" aria-label="Product details">
+        <div class="pp-tabs" role="tablist">
+            <button type="button" role="tab" class="pp-tab is-on" id="tab-details" aria-selected="true" aria-controls="panel-details">{{ page.details_heading }}</button>
+            {% if product.size_chart_img %}<button type="button" role="tab" class="pp-tab" id="tab-sizechart" aria-selected="false" aria-controls="panel-sizechart">{{ page.size_chart_heading }}</button>{% endif %}
+        </div>
+        <div class="pp-panel" id="panel-details" role="tabpanel" aria-labelledby="tab-details">
+            <div class="pp-detail-grid">
+                {% if product.desc %}<div class="pp-rich">{{ product.desc|safe }}</div>{% elif product.short_desc %}<div class="pp-rich">{{ product.short_desc|safe }}</div>{% endif %}
+                {% if product.fabric_composition or product.fabric_weight or product.fit or product.softness or product.durability %}
+                <dl class="pp-specs">
+                    {% if product.fabric_composition %}<dt>Fabric</dt><dd>{{ product.fabric_composition }}</dd>{% endif %}
+                    {% if product.fabric_weight %}<dt>Weight</dt><dd>{{ product.fabric_weight }}</dd>{% endif %}
+                    {% if product.fit %}<dt>Fit</dt><dd>{{ product.fit }}</dd>{% endif %}
+                    {% if product.softness %}<dt>Softness</dt><dd>{{ product.softness }}</dd>{% endif %}
+                    {% if product.durability %}<dt>Durability</dt><dd>{{ product.durability }}</dd>{% endif %}
+                    {% if product.construction_quality %}<dt>Construction</dt><dd>{{ product.construction_quality }}</dd>{% endif %}
+                </dl>
+                {% endif %}
+                {% if competitors %}
+                <div class="pp-compare">
+                    <p class="pp-label">How it compares</p>
+                    <table>
+                        <thead><tr><th></th><th>{{ product.product_name }}</th>{% for c in competitors %}<th>{{ c.competitor_name }}</th>{% endfor %}</tr></thead>
+                        <tbody>
+                            <tr><td>Fabric</td><td>{{ product.fabric_composition|default:"-" }}</td>{% for c in competitors %}<td>{{ c.fabric_composition|default:"-" }}</td>{% endfor %}</tr>
+                            <tr><td>Weight</td><td>{{ product.fabric_weight|default:"-" }}</td>{% for c in competitors %}<td>{{ c.fabric_weight|default:"-" }}</td>{% endfor %}</tr>
+                            <tr><td>Fit</td><td>{{ product.fit|default:"-" }}</td>{% for c in competitors %}<td>{{ c.fit|default:"-" }}</td>{% endfor %}</tr>
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% if product.size_chart_img %}
+        <div class="pp-panel" id="panel-sizechart" role="tabpanel" aria-labelledby="tab-sizechart" hidden>
+            <img src="{{ product.size_chart_img.url }}" alt="{{ product.product_name }} size chart" class="pp-chart" loading="lazy">
+        </div>
+        {% endif %}
+    </section>
+</main>
+</div>
+
+{{ page_data|json_script:"ppData" }}
+<script>
+/* ===== PRODUCT PAGE ===== */
+(function () {
+    var data = JSON.parse(document.getElementById('ppData').textContent);
+    var colors = {};
+    data.colors.forEach(function (c) { colors[c.id] = c; });
+    var current = colors[data.startColor];
+    var view = 0;
+    var qty = {}; // size name -> quantity (kept when the colour changes)
+
+    var $ = function (id) { return document.getElementById(id); };
+    function money(n) { return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+    function isPromo(c) { return data.promoPct > 0 && c.is_promo; }
+
+    // ---- Gallery ----
+    function renderGallery() {
+        var photo = $('ppPhoto'), img = $('ppMainImg'), thumbs = $('ppThumbs');
+        photo.style.setProperty('--tint', current.hex);
+        thumbs.innerHTML = '';
+        if (!current.photos.length) {          // no real photos yet: tinted blank
+            img.src = data.blank; img.classList.add('is-blank');
+            img.alt = data.productName + ' in ' + current.name;
+            return;
+        }
+        if (view >= current.photos.length) view = 0;
+        img.classList.remove('is-blank');
+        img.src = current.photos[view][1];
+        img.alt = data.productName + ', ' + current.photos[view][0] + ' view, ' + current.name;
+        if (current.photos.length < 2) return;
+        current.photos.forEach(function (p, i) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'pp-thumb' + (i === view ? ' is-on' : '');
+            b.setAttribute('aria-pressed', i === view ? 'true' : 'false');
+            b.setAttribute('aria-label', p[0] + ' view');
+            b.innerHTML = '<img src="' + p[1] + '" alt="" loading="lazy"><span></span>';
+            b.querySelector('span').textContent = p[0];
+            b.addEventListener('click', function () { view = i; renderGallery(); });
+            thumbs.appendChild(b);
+        });
+    }
+
+    // ---- Sizes ----
+    function renderSizes() {
+        var grid = $('ppSizes');
+        grid.innerHTML = '';
+        grid.style.setProperty('--n', Math.min(current.sizes.length, 7));
+        current.sizes.forEach(function (s) {
+            var id = 'pp-qty-' + s.label.replace(/\W/g, '');
+            var cell = document.createElement('div');
+            cell.className = 'pp-size';
+            cell.innerHTML = '<label></label><input type="text" inputmode="numeric" placeholder="0" autocomplete="off">';
+            var label = cell.querySelector('label'), input = cell.querySelector('input');
+            label.textContent = s.label; label.htmlFor = id;
+            input.id = id;
+            input.value = qty[s.name] || '';
+            input.classList.toggle('has-qty', !!qty[s.name]);
+            input.addEventListener('input', function () {
+                var v = input.value.replace(/[^0-9]/g, '').slice(0, 4);
+                input.value = v;
+                qty[s.name] = parseInt(v, 10) || 0;
+                input.classList.toggle('has-qty', qty[s.name] > 0);
+                renderPrice();
+            });
+            grid.appendChild(cell);
+        });
+    }
+
+    // ---- Price (same formula as the Instant Quote / Design Lab) ----
+    function unit(s, c, withPromo) {
+        var u = s.price + data.frontPrice;
+        return withPromo && isPromo(c) ? u * (1 - data.promoPct / 100) : u;
+    }
+    function tierFor(q) {
+        for (var i = 0; i < data.tiers.length; i++) {
+            var t = data.tiers[i];
+            if (q >= t.min && (t.max === null || q <= t.max)) return t;
+        }
+        return null;
+    }
+    function nextTier(q) {
+        var best = null;
+        data.tiers.forEach(function (t) { if (t.min > q && (!best || t.min < best.min)) best = t; });
+        return best;
+    }
+    function renderPrice() {
+        var q = 0, sub = 0, subReg = 0;
+        current.sizes.forEach(function (s) {
+            var n = qty[s.name] || 0;
+            q += n; sub += n * unit(s, current, true); subReg += n * unit(s, current, false);
+        });
+        var on = q > 0;
+        $('ppPriceOn').hidden = !on;
+        $('ppPriceOff').hidden = on;
+        if (!on) {
+            var lowest = Math.min.apply(null, current.sizes.map(function (s) { return unit(s, current, true); }));
+            var last = data.tiers.reduce(function (a, t) { return !a || t.min > a.min ? t : a; }, null);
+            var txt = 'From ' + money(lowest) + ' each';
+            if (last && last.pct > 0) txt += ' · as low as ' + money(lowest * (1 - last.pct / 100)) + ' at ' + last.min + '+';
+            $('ppFrom').textContent = txt;
+            $('ppBarPieces').textContent = '0 pieces';
+            $('ppBarTotal').textContent = '–';
+            return;
+        }
+        var tier = tierFor(q), pct = tier ? tier.pct : 0;
+        var total = sub * (1 - pct / 100), each = total / q;
+        var regTotal = subReg * (1 - pct / 100);
+        $('ppEach').textContent = money(each);
+        $('ppEach').classList.toggle('is-promo', isPromo(current));
+        $('ppReg').hidden = !isPromo(current);
+        $('ppReg').textContent = money(regTotal / q);
+        $('ppTotal').textContent = money(total);
+        $('ppPieces').textContent = q + (q === 1 ? ' piece' : ' pieces');
+        $('ppSaving').hidden = !isPromo(current);
+        $('ppSaving').textContent = 'You save ' + money(regTotal - total) + ' with this promo colour';
+        var nt = nextTier(q);
+        $('ppNudge').textContent = nt ? ('Add ' + (nt.min - q) + ' more → ' + money((sub / q) * (1 - nt.pct / 100)) + ' each') : 'Best bulk price unlocked';
+        $('ppBarPieces').textContent = q + (q === 1 ? ' piece' : ' pieces');
+        $('ppBarTotal').textContent = money(total);
+    }
+
+    // ---- Colour swatches ----
+    document.querySelectorAll('.pp-swatch').forEach(function (b) {
+        b.addEventListener('click', function () {
+            current = colors[b.dataset.color];
+            document.querySelectorAll('.pp-swatch').forEach(function (x) {
+                var on = x === b;
+                x.classList.toggle('is-on', on);
+                x.setAttribute('aria-pressed', on ? 'true' : 'false');
+            });
+            renderGallery(); renderSizes(); renderPrice();
+            history.replaceState(null, '', '?color=' + current.id);
+        });
+    });
+
+    // ---- Links that carry the choices: Design Lab and Instant Quote ----
+    function sizesParam() {
+        return current.sizes.filter(function (s) { return qty[s.name] > 0; })
+            .map(function (s) { return s.label + ':' + qty[s.name]; }).join(',');
+    }
+    $('ppCta').addEventListener('click', function (e) {
+        e.preventDefault();
+        if (!data.editorBase) return;
+        var url = data.editorBase + '?attr_id=' + current.attr_id + '&color_id=' + current.id +
+                  '&color_code=' + encodeURIComponent(current.hex);
+        var s = sizesParam();
+        if (s) url += '&sizes=' + encodeURIComponent(s);
+        window.location.href = url;
+    });
+    $('ppQuote').addEventListener('click', function (e) {
+        e.preventDefault();
+        var q = {};
+        current.sizes.forEach(function (s) { if (qty[s.name] > 0) q[s.label] = qty[s.name]; });
+        if (typeof window.openQuoteFor === 'function') window.openQuoteFor(data.productId, current.hex, q);
+        else if (typeof window.openQuotePopup === 'function') window.openQuotePopup();
+    });
+
+    // ---- Details / size chart tabs ----
+    function openTab(name) {
+        document.querySelectorAll('.pp-tab').forEach(function (t) {
+            var on = t.id === 'tab-' + name;
+            t.classList.toggle('is-on', on);
+            t.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        document.querySelectorAll('.pp-panel').forEach(function (p) { p.hidden = p.id !== 'panel-' + name; });
+    }
+    document.querySelectorAll('.pp-tab').forEach(function (t) {
+        t.addEventListener('click', function () { openTab(t.id.replace('tab-', '')); });
+    });
+    document.querySelectorAll('[data-tab]').forEach(function (a) {
+        a.addEventListener('click', function () { if ($('tab-' + a.dataset.tab)) openTab(a.dataset.tab); });
+    });
+
+    renderGallery(); renderSizes(); renderPrice();
+})();
+</script>
+{% endblock body %}

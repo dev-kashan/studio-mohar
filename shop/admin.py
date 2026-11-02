@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.forms.models import BaseInlineFormSet
 
 from django.shortcuts import HttpResponseRedirect , redirect
 from django.contrib import messages
@@ -320,12 +321,44 @@ class ProductAttributeAdminInline(admin.TabularInline):
     extra = 0
     readonly_fields = ('image_tag',)
 
+
+class ProductColorFormSet(BaseInlineFormSet):
+    """Colour photos must be for a colour the product has in its variations."""
+
+    def clean(self):
+        super().clean()
+        if not self.instance.pk:
+            return
+        allowed = set(ProductAttribute.objects.filter(product=self.instance).values_list('color_id', flat=True))
+        for form in self.forms:
+            if not form.cleaned_data or form.cleaned_data.get('DELETE'):
+                continue
+            color = form.cleaned_data.get('color')
+            if color and allowed and color.id not in allowed:
+                form.add_error('color', f'"{color}" is not in this product\'s variations - add it there first.')
+
+
+class ProductColorInline(admin.TabularInline):
+    model = ProductColor
+    formset = ProductColorFormSet
+    extra = 0
+    fields = ('color', 'is_promo', 'front_image', 'back_image', 'left_image', 'right_image', 'order')
+    verbose_name_plural = "Colour photos (front / back / sleeves) - shown on the product page instead of the mockup"
+
+
+class ProductPhotoInline(admin.TabularInline):
+    model = ProductPhoto
+    extra = 0
+    fields = ('image', 'label', 'color', 'order')
+    verbose_name_plural = "Extra photos (on model, fabric...)"
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     fieldsets = [
         ("", {
             "classes": ("collapse"),
             "fields": (('product_name') ,
+                       ('Slug', 'display_order'),
                        ('size_available'),
                         ('printed_image', 'blank_image', 'size_chart_img'),
                         ('categories' , 'customize_mockup_template'),
@@ -333,7 +366,7 @@ class ProductAdmin(admin.ModelAdmin):
                         # ('price' , 'sprice'),
                         ('short_desc'),
                         ('desc'),
-                        ('live', 'is_best_seller', 'is_sustainable'),
+                        ('live', 'promo_percent'),
                         ('Meta_title', 'Meta_description'),
                 ),
         }),
@@ -369,7 +402,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter =('product_id' , 'categories__category_name' ,   'Availibility' , 'live' , 'pub_date',)
     list_editable = ('live', ) 
     search_fields = ('product_name' ,'categories__category_name'  , 'categories__category' , 'desc', 'pub_date')
-    inlines = [ProductCompareInline, ProductAttributeAdminInline, ProductPreviewInline]
+    inlines = [ProductAttributeAdminInline, ProductColorInline, ProductPhotoInline, ProductCompareInline, ProductPreviewInline]
     # ordering = ['Availibility']
  
     class Meta:
@@ -468,18 +501,28 @@ class ProductAdmin(admin.ModelAdmin):
 
 class CategoryAdmin(admin.ModelAdmin):
 
-    fields =(
-        ('category_name', 'active'),
-        ('cate_image'),
-      
-
-    )
+    fieldsets = [
+        ("Category", {
+            "fields": (('category_name', 'active'),
+                       ('slug', 'display_order', 'is_pinned'),
+                       ('Category_image', 'cate_image')),
+            "description": "The image is the card on the All products page. URL: /<slug>/ shows every live style of this category.",
+        }),
+        ("Styles page", {
+            "fields": ('page_title', 'page_description'),
+        }),
+        ("SEO", {
+            "fields": ('meta_title', 'meta_description'),
+        }),
+    ]
+    prepopulated_fields = {"slug": ("category_name",)}
 
     readonly_fields = ('Category_image' ,  'Category_Banner')
 
-    list_display =('category_name' , 'category' , 'offer' , 'pub_date' , 'active' , 'Category_image')
+    list_display =('Category_image', 'category_name' , 'slug', 'is_pinned', 'display_order', 'pub_date' , 'active')
+    list_display_links = ('Category_image', 'category_name')
     list_filter =('pub_date',)
-    list_editable = ('active',)
+    list_editable = ('active', 'is_pinned', 'display_order')
     search_fields = ('category_name' , 'category' ,  'pub_date')
 
 
@@ -581,10 +624,12 @@ admin.site.register(MockUp, MockUpAdmin)
 
 class ColorAdmin(admin.ModelAdmin):
     fields = (
-        ('color_code' , 'color_name' , 'Available')
+        ('color_code' , 'color_name' , 'Available'),
+        'family',
     )
-    list_display = ('color_code' , 'color_Show' ,  'color_name' , 'Available' , 'date')
-    list_editable = ('Available' ,)
+    list_display = ('color_code' , 'color_Show' ,  'color_name' , 'family', 'Available' , 'date')
+    list_editable = ('Available' , 'family')
+    list_filter = ('family',)
     search_fields = ('color_code' , 'color_name' , 'Available' , 'date')
 
 admin.site.register(Color , ColorAdmin)
@@ -1032,3 +1077,36 @@ admin.site.site_title = "Ruii | Admin"
 admin.site.index_title = "Welcome to Ruii"
 admin.site.search_fields="search"
 
+
+
+# =====================================================================
+# PRODUCT PAGES (All products / styles page / product page texts)
+# =====================================================================
+class ProductTrustItemInline(admin.TabularInline):
+    model = ProductTrustItem
+    extra = 1
+    fields = ('icon', 'text', 'order')
+    verbose_name_plural = "Icons under 'Add your design'"
+
+
+@admin.register(ProductPageSettings)
+class ProductPageSettingsAdmin(admin.ModelAdmin):
+    inlines = [ProductTrustItemInline]
+    fieldsets = [
+        ('All products page', {
+            "fields": ('all_title', 'all_intro', 'styles_label', 'all_meta_title', 'all_meta_description'),
+        }),
+        ('Product page', {
+            "fields": ('includes_text',
+                       ('delivery_min_days', 'delivery_max_days', 'delivery_region'), 'delivery_note',
+                       ('request_colour_text', 'request_colour_link', 'request_colour_url'),
+                       ('quote_link_text', 'cta_text'),
+                       ('details_heading', 'size_chart_heading')),
+        }),
+    ]
+
+    def has_add_permission(self, request):
+        return not ProductPageSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False

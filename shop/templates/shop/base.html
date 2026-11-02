@@ -682,9 +682,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     {% load size_filters %}
     <div class="quote-form-section">
         <label class="quote-form-label">Product</label>
+        <!-- Product picker: categories that expand into their styles (drives the select below) -->
+        <div class="qp-picker" id="quotePicker" aria-label="Choose a product"></div>
         <select class="quote-product-select" id="productSelect" onchange="handleProductChange()">
             {% for i in mockup_products %}
-            <option value="{{i.product_id}}" 
+            <option value="{{i.product_id}}" data-category="{{ i.categories.category_name|default:'Other' }}"
                 data-image="/media/{{i.blank_image}}"
                 data-attributes='[
                     {% for attr in i.productattribute_set.all %}
@@ -1579,6 +1581,101 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         document.getElementById('quotePopupOverlay').style.display = 'block';
         document.body.style.overflow = 'hidden';
         initializePopup();
+    }
+
+    // Instant Quote product picker: list of products (categories) that expand
+    // into their styles. Picking a style sets the hidden select as before.
+    function buildQuotePicker() {
+        var picker = document.getElementById('quotePicker');
+        var select = document.getElementById('productSelect');
+        if (!picker || !select || picker.dataset.built) return;
+        picker.dataset.built = '1';
+        var groups = {}, order = [];
+        [].forEach.call(select.options, function (o) {
+            var cat = o.dataset.category || 'Other';
+            if (!groups[cat]) { groups[cat] = []; order.push(cat); }
+            groups[cat].push(o);
+        });
+        order.forEach(function (cat) {
+            var box = document.createElement('div');
+            box.className = 'qp-group';
+            var head = document.createElement('button');
+            head.type = 'button';
+            head.className = 'qp-cat';
+            head.setAttribute('aria-expanded', 'false');
+            head.innerHTML = '<span></span><small></small>';
+            head.querySelector('span').textContent = cat;
+            head.querySelector('small').textContent = groups[cat].length + (groups[cat].length === 1 ? ' style' : ' styles');
+            var list = document.createElement('div');
+            list.className = 'qp-styles';
+            list.hidden = true;
+            groups[cat].forEach(function (o) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'qp-style';
+                b.dataset.value = o.value;
+                b.textContent = o.textContent.trim();
+                b.addEventListener('click', function () {
+                    select.value = o.value;
+                    handleProductChange();
+                    syncQuotePicker();
+                });
+                list.appendChild(b);
+            });
+            head.addEventListener('click', function () {
+                var open = list.hidden;
+                list.hidden = !open;
+                head.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+            box.appendChild(head);
+            box.appendChild(list);
+            picker.appendChild(box);
+        });
+    }
+    function syncQuotePicker() {
+        var select = document.getElementById('productSelect');
+        if (!select) return;
+        document.querySelectorAll('#quotePicker .qp-style').forEach(function (b) {
+            var on = b.dataset.value === select.value;
+            b.classList.toggle('is-on', on);
+            if (on) {   // keep the chosen product's group open
+                var list = b.parentElement;
+                list.hidden = false;
+                list.previousElementSibling.setAttribute('aria-expanded', 'true');
+            }
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        buildQuotePicker();
+        syncQuotePicker();
+        var select = document.getElementById('productSelect');
+        if (select) select.addEventListener('change', syncQuotePicker);
+    });
+
+    // Open the Instant Quote already filled in (used by the product page):
+    // product id, colour hex and {size label: quantity}, e.g. {S: 5, M: 2}
+    function openQuoteFor(productId, colorCode, quantities) {
+        openQuotePopup();
+        var select = document.getElementById('productSelect');
+        if (select && [].some.call(select.options, function (o) { return o.value == productId; })) {
+            select.value = String(productId);
+            handleProductChange();
+            syncQuotePicker();
+        }
+        var want = String(colorCode || '').toLowerCase();
+        document.querySelectorAll('#colorGrid .quote-color-option').forEach(function (el) {
+            if ((el.dataset.colorCode || '').toLowerCase() === want) {
+                selectColor(el, el.dataset.colorCode, el.dataset.colorName);
+            }
+        });
+        Object.keys(quantities || {}).forEach(function (size) {
+            var input = document.getElementById('size' + size);
+            if (input) {
+                input.value = quantities[size];
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
     }
 
     // Close popup
