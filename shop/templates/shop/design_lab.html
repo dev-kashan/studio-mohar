@@ -1,0 +1,366 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Design Lab | Studio Mohar</title>
+    <meta name="description" content="Design your own custom t-shirts, hoodies and tote bags: upload your logo or add text, pick print or embroidery and see your price right away.">
+    <link rel="icon" type="image/x-icon" href="/media/{{ layout.favicon }}">
+
+    <!-- Google Tag Manager (same container as the rest of the site) -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-MR9BZ39V');</script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Manrope for the page; the rest are the text fonts customers can pick -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Anton&family=Bebas+Neue&family=Oswald:wght@500;700&family=Playfair+Display:wght@700&family=Graduate&family=Pacifico&family=Lobster&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/shop/css/new_syle.css">
+</head>
+<body class="dl-body">
+<!-- ============================================================
+     DESIGN LAB - matches the client's "Design Lab Redesign" file.
+     One page: Choose your merch -> style -> colour -> editor -> price.
+     Everything is drawn by shop/js/design-lab.js from #dlData.
+     ============================================================ -->
+<div class="dl" id="dl">
+
+    <header class="dl-header">
+        <a href="/" class="dl-logo" aria-label="Studio Mohar home">
+            {% if layout.logo %}<img src="/media/{{ layout.logo }}" alt="Studio Mohar">{% else %}STUDIO MOHAR{% endif %}
+        </a>
+        <span class="dl-header-title" id="dlHeaderTitle" hidden>Change product</span>
+        <button type="button" class="dl-pill" id="dlPill" hidden>
+            <span class="dl-pill-thumb"><img id="dlPillImg" src="data:," alt=""></span>
+            <span class="dl-pill-name" id="dlPillName"></span>
+            <span class="dl-pill-color" id="dlPillColor"></span>
+            <span class="dl-pill-chip">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h12l-3-3M17 17H5l3 3"></path></svg>
+                Change product
+            </span>
+        </button>
+        <button type="button" class="dl-next" id="dlNext">
+            Next
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </button>
+    </header>
+
+    <noscript><p class="dl-noscript">The Design Lab needs JavaScript. Please turn it on, or <a href="/contact_sales/">send us your idea</a> and we'll design it for you.</p></noscript>
+
+    <!-- ===== Steps 1-3: pickers (also used for "Change product") ===== -->
+    <main class="dl-picker" id="dlPicker" hidden>
+        <!-- 1 - Choose your merch -->
+        <section class="dl-step" id="dlStepMerch" aria-labelledby="dlMerchTitle">
+            <button type="button" class="dl-back" data-back="editor" hidden>← Back to editor</button>
+            <div class="dl-carry" data-carry hidden>
+                <span class="dl-carry-icon" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h12l-3-3M17 17H5l3 3"></path></svg></span>
+                <div>
+                    <strong>Your design comes with you</strong>
+                    <span>Pick any product and we'll place your artwork on it. Sides the new product doesn't have (like sleeves on a tote) are kept, just hidden.</span>
+                </div>
+            </div>
+            <div class="dl-step-head">
+                <h1 class="dl-title" id="dlMerchTitle">Choose your merch</h1>
+                <p class="dl-sub" id="dlMerchSub">Pick what you want to put your design on. You can switch products later — your design comes with you.</p>
+            </div>
+            <div class="dl-grid" id="dlMerchGrid"></div>
+        </section>
+
+        <!-- 2 - Choose your style (only when a category has more than one style) -->
+        <section class="dl-step" id="dlStepStyle" aria-labelledby="dlStyleTitle" hidden>
+            <div class="dl-step-head">
+                <button type="button" class="dl-back" data-back="merch">← All merch</button>
+                <h1 class="dl-title" id="dlStyleTitle">Choose your style</h1>
+                <p class="dl-sub" id="dlStyleSub"></p>
+            </div>
+            <div class="dl-grid is-styles" id="dlStyleGrid"></div>
+        </section>
+
+        <!-- 3 - Choose your colour -->
+        <section class="dl-step" id="dlStepColour" aria-labelledby="dlColourTitle" hidden>
+            <div class="dl-colour">
+                <div class="dl-colour-photo" id="dlColourPhoto"><img id="dlColourImg" src="data:," alt=""></div>
+                <div class="dl-colour-side">
+                    <div class="dl-step-head">
+                        <button type="button" class="dl-back" id="dlColourBack" data-back="style">← Styles</button>
+                        <h1 class="dl-title" id="dlColourTitle">Choose your colour</h1>
+                        <p class="dl-sub"><span id="dlColourStyle"></span> · <strong id="dlColourName"></strong></p>
+                    </div>
+                    <div id="dlColourSwatches"></div>
+                    <p class="dl-hint">Don't see your colour? <a href="/contact_sales/" data-url="requestColour">Request a colour →</a></p>
+                    <button type="button" class="dl-cta" id="dlStart">
+                        Start designing
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                    </button>
+                    <p class="dl-hint dl-center">You can change colour any time in the editor.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== Step 4-5: editor and price ===== -->
+    <div class="dl-lab" id="dlLab" hidden>
+
+        <!-- Left: tools (on phones these open as bottom sheets) -->
+        <aside class="dl-tools" id="dlTools" aria-label="Design tools">
+            <div class="dl-sheet-head">
+                <h2 id="dlSheetTitle">Colour</h2>
+                <button type="button" class="dl-close" data-close-sheet aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+            </div>
+            <div class="dl-tool-btns">
+                <button type="button" class="dl-tool" data-open="upload">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v4h16v-4"></path></svg>
+                    Upload image
+                </button>
+                <button type="button" class="dl-tool" id="dlTextBtn" aria-pressed="false">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6V4h14v2M12 4v16M9 20h6"></path></svg>
+                    Add text
+                </button>
+            </div>
+
+            <!-- Text: add a new text or edit the selected one -->
+            <div class="dl-textpanel" id="dlTextPanel" hidden>
+                <div class="dl-field">
+                    <label for="dlTextInput">Your text</label>
+                    <input id="dlTextInput" class="dl-input" type="text" maxlength="80" placeholder="Type your text" autocomplete="off">
+                </div>
+                <div class="dl-field">
+                    <label for="dlFont">Font</label>
+                    <select id="dlFont" class="dl-select">
+                        <option value="Anton">Bold sans</option>
+                        <option value="Manrope">Clean sans</option>
+                        <option value="Bebas Neue">Tall sans</option>
+                        <option value="Oswald">Condensed</option>
+                        <option value="Playfair Display">Classic serif</option>
+                        <option value="Graduate">Varsity</option>
+                        <option value="Pacifico">Script</option>
+                        <option value="Lobster">Retro script</option>
+                        <option value="Permanent Marker">Marker</option>
+                    </select>
+                </div>
+                <div class="dl-field">
+                    <span class="dl-field-label">Text colour</span>
+                    <div class="dl-text-colors" id="dlTextColors" role="group" aria-label="Text colour"></div>
+                </div>
+                <fieldset class="dl-fieldset">
+                    <legend class="dl-legend">How should we make it?</legend>
+                    <div class="dl-methods">
+                        <label class="dl-method"><input type="radio" name="dlTextMethod" value="print" checked>Print</label>
+                        <label class="dl-method"><input type="radio" name="dlTextMethod" value="embroidery">Embroidery</label>
+                    </div>
+                </fieldset>
+                <p class="dl-error" id="dlTextError" hidden></p>
+                <button type="button" class="dl-btn is-primary is-block" id="dlTextAdd">Add text</button>
+            </div>
+
+            <div class="dl-section dl-colors-sec">
+                <p class="dl-tools-title">Colours · <span data-style-name></span></p>
+                <p class="dl-tools-sel">Selected: <strong data-color-name></strong></p>
+                <div id="dlToolSwatches"></div>
+                <a href="/contact_sales/" class="dl-small-link" data-url="requestColour">Don't see your colour? Request it →</a>
+                <button type="button" class="dl-btn is-primary is-block dl-done" data-close-sheet>Done</button>
+            </div>
+
+            <div class="dl-spacer"></div>
+            <button type="button" class="dl-cta is-ghost" data-open="save">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18v12H3z"></path><path d="M3 7l9 6 9-6"></path></svg>
+                Save &amp; Email My Design
+            </button>
+        </aside>
+
+        <!-- Middle: the product photo with the design area -->
+        <section class="dl-stage" aria-label="Design preview">
+            <p class="dl-stage-cap"><strong data-style-name></strong> · <span data-color-name></span> · <span data-side-name></span></p>
+            <div class="dl-mcap">
+                <p><strong data-style-name></strong><br><span data-color-name></span></p>
+                <div class="dl-mside">
+                    <button type="button" id="dlNextSide">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h12l-3-3M17 17H5l3 3"></path></svg>
+                        Change side
+                    </button>
+                    <span>Showing: <b data-side-name></b></span>
+                </div>
+            </div>
+            <div class="dl-stage-box" id="dlStageBox">
+                <div class="dl-shirt" id="dlShirt">
+                    <img id="dlPhoto" src="data:," alt="" draggable="false">
+                    <div class="dl-area" id="dlArea"><canvas id="dlCanvas"></canvas></div>
+                </div>
+                <span class="dl-empty" id="dlEmpty" hidden>Nothing on this side yet — upload an image or add text</span>
+            </div>
+            <!-- Phone: print / embroidery for the selected artwork -->
+            <div class="dl-mbar" id="dlMbar" hidden>
+                <span class="dl-mbar-title" id="dlMbarTitle"></span>
+                <div class="dl-mbar-row">
+                    <div class="dl-methods" role="radiogroup" aria-label="How should we make it?">
+                        <label class="dl-method"><input type="radio" name="dlMbarMethod" value="print">Print</label>
+                        <label class="dl-method"><input type="radio" name="dlMbarMethod" value="embroidery">Embroidery</label>
+                    </div>
+                    <button type="button" class="dl-remove" id="dlMbarRemove" aria-label="Remove this artwork">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="dl-sides" id="dlSides" role="group" aria-label="Sides"></div>
+        </section>
+
+        <!-- Right: artwork, sizes and price -->
+        <aside class="dl-order" id="dlOrder" aria-label="Order">
+            <!-- Design step -->
+            <div class="dl-section" data-step="design">
+                <p class="dl-h">Your artwork</p>
+                <div class="dl-arts" id="dlArts"></div>
+                <p class="dl-hint" id="dlNoArts">No artwork yet. Upload an image or add text to get started.</p>
+                <p class="dl-note-box" id="dlHiddenArt" hidden></p>
+            </div>
+
+            <!-- Price step -->
+            <div class="dl-section" data-step="price" hidden>
+                <button type="button" class="dl-back" data-back="design">← Back to design</button>
+                <p class="dl-h-lg">Your price</p>
+                <p class="dl-hint"><span data-style-name></span> · <span data-color-name></span> · <span data-pieces></span></p>
+                <p class="dl-hint" id="dlSizeSummary"></p>
+            </div>
+            <div class="dl-section" data-step="price" hidden>
+                <p class="dl-h">Your artwork</p>
+                <div class="dl-arts" id="dlPriceArts"></div>
+            </div>
+
+            <div class="dl-section">
+                <div class="dl-row">
+                    <p class="dl-h">Sizes</p>
+                    <a href="#" id="dlSizeChart" target="_blank" rel="noopener" class="dl-small-link" hidden>Size chart</a>
+                </div>
+                <div class="dl-sizes" id="dlSizes"></div>
+                <p class="dl-hint"><span data-pieces></span></p>
+            </div>
+
+            <div class="dl-pricebox" data-step="design" id="dlPriceBox"></div>
+
+            <div class="dl-lines" data-step="price" id="dlLines" hidden></div>
+            <div class="dl-arrive" data-step="price" hidden>
+                <strong>Arrives <span id="dlArrives"></span></strong>
+                <span>Embroidery and large orders may take a little longer · Rush at checkout</span>
+            </div>
+
+            <div class="dl-spacer"></div>
+            <button type="button" class="dl-cta" data-step="design" id="dlReview">Review &amp; add to cart</button>
+            <div class="dl-pair" data-step="price" hidden>
+                <button type="button" class="dl-cta is-ghost" data-back="design">Edit Design</button>
+                <button type="button" class="dl-cta" data-open="cart">Add to cart</button>
+            </div>
+        </aside>
+
+        <!-- Phone: tab bar -->
+        <nav class="dl-tabbar" aria-label="Design tools">
+            <button type="button" class="dl-tab" data-tab="product"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3L3 6l2 5 3-1v11h8V10l3 1 2-5-5-3c-.5 1.5-2 2.5-4 2.5S8.5 4.5 8 3z"></path></svg>Product</button>
+            <button type="button" class="dl-tab" data-tab="color" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.5-.8 1.5-1.5 0-1-1-1.3-1-2.3 0-.8.7-1.2 1.5-1.2H16a5 5 0 0 0 5-5C21 6.5 17 3 12 3z"></path><circle cx="7.5" cy="11.5" r="1"></circle><circle cx="10" cy="7.5" r="1"></circle><circle cx="15" cy="7.5" r="1"></circle></svg>Color</button>
+            <button type="button" class="dl-tab" data-tab="upload"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 16v4h16v-4"></path></svg>Upload</button>
+            <button type="button" class="dl-tab" data-tab="text" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6V4h14v2M12 4v16M9 20h6"></path></svg>Text</button>
+            <button type="button" class="dl-tab" data-tab="save"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18v12H3zM3 7l9 6 9-6"></path></svg>Save</button>
+        </nav>
+    </div>
+
+    <!-- ===== Popup: Upload your image (one page, no steps) ===== -->
+    <div class="dl-modal" id="dlUpload" hidden>
+        <div class="dl-dialog" role="dialog" aria-modal="true" aria-labelledby="dlUploadTitle">
+            <div class="dl-dialog-head">
+                <h2 id="dlUploadTitle">Upload your image</h2>
+                <button type="button" class="dl-close" data-close aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+            </div>
+            <label class="dl-drop" id="dlDrop" for="dlFile">
+                <img class="dl-drop-preview" id="dlDropPreview" src="data:," alt="" hidden>
+                <span class="dl-drop-text">
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#3f5a3b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" id="dlDropIcon"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v4h16v-4"></path></svg>
+                    <strong id="dlDropLabel">Drag your image here or <u>browse</u></strong><br>
+                    <span id="dlDropHint">PNG, JPG, WEBP or GIF · up to 15 MB</span>
+                </span>
+                <input id="dlFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+            </label>
+            <p class="dl-error" id="dlFileError" hidden></p>
+            <label class="dl-check-row"><input type="checkbox" id="dlTerms">I agree to the <a href="/terms-conditions/" data-url="terms" target="_blank" rel="noopener">Terms and Conditions</a></label>
+            <fieldset class="dl-fieldset">
+                <legend class="dl-legend">How should we make it?</legend>
+                <div class="dl-choice-grid">
+                    <label class="dl-choice"><input type="radio" name="dlUpMethod" value="print" checked><span><b>Print</b><small>Full colour, any detail</small></span></label>
+                    <label class="dl-choice"><input type="radio" name="dlUpMethod" value="embroidery"><span><b>Embroidery</b><small>Stitched · best for simple logos</small></span></label>
+                </div>
+            </fieldset>
+            <div class="dl-embnote" id="dlUpEmbNote" role="note" hidden>
+                <strong>A quick note on embroidery</strong>
+                <p>Embroidery is priced by stitch count, which depends on your design's size and detail. The price and delivery date you see are estimates until we review your file.</p>
+                <p>If anything changes, we'll reach out and let you know before we start.</p>
+                <button type="button" class="dl-linkbtn" id="dlUpUsePrint">Use print instead</button>
+            </div>
+            <div class="dl-field">
+                <label for="dlNotes">Any additional notes</label>
+                <textarea id="dlNotes" class="dl-textarea" rows="3" maxlength="1000" placeholder="e.g. make the logo about 3 inches wide"></textarea>
+            </div>
+            <div class="dl-actions">
+                <button type="button" class="dl-btn is-plain" data-close>Cancel</button>
+                <button type="button" class="dl-btn is-primary" id="dlUploadGo" disabled>Upload</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Popup: Save & Email My Design ===== -->
+    <div class="dl-modal" id="dlSave" hidden>
+        <div class="dl-dialog is-sm" role="dialog" aria-modal="true" aria-labelledby="dlSaveTitle">
+            <button type="button" class="dl-close" data-close aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+            <h2 id="dlSaveTitle">Save &amp; Email My Design</h2>
+            <p>We'll email you a link so you can come back to it on any device.</p>
+            <div class="dl-field">
+                <label for="dlSaveName">Design name</label>
+                <input id="dlSaveName" class="dl-input" type="text" maxlength="250" placeholder="e.g. Debate Club 2026 tee" data-sync="name">
+            </div>
+            <div class="dl-field">
+                <label for="dlSaveEmail">Email</label>
+                <input id="dlSaveEmail" class="dl-input" type="email" maxlength="254" placeholder="you@example.com" autocomplete="email" data-sync="email">
+                <p class="dl-error" data-error hidden></p>
+            </div>
+            <button type="button" class="dl-cta" id="dlSaveGo">Save &amp; Email My Design</button>
+        </div>
+    </div>
+
+    <!-- ===== Popup: You're almost there! (Save & Add to Cart) ===== -->
+    <div class="dl-modal" id="dlCart" hidden>
+        <div class="dl-dialog is-sm" role="dialog" aria-modal="true" aria-labelledby="dlCartTitle">
+            <button type="button" class="dl-close" data-close aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+            <h2 id="dlCartTitle">You’re almost there!</h2>
+            <p>Let's save your progress so you can access, edit, or share it anytime.</p>
+            <div class="dl-field">
+                <label for="dlCartName">Design name</label>
+                <input id="dlCartName" class="dl-input" type="text" maxlength="250" placeholder="e.g. Debate Club 2026 tee" data-sync="name">
+            </div>
+            <div class="dl-field">
+                <label for="dlCartEmail">Email</label>
+                <input id="dlCartEmail" class="dl-input" type="email" maxlength="254" placeholder="you@example.com" autocomplete="email" data-sync="email">
+                <p class="dl-error" data-error hidden></p>
+            </div>
+            <button type="button" class="dl-cta" id="dlCartGo">Save &amp; Add to Cart</button>
+            <button type="button" class="dl-btn is-plain is-block" data-close>← Go back and edit my design</button>
+            <p class="dl-hint dl-center">We'll email you a link to this design.</p>
+        </div>
+    </div>
+
+    <!-- ===== Popup: embroidery note (first time embroidery is picked, once per visit) ===== -->
+    <div class="dl-modal" id="dlEmb" hidden>
+        <div class="dl-dialog is-xs" role="dialog" aria-modal="true" aria-labelledby="dlEmbTitle">
+            <span class="dl-icon-circle" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3f5a3b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.5"></path></svg></span>
+            <h2 id="dlEmbTitle">A quick note on embroidery</h2>
+            <p>Embroidery is priced by stitch count, which depends on your design's size and detail. The price and delivery date you see are estimates until we review your file.</p>
+            <p>If anything changes, we'll reach out and let you know before we start.</p>
+            <button type="button" class="dl-cta" data-close>Got it</button>
+            <button type="button" class="dl-btn is-plain is-block" id="dlEmbUsePrint">Use print instead</button>
+        </div>
+    </div>
+</div>
+
+{{ lab_data|json_script:"dlData" }}
+<script src="{% static 'shop/js/fabric.min.js' %}"></script>
+<script src="{% static 'shop/js/design-lab.js' %}"></script>
+</body>
+</html>

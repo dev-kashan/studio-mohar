@@ -59,6 +59,7 @@ class OrderItemInline(admin.StackedInline):
         ('shop_design', 'personal_image'),
         ('Front_Image', 'Back_Image', 'Left_Image', 'Right_Image'),
         ('Front_Desgin_Image', 'Back_Desgin_Image', 'Left_Desgin_Image', 'Right_Desgin_Image'),
+        ('design_details',),  # Design Lab: print / embroidery per artwork, texts, notes
 
         ('color', 'order_status', 'status', 'Active'),
     )
@@ -302,6 +303,7 @@ class OrderItemAdmin(admin.ModelAdmin):
         ('Order_Type', 'shop_design', 'personal_image'),
         ('color', 'order_status', 'status'),
         ('unity_price', 'item_total', 'date', 'Active'),
+        ('design_details',),
     )
     list_filter = ('id', 'order_by', 'order_item', 'color', 'status', 'Active', 'date')
     readonly_fields = ('image_thumbnail', 'date',)
@@ -372,6 +374,15 @@ class ProductAdmin(admin.ModelAdmin):
         }),
         
        
+        ("Design Lab print areas", {
+            "classes": ("collapse",),
+            "description": "Where the customer's design may go on each colour photo, in % of the photo "
+                           "(left, top, width, height). Only sides that have a colour photo show in the Design Lab.",
+            "fields": (('print_area_front', 'print_area_back'),
+                       ('print_area_left', 'print_area_right'),
+                ),
+        }),
+
         ("Competition Details", {
             "classes": ("collapse"),
             "fields": (('fabric_composition', "softness") ,

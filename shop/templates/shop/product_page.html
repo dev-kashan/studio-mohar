@@ -322,8 +322,7 @@
     $('ppCta').addEventListener('click', function (e) {
         e.preventDefault();
         if (!data.editorBase) return;
-        var url = data.editorBase + '?attr_id=' + current.attr_id + '&color_id=' + current.id +
-                  '&color_code=' + encodeURIComponent(current.hex);
+        var url = data.editorBase + '&color=' + current.id;   // Design Lab: /design-lab/?product=..
         var s = sizesParam();
         if (s) url += '&sizes=' + encodeURIComponent(s);
         window.location.href = url;

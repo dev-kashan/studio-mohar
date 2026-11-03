@@ -25,7 +25,7 @@ from django.core import serializers
 from .cate_context import category_context
 from django.db.models import Count, Q
 from django.db import transaction
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
 from PIL import Image
 import io
@@ -956,6 +956,7 @@ def stripe_success(request):
             Order_Type=order_type,
             shop_design=shop_design,
             personal_image=item.personal_image or None,  # same physical file as the cart upload
+            design_details=item.design_details,  # Design Lab: print / embroidery, texts, notes
             Front_Image=front_design_file,
             Back_Image=back_design_file,
             Left_Image=left_design_file,
@@ -1584,7 +1585,19 @@ def rating(request):
 
 @ensure_csrf_cookie  # editor posts to /save-design/ and /add-to-cart/ via fetch; fresh/incognito visitors have no csrftoken cookie otherwise
 def customizeEditor(request , id , slug , pid):
-    
+    # The new Design Lab (/design-lab/) replaces this editor. The site-wide "Start
+    # designing" links all point at the first Design Lab product, so those open the
+    # product picker; links for a specific product open that product in the editor.
+    first = _design_lab_products().order_by('product_id').first()
+    if first and pid == first.product_id and 'sizes' not in request.GET:
+        return redirect('/design-lab/')
+    lab_url = f'/design-lab/?product={pid}'
+    if request.GET.get('color_id', '').isdigit():
+        lab_url += f"&color={request.GET['color_id']}"
+    if request.GET.get('sizes'):
+        from urllib.parse import quote
+        lab_url += '&sizes=' + quote(request.GET['sizes'])
+    return redirect(lab_url)
 
     mockup_products = Product.objects.filter(customize_mockup_template__isnull=False, live=True).exclude(product_id=pid)
 
@@ -1918,6 +1931,9 @@ def save_design(request):
 @ensure_csrf_cookie
 def load_design(request, uid):
     design = get_object_or_404(SavedDesign, uid=uid)
+    # Designs saved in the new Design Lab open there; old ones keep the old editor
+    if _dl_saved_sides(design) is not None:
+        return redirect(f'/design-lab/?design={design.uid}')
 
     # Get mockup/product again (assuming you stored pid & mockup id when saving)
     product = Product.objects.filter(product_id=design.product.product_id, live=True).first()
@@ -2703,7 +2719,7 @@ def style_page(request, cat_slug, style_slug):
         'startColor': start['id'],
         'colors': colors,
         'blank': f'/media/{product.blank_image}' if product.blank_image else '',
-        'editorBase': f'/customize-editor/{mockup.id}/{mockup.MockUp_Name}/{product.product_id}/' if mockup else '',
+        'editorBase': f'/design-lab/?product={product.product_id}' if mockup else '',
     }
     return render(request, 'shop/product_page.html', {
         'product': product,
@@ -2781,3 +2797,449 @@ def inspo_request(request):
         print(f'Inspo request {req.id}: email not sent: {exc}')
 
     return JsonResponse({'success': True, 'message': ProductPageSettings.load().inspo_success})
+
+
+# =====================================================================
+# DESIGN LAB (2026 redesign) - /design-lab/
+# Values and flow from the client's "Design Lab Redesign" file:
+# Choose your merch -> style -> colour -> editor (real colour photos per
+# side) -> price -> "You're almost there!" (save + add to cart).
+# The browser works out the price for display; the server always works it
+# out again from the database, so a changed page can't lower the price.
+# =====================================================================
+DL_SIDES = ('front', 'back', 'left_sleeve', 'right_sleeve')
+DL_SIDE_LABELS = {'front': 'Front', 'back': 'Back', 'left_sleeve': 'Left sleeve', 'right_sleeve': 'Right sleeve'}
+DL_PHOTO_FIELDS = {'front': 'front_image', 'back': 'back_image', 'left_sleeve': 'left_image', 'right_sleeve': 'right_image'}
+DL_MOCKUP_FIELDS = {'front': 'MockUp_Fornt_Image', 'back': 'MockUp_Back_Image',
+                    'left_sleeve': 'MockUp_Left_Image', 'right_sleeve': 'MockUp_Right_Image'}
+DL_AREA_KEYS = {'front': 'front', 'back': 'back', 'left_sleeve': 'left', 'right_sleeve': 'right'}
+DL_MAX_QTY = 9999           # pieces per size
+DL_MAX_ARTWORKS = 40        # images + texts over all sides
+DL_MAX_FILES = 20
+DL_MAX_IMAGE_MB = 15
+DL_MAX_PREVIEW_MB = 12      # each generated preview picture (data URL)
+
+
+def _dl_pricing():
+    """Side print prices, embroidery price per artwork and quantity tiers from 'Design Pricing'."""
+    pricing = DesignPricing.objects.first()
+    if pricing:
+        sides = {'front': float(pricing.front_price), 'back': float(pricing.back_price),
+                 'left_sleeve': float(pricing.left_sleeve_price), 'right_sleeve': float(pricing.right_sleeve_price)}
+        emb = float(pricing.embroidery_extra)
+    else:
+        sides, emb = {s: 10.0 for s in DL_SIDES}, 5.0
+    _, tiers = _price_tiers()
+    return {'sides': sides, 'emb': emb, 'tiers': tiers}
+
+
+def _dl_quote(color, qty_by_size, sides_used, emb_count, promo_pct, pricing):
+    """Price of an order, the same formula as design-lab.js:
+       piece = (size price + print price of every side with artwork) x promo x quantity tier
+               + embroidery price x number of embroidered artworks.
+    The apparel price always includes one print, so a blank design is priced with the front print.
+    Returns (rows [(size, qty, unit)], total, each) or None when nothing is ordered."""
+    sizes = {s['name']: s for s in color['sizes']}
+    rows = [(name, qty) for name, qty in qty_by_size.items() if qty > 0 and name in sizes]
+    q = sum(qty for _, qty in rows)
+    if not q:
+        return None
+    print_cost = sum(pricing['sides'][s] for s in sides_used) if sides_used else pricing['sides']['front']
+    promo = promo_pct if color['is_promo'] else 0
+    pct = 0
+    for t in pricing['tiers']:
+        if q >= t['min'] and (t['max'] is None or q <= t['max']):
+            pct = t['pct']
+            break
+    out, total = [], Decimal('0')
+    for name, qty in rows:
+        unit = (sizes[name]['price'] + print_cost) * (1 - promo / 100) * (1 - pct / 100) + pricing['emb'] * emb_count
+        unit = Decimal(str(unit)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)   # same as Math.round in JS
+        out.append((name, qty, unit))
+        total += unit * qty
+    return out, total, (total / q).quantize(Decimal('0.01'))
+
+
+def _dl_colors(product):
+    """Colours of a style with the photo of every side ({'front': url, ...}).
+    A colour without photos falls back to the old mockup pictures, tinted in the browser."""
+    photos = {pc.color_id: pc for pc in product.color_photos.all()}
+    mockup = product.customize_mockup_template
+    out = []
+    for c in _product_colors(product):
+        if not c['sizes']:
+            continue
+        pc = photos.get(c['id'])
+        sides, tinted = {}, False
+        for side in DL_SIDES:
+            field = getattr(pc, DL_PHOTO_FIELDS[side]) if pc else None
+            if field:
+                sides[side] = field.url
+        if not sides and mockup:
+            tinted = True
+            for side in DL_SIDES:
+                field = getattr(mockup, DL_MOCKUP_FIELDS[side])
+                if field:
+                    sides[side] = field.url
+        if not sides:
+            continue
+        out.append({'id': c['id'], 'name': c['name'], 'hex': c['hex'], 'is_promo': c['is_promo'],
+                    'attr_id': c['attr_id'], 'sides': sides, 'tinted': tinted, 'sizes': c['sizes']})
+    return out
+
+
+def _dl_style(product, pricing):
+    colors = _dl_colors(product)
+    if not colors:
+        return None
+    promo_on = bool(product.promo_percent and product.promo_percent > 0)
+    lowest = min(s['price'] for c in colors for s in c['sizes']) + pricing['sides']['front']
+    areas = product.print_areas()
+    return {
+        'id': product.product_id,
+        'name': product.product_name,
+        'facts': product.fabric_composition or strip_tags(product.short_desc or '')[:90],
+        'from': round(lowest, 2),
+        'promoPct': float(product.promo_percent) if promo_on else 0,
+        'promoCount': sum(1 for c in colors if c['is_promo']) if promo_on else 0,
+        'sizeChart': product.size_chart_img.url if product.size_chart_img else '',
+        'photo': next(iter(colors[0]['sides'].values())),
+        'areas': {side: areas[DL_AREA_KEYS[side]] for side in DL_SIDES},
+        'colors': colors,
+    }
+
+
+def _dl_catalog(pricing):
+    """Categories -> styles -> colours for the 'Choose your merch / style / colour' steps."""
+    out = []
+    for cat in Category.objects.filter(active=True).order_by('-is_pinned', 'display_order', 'category_name'):
+        styles = []
+        for p in (cat.live_styles().order_by('display_order', 'product_name')
+                  .select_related('customize_mockup_template').prefetch_related('color_photos', 'photos')):
+            style = _dl_style(p, pricing)
+            if style:
+                styles.append(style)
+        if not styles:
+            continue
+        image = ''
+        if cat.cate_image and 'noperview' not in cat.cate_image.name and cat.cate_image.storage.exists(cat.cate_image.name):
+            image = cat.cate_image.url
+        out.append({'id': cat.category_id, 'name': cat.category_name, 'image': image or styles[0]['photo'],
+                    'styles': styles})
+    return out
+
+
+def _dl_parse_sizes(raw, color):
+    """'S:2,M:3' (labels or names, from the product page link) -> {size name: qty}."""
+    by_key = {}
+    for s in color['sizes']:
+        by_key[s['name'].upper()] = s['name']
+        by_key[s['label'].upper()] = s['name']
+    out = {}
+    for pair in (raw or '').split(','):
+        key, _, qty = pair.partition(':')
+        name = by_key.get(key.strip().upper())
+        if name and qty.strip().isdigit():
+            out[name] = min(int(qty), DL_MAX_QTY)
+    return out
+
+
+def _dl_saved_sides(design):
+    """The four side canvases of a Design Lab saved design, or None for an old-editor design."""
+    sides = {}
+    for side, field in (('front', 'front_json'), ('back', 'back_json'),
+                        ('left_sleeve', 'left_sleeve'), ('right_sleeve', 'right_sleeve')):
+        raw = getattr(design, field) or ''
+        try:
+            data = json.loads(raw) if raw else None
+        except json.JSONDecodeError:
+            return None
+        if data is None:
+            continue
+        if not isinstance(data, dict) or data.get('dl') != 1:
+            return None
+        sides[side] = data.get('canvas')
+    return sides
+
+
+@ensure_csrf_cookie
+def design_lab(request):
+    """The Design Lab page. ?product=<id>&color=<id>&sizes=S:2,M:3 opens that product
+    in the editor; ?design=<uid> reopens a saved design; no product shows the pickers."""
+    pricing = _dl_pricing()
+    catalog = _dl_catalog(pricing)
+    page = ProductPageSettings.load()
+
+    start = {'product': None, 'color': None, 'sizes': {}, 'design': None}
+    want = request.GET.get('product', '')
+    uid = request.GET.get('design', '')
+    cart_sizes = {}
+    if len(uid) == 36:
+        saved = SavedDesign.objects.filter(uid=uid).first() if _is_uuid(uid) else None
+        sides = _dl_saved_sides(saved) if saved else None
+        if saved and sides is not None and saved.product_id:
+            want = str(saved.product_id)
+            start['color'] = saved.color_id
+            start['design'] = {'uid': str(saved.uid), 'name': saved.design_name or '', 'email': saved.email, 'sides': sides}
+            # Opened from the cart's edit button: bring back that line's sizes too
+            if request.session.session_key:
+                line = GuestCart.objects.filter(session_id=request.session.session_key, save_design_uid=str(saved.uid)).first()
+                if line:
+                    cart_sizes = {i.size: i.quantity for i in line.cart_items.all()}
+    if want.isdigit():
+        style = next((s for cat in catalog for s in cat['styles'] if s['id'] == int(want)), None)
+        if style:
+            start['product'] = style['id']
+            color = style['colors'][0]
+            want_color = request.GET.get('color', '') or str(start['color'] or '')
+            if want_color.isdigit():
+                color = next((c for c in style['colors'] if c['id'] == int(want_color)), color)
+            start['color'] = color['id']
+            start['sizes'] = _dl_parse_sizes(request.GET.get('sizes', ''), color) or {
+                name: qty for name, qty in cart_sizes.items() if any(s['name'] == name for s in color['sizes'])}
+
+    today = date.today()
+    first_day = today + timedelta(days=page.delivery_min_days)
+    last_day = today + timedelta(days=page.delivery_max_days)
+    if first_day.month == last_day.month:
+        arrives = f'{first_day:%b} {first_day.day}–{last_day.day}'
+    else:
+        arrives = f'{first_day:%b} {first_day.day} – {last_day:%b} {last_day.day}'
+
+    lab_data = {
+        'catalog': catalog,
+        'pricing': pricing,
+        'start': start,
+        'arrives': arrives,
+        'sideLabels': DL_SIDE_LABELS,
+        'maxImageMb': DL_MAX_IMAGE_MB,
+        'urls': {
+            'save': '/design-lab/save/',
+            'cart': '/cart/',
+            'requestColour': page.request_colour_url or '/contact_sales/',
+            'requestProduct': '/contact_sales/',
+            'terms': '/terms-conditions/',
+        },
+    }
+    return render(request, 'shop/design_lab.html', {'lab_data': lab_data})
+
+
+def _is_uuid(value):
+    import uuid as _uuid
+    try:
+        _uuid.UUID(value)
+        return True
+    except ValueError:
+        return False
+
+
+def _dl_artworks(sides, available):
+    """Images/texts on the sides the product has: [(side, object dict)]."""
+    out = []
+    for side in DL_SIDES:
+        canvas = sides.get(side) if side in available else None
+        objects = canvas.get('objects') if isinstance(canvas, dict) else None
+        if isinstance(objects, list):
+            for obj in objects:
+                if isinstance(obj, dict) and obj.get('type') in ('image', 'textbox', 'i-text', 'text'):
+                    out.append((side, obj))
+    return out
+
+
+def _dl_details_text(artworks):
+    """Readable summary for the cart line / order item, e.g.
+    'Front: Image "logo.png" - Embroidery - Notes: 3 inches wide'."""
+    lines = []
+    for side, obj in artworks:
+        method = 'Embroidery' if obj.get('dlMethod') == 'embroidery' else 'Print'
+        if obj.get('type') == 'image':
+            what = 'Image "%s"' % str(obj.get('dlName') or 'image')[:120]
+        else:
+            what = 'Text "%s" (%s, %s)' % (str(obj.get('text') or '')[:200], str(obj.get('fontFamily') or '')[:40],
+                                           str(obj.get('fill') or '')[:20])
+        line = f'{DL_SIDE_LABELS[side]}: {what} - {method}'
+        notes = str(obj.get('dlNotes') or '').strip()
+        if notes:
+            line += f' - Notes: {notes[:1000]}'
+        lines.append(line)
+    return '\n'.join(lines)
+
+
+def _dl_data_url(value):
+    """Only accept generated PNG/JPEG previews, within the size limit."""
+    value = value if isinstance(value, str) else ''
+    if not value.startswith(('data:image/png;base64,', 'data:image/jpeg;base64,')):
+        return ''
+    return value if len(value) <= DL_MAX_PREVIEW_MB * 1024 * 1024 * 4 // 3 else ''
+
+
+def _dl_json(request, key, default):
+    try:
+        value = json.loads(request.POST.get(key, '') or 'null')
+    except json.JSONDecodeError:
+        return default
+    return value if isinstance(value, type(default)) else default
+
+
+@require_POST
+def design_lab_save(request):
+    """Save a Design Lab design (and, with action=cart, add it to the cart). Multipart POST:
+      action          'save' (Save & Email My Design) or 'cart' (Save & Add to Cart)
+      name, email     design name and the customer's email (email required)
+      product_id, color_id
+      sizes           JSON {size name: qty}                    - cart only
+      sides           JSON {side: fabric canvas JSON}          - images/texts carry dlMethod/dlName/dlNotes
+      previews        JSON {side: data URL of photo + design}  - cart only
+      prints          JSON {side: data URL of the design only} - cart only
+      design_uid      the saved design being edited (optional)
+      uploaded_files  original image files, uploaded_files_meta JSON {"side", "filename"} each
+    """
+    from django.core.validators import validate_email
+    from django.core.exceptions import ValidationError as _VE
+
+    def fail(msg, field=''):
+        return JsonResponse({'success': False, 'field': field, 'error': msg}, status=400)
+
+    action = request.POST.get('action', 'save')
+    email = request.POST.get('email', '').strip()[:254]
+    name = request.POST.get('name', '').strip()[:250]
+    try:
+        validate_email(email)
+    except _VE:
+        return fail('Please enter a valid email address.', 'email')
+
+    product_id, color_id = request.POST.get('product_id', ''), request.POST.get('color_id', '')
+    if not product_id.isdigit() or not color_id.isdigit():
+        return fail('Invalid data.')
+    product = (_design_lab_products().select_related('customize_mockup_template')
+               .prefetch_related('color_photos', 'photos').filter(product_id=int(product_id)).first())
+    pricing = _dl_pricing()
+    style = _dl_style(product, pricing) if product else None
+    color = next((c for c in style['colors'] if c['id'] == int(color_id)), None) if style else None
+    if not color:
+        return fail('This product or colour is not available any more.')
+
+    sides = _dl_json(request, 'sides', {})
+    sides = {s: sides[s] for s in DL_SIDES if isinstance(sides.get(s), dict)}
+    artworks = _dl_artworks(sides, color['sides'])
+    if not artworks:
+        return fail('Please upload an image or add text first.')
+    if len(artworks) > DL_MAX_ARTWORKS:
+        return fail(f'A design can have up to {DL_MAX_ARTWORKS} images and texts.')
+
+    # Original files (for printing). Only real raster images: an SVG/HTML file could
+    # carry a script that runs when the team opens it from the admin.
+    files = request.FILES.getlist('uploaded_files')[:DL_MAX_FILES]
+    metas = request.POST.getlist('uploaded_files_meta')
+    clean_files = []
+    for i, f in enumerate(files):
+        try:
+            meta = json.loads(metas[i]) if i < len(metas) else {}
+        except json.JSONDecodeError:
+            meta = {}
+        side = meta.get('side') if isinstance(meta, dict) else None
+        if side not in DL_SIDES:
+            continue
+        if f.size > DL_MAX_IMAGE_MB * 1024 * 1024:
+            return fail(f'Images must be under {DL_MAX_IMAGE_MB} MB.')
+        try:
+            with Image.open(f) as img:
+                fmt = (img.format or '').upper()
+                img.verify()
+        except Exception:
+            fmt = ''
+        if fmt not in SHOP_DESIGN_IMAGE_FORMATS:
+            return fail('Please upload a JPG, PNG, WEBP or GIF image.')
+        f.seek(0)
+        clean_files.append((f, side, str(meta.get('filename') or f.name)[:255]))
+
+    quote = None
+    if action == 'cart':
+        qty_by_size = {}
+        for size_name, qty in _dl_json(request, 'sizes', {}).items():
+            try:
+                qty = int(qty)
+            except (TypeError, ValueError):
+                qty = 0
+            if qty < 0 or qty > DL_MAX_QTY:
+                return fail(f'Quantity must be between 1 and {DL_MAX_QTY} per size.')
+            if qty:
+                qty_by_size[str(size_name)] = qty
+        sides_used = sorted({side for side, _ in artworks})
+        emb_count = sum(1 for _, obj in artworks if obj.get('dlMethod') == 'embroidery')
+        quote = _dl_quote(color, qty_by_size, sides_used, emb_count, style['promoPct'], pricing)
+        if not quote:
+            return fail('Please enter how many pieces you need in each size.')
+
+    def side_json(side):
+        return json.dumps({'dl': 1, 'canvas': sides[side]}) if side in sides else None
+
+    attr = ProductAttribute.objects.filter(id=color['attr_id']).select_related('color').first()
+    with transaction.atomic():
+        design = None
+        uid = request.POST.get('design_uid', '')
+        if _is_uuid(uid):
+            design = SavedDesign.objects.filter(uid=uid, email__iexact=email).first()
+        if design is None:
+            design = SavedDesign(email=email)
+        design.design_name = name
+        design.front_json = side_json('front')
+        design.back_json = side_json('back')
+        design.left_sleeve = side_json('left_sleeve')
+        design.right_sleeve = side_json('right_sleeve')
+        design.color = attr.color if attr else None
+        design.product = product
+        design.product_attr = attr
+        design.mockup = product.customize_mockup_template
+        design.save()
+
+        cart = None
+        if quote:
+            rows, total, each = quote
+            if not request.session.session_key:
+                request.session.create()
+            previews = _dl_json(request, 'previews', {})
+            prints = _dl_json(request, 'prints', {})
+            # Editing a design that is already in this cart replaces that line
+            cart = GuestCart.objects.filter(session_id=request.session.session_key, save_design_uid=str(design.uid)).first()
+            if cart is None:
+                cart = GuestCart(session_id=request.session.session_key, save_design_uid=str(design.uid))
+            cart.product_attr = attr
+            cart.front_image = _dl_data_url(previews.get('front'))
+            cart.back_image = _dl_data_url(previews.get('back'))
+            cart.left_image = _dl_data_url(previews.get('left_sleeve'))
+            cart.right_image = _dl_data_url(previews.get('right_sleeve'))
+            cart.front_design_image = _dl_data_url(prints.get('front'))
+            cart.back_design_image = _dl_data_url(prints.get('back'))
+            cart.left_design_image = _dl_data_url(prints.get('left_sleeve'))
+            cart.right_design_image = _dl_data_url(prints.get('right_sleeve'))
+            cart.price_of_each = each
+            cart.total_price = total
+            cart.design_details = _dl_details_text(artworks)
+            cart.save()
+            cart.cart_items.all().delete()
+            cart.uploaded_files.all().delete()
+            for size_name, qty, unit in rows:
+                GuestCartItem.objects.create(cart=cart, size=size_name, quantity=qty, unit_price=float(unit))
+            for f, side, filename in clean_files:
+                CartUploadedFile.objects.create(cart=cart, file=f, side=side, filename=filename)
+
+    # Email the link (same template as the old editor). A mail problem must not
+    # lose the design or the cart line - both are already saved.
+    try:
+        link = request.build_absolute_uri('/retrieve-design/')
+        msg = EmailMultiAlternatives(
+            'Your Design is Saved | Studio Mohar',
+            f'Your design is saved! Continue editing here: {link}',
+            settings.DEFAULT_FROM_EMAIL,
+            [email] + list(getattr(settings, 'DESIGN_SAVED_EMAILS', [])),
+            reply_to=[email],
+        )
+        msg.attach_alternative(render_to_string('shop/emails/design_saved.html', {
+            'product': product, 'mockup': product.customize_mockup_template, 'link': link,
+        }), 'text/html')
+        msg.send()
+    except Exception as exc:
+        print(f'Design Lab save {design.uid}: email not sent: {exc}')
+
+    return JsonResponse({'success': True, 'uid': str(design.uid), 'cart_url': '/cart/' if cart else ''})
