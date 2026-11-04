@@ -97,7 +97,7 @@
             <p>{{ shop.idea_card_text }}</p>
             <div class="sm-cta-buttons">
                 <a href="{{ shop.idea_box_url }}" class="sm-btn sm-btn-primary">{{ shop.idea_box_cta }}</a>
-                <a href="{% if shop.design_box_url %}{{ shop.design_box_url }}{% else %}/customize-editor/{{ first_mockup_product.customize_mockup_template.id }}/{{ first_mockup_product.customize_mockup_template.MockUp_Name }}/{{ first_mockup_product.product_id }}/?attr_id={{ first_mockup_product.productattribute_set.first.id }}&color_id={{ first_mockup_product.productattribute_set.first.color.id }}&color_code={{ first_mockup_product.productattribute_set.first.color.color_code|urlencode }}{% endif %}" class="sm-btn sm-btn-outline-green">{{ shop.design_box_title }}</a>
+                <a href="{% if shop.design_box_url %}{{ shop.design_box_url }}{% else %}/design-lab/{% endif %}" class="sm-btn sm-btn-outline-green">{{ shop.design_box_title }}</a>
             </div>
         </div>
     </section>

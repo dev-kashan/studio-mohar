@@ -835,7 +835,7 @@ img.size_chart_img {
 						{% if i.Available > 0 %}
 
 							{% if i.customize_mockup_template %}
-							<button type="button" class="btn add-to add-to-cart z-index-1" onclick="window.location.href = '/customize-editor/{{i.customize_mockup_template.id}}/{{i.customize_mockup_template.MockUp_Name}}/{{i.product_id}}/';" style="background-color:#982b4e; color:white;"><i class="fa fa-edit"></i> Designs / Prints </button>
+							<button type="button" class="btn add-to add-to-cart z-index-1" onclick="window.location.href = '/design-lab/?product={{i.product_id}}';" style="background-color:#982b4e; color:white;"><i class="fa fa-edit"></i> Designs / Prints </button>
 							{% else %}
 							<button type="submit" class="btn add-to add-to-cart z-index-1 buy_now_btn" style="background-color:#d1d1d1; color:#373334;">Buy Now</button>
 							{% endif %}

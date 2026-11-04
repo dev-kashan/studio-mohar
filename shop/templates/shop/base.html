@@ -976,7 +976,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <div>
                             <span class="smh-eyebrow">How do you want to start?</span>
                             <div class="smh-choice-grid">
-                                <a class="smh-choice" style="--box:{{ shop_settings.design_box_color }}" href="{% if shop_settings.design_box_url %}{{ shop_settings.design_box_url }}{% else %}/customize-editor/{{ first_mockup_product.customize_mockup_template.id }}/{{ first_mockup_product.customize_mockup_template.MockUp_Name }}/{{ first_mockup_product.product_id }}/?attr_id={{ first_mockup_product.productattribute_set.first.id }}&color_id={{ first_mockup_product.productattribute_set.first.color.id }}&color_code={{ first_mockup_product.productattribute_set.first.color.color_code|urlencode }}{% endif %}">
+                                <a class="smh-choice" style="--box:{{ shop_settings.design_box_color }}" href="{% if shop_settings.design_box_url %}{{ shop_settings.design_box_url }}{% else %}/design-lab/{% endif %}">
                                     {% include 'shop/partials/icon.html' with name='pencil' %}
                                     <span class="smh-choice-title">{{ shop_settings.design_box_title }}</span>
                                     <span class="smh-choice-text">{{ shop_settings.design_box_text }}</span>
@@ -1061,7 +1061,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     {% include 'shop/partials/icon.html' with name='cart' %}
                     <span class="smh-cart-count">{{cart_count}}</span>
                 </a>
-                <a href="/customize-editor/{{first_mockup_product.customize_mockup_template.id}}/{{first_mockup_product.customize_mockup_template.MockUp_Name}}/{{first_mockup_product.product_id}}/?attr_id={{first_mockup_product.productattribute_set.first.id}}&color_id={{first_mockup_product.productattribute_set.first.color.id}}&color_code={{first_mockup_product.productattribute_set.first.color.color_code|urlencode}}" class="smh-cta">{{layout.header_button_text}}</a>
+                <a href="/design-lab/" class="smh-cta">{{layout.header_button_text}}</a>
             </div>
         </div>
     </nav>
@@ -1121,7 +1121,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li class="mobile-dropdown">
         <button class="dropdown-toggle">Custom merch</button>
         <div class="dropdown-content">
-          <a class="smh-choice" style="--box:{{ shop_settings.design_box_color }}" href="{% if shop_settings.design_box_url %}{{ shop_settings.design_box_url }}{% else %}/customize-editor/{{ first_mockup_product.customize_mockup_template.id }}/{{ first_mockup_product.customize_mockup_template.MockUp_Name }}/{{ first_mockup_product.product_id }}/?attr_id={{ first_mockup_product.productattribute_set.first.id }}&color_id={{ first_mockup_product.productattribute_set.first.color.id }}&color_code={{ first_mockup_product.productattribute_set.first.color.color_code|urlencode }}{% endif %}">
+          <a class="smh-choice" style="--box:{{ shop_settings.design_box_color }}" href="{% if shop_settings.design_box_url %}{{ shop_settings.design_box_url }}{% else %}/design-lab/{% endif %}">
             <span class="smh-choice-title">{{ shop_settings.design_box_title }}</span>
             <span class="smh-choice-cta">{{ shop_settings.design_box_cta }} &rarr;</span>
           </a>
@@ -1174,7 +1174,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </ul>
 
     <div class="smh-m-bottom">
-      <a href="/customize-editor/{{first_mockup_product.customize_mockup_template.id}}/{{first_mockup_product.customize_mockup_template.MockUp_Name}}/{{first_mockup_product.product_id}}/?attr_id={{first_mockup_product.productattribute_set.first.id}}&color_id={{first_mockup_product.productattribute_set.first.color.id}}&color_code={{first_mockup_product.productattribute_set.first.color.color_code|urlencode}}">{{layout.header_button_text}}</a>
+      <a href="/design-lab/">{{layout.header_button_text}}</a>
     </div>
   </div>
 </nav>

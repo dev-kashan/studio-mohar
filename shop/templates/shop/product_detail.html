@@ -800,7 +800,7 @@ color: #7e9479;
                     <button class="checkout-btn" data-template-id="{{ product.customize_mockup_template.id }}"
         data-mockup-name="{{ product.customize_mockup_template.MockUp_Name }}"
         data-product-id="{{ product.product_id }}"
-                      onclick="window.location.href='/customize-editor/{{product.customize_mockup_template.id}}/{{product.customize_mockup_template.MockUp_Name}}/{{product.product_id}}?attr_id={% for i in filter_color|slice:':1' %}{{ i.attr_id }}{% endfor %}&color_id={% for i in filter_color|slice:':1' %}{{ i.color__id }}{% endfor %}&color_code={% for i in filter_color|slice:':1' %}{{ i.color__color_code }}{% endfor %}'">
+                      onclick="window.location.href='/design-lab/?product={{product.product_id}}&color={% for i in filter_color|slice:':1' %}{{ i.color__id }}{% endfor %}'">
                       Start Designing
                       </button>
                     {% else %}
@@ -1563,7 +1563,7 @@ $(document).ready(function () {
         const productId = btn.data("product-id");
         const price = $(swatch).attr('data-discount_price');
 
-        btn.attr('onclick', `window.location.href='/customize-editor/${templateId}/${mockupName}/${productId}?attr_id=${swatch.data('attr-id')}&color_id=${swatch.data('color-id')}&color_code=${encodeURIComponent(swatch.css('background-color'))}'`);
+        btn.attr('onclick', `window.location.href='/design-lab/?product=${productId}&color=${swatch.data('color-id')}'`);
         $("#mainImage").css('background' , $(swatch).css('background-color'))
 
         // Extract color info
