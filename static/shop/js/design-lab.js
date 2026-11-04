@@ -4,8 +4,9 @@
      1 Choose your merch -> 2 Choose your style (only if more than one)
      -> 3 Choose your colour -> 4 Editor -> 5 Your price -> "You're almost there!"
    The editor draws on the real colour photo of each side (front, back,
-   sleeves). Every side has its own design area (fabric.js canvas) placed
-   over the photo where the admin's print area is. A design is stored in
+   sleeves). Every side has its own design area (fabric.js canvas) that
+   covers the WHOLE photo of that side, so customers can design anywhere
+   (also on the sleeves). A design is stored in
    "design units" (600 wide), so it moves to another product unchanged.
    Price = (size price + print price of each side with artwork) x promo
            x quantity tier + embroidery price x embroidered artworks.
@@ -241,7 +242,10 @@
     // =================================================================
     function availableSides() { return SIDES.filter(function (s) { return !!state.color.sides[s]; }); }
     function firstSide() { return availableSides()[0] || 'front'; }
-    function area(side) { return state.style.areas[side || state.side]; }
+    // Design area = the whole photo of every side (left, top, width, height in %).
+    // The admin's "print areas" are no longer used to limit the design.
+    var FULL_AREA = [0, 0, 100, 100];
+    function area() { return FULL_AREA; }
 
     function initCanvas() {
         // fabric 5.3 sets the invalid textBaseline 'alphabetical' (browser warning on every

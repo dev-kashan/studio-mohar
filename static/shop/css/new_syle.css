@@ -3826,8 +3826,8 @@ html, body { overflow-x: clip; }
 }
 .dl-shirt { position: relative; line-height: 0; }
 .dl-shirt > img { display: block; max-width: 100%; max-height: 100%; user-select: none; -webkit-user-drag: none; }
-.dl-area { position: absolute; outline: 1px dashed rgba(255, 255, 255, .75); outline-offset: 0; }
-.dl-area.is-light { outline-color: rgba(28, 31, 27, .45); }
+/* The design area covers the whole photo, so no dashed print-area outline any more */
+.dl-area { position: absolute; }
 .dl-area .canvas-container { position: absolute !important; inset: 0; }
 .dl-empty {
     position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
