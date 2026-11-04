@@ -3793,6 +3793,9 @@ html, body { overflow-x: clip; }
 .dl-tools-sel { font-size: 14px; color: var(--dl-muted); }
 .dl-tools-sel strong { color: var(--dl-ink); }
 .dl-section { display: flex; flex-direction: column; gap: 10px; }
+/* The tools and order columns scroll: their items keep their real height instead of being
+   squashed when the column is taller than the screen (CTA buttons stayed thin otherwise) */
+.dl-tools > *, .dl-order > * { flex-shrink: 0; }
 .dl-spacer { flex: 1 1 auto; }
 .dl .dl-small-link { font-size: 13px; }
 
