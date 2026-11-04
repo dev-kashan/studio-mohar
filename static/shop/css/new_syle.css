@@ -3778,7 +3778,7 @@ html, body { overflow-x: clip; }
 /* ---------- Editor: tools | stage | order ---------- */
 .dl-lab { flex: 1 1 auto; display: flex; min-height: 0; height: calc(100vh - 64px); height: calc(100dvh - 64px); }
 .dl-tools {
-    flex: 0 0 288px; border-right: 1px solid var(--dl-line); padding: 20px;
+    flex: 0 0 320px; border-right: 1px solid var(--dl-line); padding: 20px;
     display: flex; flex-direction: column; gap: 22px; overflow-y: auto; background: #ffffff;
 }
 .dl-tool-btns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
@@ -3996,7 +3996,7 @@ html, body { overflow-x: clip; }
 
 /* ---------- Laptop ---------- */
 @media (max-width: 1180px) {
-    .dl-tools { flex-basis: 248px; padding: 16px; }
+    .dl-tools { flex-basis: 272px; padding: 16px; }
     .dl-order { flex-basis: 320px; padding: 18px; }
     .dl-stage { padding: 16px; }
     .dl-pill-color { display: none; }
