@@ -1,4 +1,8 @@
 {% extends 'shop/base.html' %}
+{% block head %}
+    <title>{{ terms.meta_title|default:'Shipping policy | Studio Mohar' }}</title>
+    {% if terms.meta_description %}<meta name="description" content="{{ terms.meta_description }}">{% endif %}
+{% endblock head %}
 
 {% block body %}
 <style>

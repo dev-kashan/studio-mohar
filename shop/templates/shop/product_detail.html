@@ -1131,9 +1131,10 @@ color: #7e9479;
                     <p class="rp-product-price">C${{i.productattribute_set.first.price}}</p>
                     {% endif %}
                     <div class="rp-color-options">
-                      {% for attr in i.productattribute_set.all %}
-                          <span class="rp-color-dot" style="background-color: {{attr.color}}"></span>
+                      {% for code in i.rp_dots %}
+                          <span class="rp-color-dot" style="background-color: {{ code }}"></span>
                       {% endfor %}
+                      {% if i.rp_more %}<span class="rp-more-colors">+{{ i.rp_more }}</span>{% endif %}
                         <!-- <span class="rp-color-dot rp-color-black"></span>
                         <span class="rp-color-dot rp-color-red"></span>
                         <span class="rp-more-colors">+1</span> -->
@@ -1383,8 +1384,10 @@ color: #7e9479;
 });
 
 $(document).ready(function(){
+    // loop only when there are more cards than fit on screen, otherwise owl repeats the same products
+    var rpCount = $('.rp-products-carousel .rp-product-card').length;
     $('.rp-products-carousel').owlCarousel({
-        loop: true,
+        loop: rpCount > 4,
         margin: 0,
         nav: false,
         dots: true,
@@ -1874,6 +1877,8 @@ btn.attr('disabled', 'disabled').text('Adding...');
     .catch(err => {
         console.error("Add to cart failed:", err.message);
         btn.text('Try Again').removeAttr('disabled');
+        // Tell the customer what happened instead of only changing the button text
+        showNotification('Sorry, we could not add this to your cart. Please refresh the page and try again.', 'error');
     });
 });
 

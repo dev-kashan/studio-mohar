@@ -102,6 +102,38 @@ def slug_is_taken_by_site(slug):
     return match.url_name != 'category_styles'
 
 
+# ---- "Upload HTML" option for blog posts, services and get-apparel-for pages ----
+HTML_FILE_HELP = ("Optional: upload an .html file. When set, its content is shown as the page's article "
+                  "instead of the content typed above (site header and footer stay). Clear it to go back.")
+
+
+def validate_html_file(f):
+    from django.core.exceptions import ValidationError
+    if os.path.splitext(f.name)[1].lower() not in ('.html', '.htm'):
+        raise ValidationError('Please upload an .html or .htm file.')
+
+
+def read_uploaded_html(field):
+    """Content of an uploaded .html file, ready to drop inside the page.
+    A full document keeps the <style>/<link> tags of its <head> plus everything inside <body>."""
+    import re
+    if not field:
+        return ''
+    try:
+        field.open('rb')
+        raw = field.read()
+        field.close()
+    except (OSError, ValueError):
+        return ''
+    text = raw.decode('utf-8', errors='replace')
+    body = re.search(r'<body[^>]*>(.*)</body>', text, re.DOTALL | re.IGNORECASE)
+    if not body:
+        return text
+    head = re.search(r'<head[^>]*>(.*)</head>', text, re.DOTALL | re.IGNORECASE)
+    styles = re.findall(r'<style[^>]*>.*?</style>|<link[^>]+rel=["\']?stylesheet[^>]*>', head.group(1), re.DOTALL | re.IGNORECASE) if head else []
+    return '\n'.join(styles + [body.group(1)])
+
+
 COLOR_FAMILIES = (
     # value, label, swatch shown in the colour filter
     ('black', 'Black'), ('white', 'White'), ('grey', 'Grey'), ('red', 'Red'), ('pink', 'Pink'),
@@ -1111,10 +1143,15 @@ class BlogPost(models.Model):
     excerpt = models.TextField()
     content = RichTextField(default="")
     image = models.ImageField(upload_to="shop/blog_images/")
+    html_file = models.FileField(upload_to='shop/page_html/', blank=True, null=True, validators=[validate_html_file],
+                                 verbose_name='Upload HTML', help_text=HTML_FILE_HELP)
     date = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.title
+
+    def uploaded_html(self):
+        return read_uploaded_html(self.html_file)
 
     class Meta:
         verbose_name_plural = '12. Blog Post'
@@ -1125,7 +1162,8 @@ class Service(models.Model):
     meta_description = models.TextField(default='' ,blank=True, null=True)
     title_for_dropdown = models.CharField(max_length=255, default='')
     title = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True, max_length=255)
+    slug = models.SlugField(unique=True, max_length=255, blank=True,
+                            help_text="URL of this page: /services/<this>/ (e.g. screen-printing). Left empty = made from the title.")
     subtitle = RichTextField(default='')
     icon_class = models.CharField(max_length=250, default='')
     image = models.ImageField(upload_to="shop/blog_images")
@@ -1133,7 +1171,15 @@ class Service(models.Model):
     Per_Color_Price = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True, null=True)
     Per_Location_Price = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True, null=True)
     Rush = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True, null=True)
+    html_file = models.FileField(upload_to='shop/page_html/', blank=True, null=True, validators=[validate_html_file],
+                                 verbose_name='Upload HTML', help_text=HTML_FILE_HELP)
     date = models.DateField(auto_now_add=True)
+
+    def get_absolute_url(self):
+        return f'/services/{self.slug}/' if self.slug else f'/service_detail/{self.id}/'
+
+    def uploaded_html(self):
+        return read_uploaded_html(self.html_file)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -1167,12 +1213,21 @@ class GetApparelFor(models.Model):
     meta_description = models.TextField(default='' ,blank=True, null=True)
     title_for_dropdown = models.CharField(max_length=255, default='')
     title = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, blank=True,
+                            help_text="URL of this page: /get-apparel-for/<this>/ (e.g. church-groups). Left empty = made from the title.")
     subtitle = models.TextField()
     description = RichTextField(blank=True, null=True)
     icon_class = models.CharField(max_length=250, default='')
     image = models.ImageField(upload_to="shop/blog_images")
+    html_file = models.FileField(upload_to='shop/page_html/', blank=True, null=True, validators=[validate_html_file],
+                                 verbose_name='Upload HTML', help_text=HTML_FILE_HELP)
     date = models.DateField(auto_now_add=True)
+
+    def get_absolute_url(self):
+        return f'/get-apparel-for/{self.slug}/' if self.slug else f'/get_apparel_for/{self.id}/'
+
+    def uploaded_html(self):
+        return read_uploaded_html(self.html_file)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -1508,6 +1563,8 @@ class AboutUs(models.Model):
     title = models.CharField(max_length=255)
     short_desc = models.CharField(max_length=255)
     long_desc = models.CharField(max_length=255)
+    meta_title = models.CharField(max_length=255, default='', blank=True, verbose_name='SEO title')
+    meta_description = models.TextField(max_length=1000, default='', blank=True, verbose_name='SEO description')
         
     def __str__(self):
         return self.title
@@ -1530,6 +1587,8 @@ class AboutSections(models.Model):
 class TermsCondition(models.Model):
     title = models.CharField(max_length=255)
     description = RichTextField(default="")
+    meta_title = models.CharField(max_length=255, default='', blank=True, verbose_name='SEO title')
+    meta_description = models.TextField(max_length=1000, default='', blank=True, verbose_name='SEO description')
         
     def __str__(self):
         return self.title
@@ -1540,6 +1599,8 @@ class TermsCondition(models.Model):
 class PrivacyPolicy(models.Model):
     title = models.CharField(max_length=255)
     description = RichTextField(default="")
+    meta_title = models.CharField(max_length=255, default='', blank=True, verbose_name='SEO title')
+    meta_description = models.TextField(max_length=1000, default='', blank=True, verbose_name='SEO description')
         
     def __str__(self):
         return self.title
@@ -1550,6 +1611,8 @@ class PrivacyPolicy(models.Model):
 class ShippingPolicy(models.Model):
     title = models.CharField(max_length=255)
     description = RichTextField(default="")
+    meta_title = models.CharField(max_length=255, default='', blank=True, verbose_name='SEO title')
+    meta_description = models.TextField(max_length=1000, default='', blank=True, verbose_name='SEO description')
         
     def __str__(self):
         return self.title
@@ -1891,6 +1954,8 @@ class ProductPageSettings(models.Model):
     all_title = models.CharField(max_length=200, default='All products')
     all_intro = models.TextField(default='Premium blanks, printed or embroidered in-house in Mississauga.', blank=True)
     all_meta_title = models.CharField(max_length=255, default='Complete Custom Apparel Collection | Shirts, Hoodies, Bags & More | Studio Mohar', blank=True)
+    all_url = models.SlugField(max_length=120, default='', blank=True, verbose_name='All products URL',
+                               help_text='e.g. "products" makes the page /products/. Empty = /all_products/. The old /all_products/ link then redirects here.')
     all_meta_description = models.TextField(max_length=1000, default="Explore Studio Mohar's complete custom apparel collection. Premium t-shirts, hoodies, polos, hats, bags & more. Multiple decoration techniques & bulk discounts available.", blank=True)
     styles_label = models.CharField(max_length=40, default='styles', help_text="Shown under a category name: '4 styles'")
 
@@ -1931,6 +1996,14 @@ class ProductPageSettings(models.Model):
     @classmethod
     def load(cls):
         return cls.objects.first() or cls()
+
+    def all_products_url(self):
+        return f'/{self.all_url}/' if self.all_url else '/all_products/'
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.all_url and (slug_is_taken_by_site(self.all_url) or Category.objects.filter(slug=self.all_url).exists()):
+            raise ValidationError({'all_url': f'"/{self.all_url}/" is already a page or a category URL - please choose another.'})
 
 
 class InspoRequest(models.Model):

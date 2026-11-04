@@ -284,34 +284,8 @@
             {% endautoescape %}
             
             <div class="row">
-                <!-- Sidebar -->
-                <div class="col-lg-3 col-md-4">
-                    <div class="church-merch-sidebar" id="sidebar">
-                        <h5>Contents</h5>
-                        <ul class="church-merch-nav-list">
-                            {% for m in i.sections.all %}
-                            <li class="church-merch-nav-item">
-                                <a href="#sec-{{m.id}}" class="church-merch-nav-link">{{forloop.counter}}. {{m.title}}</a>
-                            </li>
-                            {% endfor %}
-                            <!-- <li class="church-merch-nav-item">
-                                <a href="#boxy-tshirts" class="church-merch-nav-link">2. Boxy T-Shirts</a>
-                            </li>
-                            <li class="church-merch-nav-item">
-                                <a href="#trucker-hats" class="church-merch-nav-link">3. Trucker Hats</a>
-                            </li>
-                            <li class="church-merch-nav-item">
-                                <a href="#dad-caps" class="church-merch-nav-link">4. Dad Caps</a>
-                            </li>
-                            <li class="church-merch-nav-item">
-                                <a href="#tote-bags" class="church-merch-nav-link">5. Tote Bags</a>
-                            </li> -->
-                        </ul>
-                    </div>
-                </div>
-                
-                <!-- Main Content -->
-                <div class="col-lg-9 col-md-8">
+                <!-- Main Content (the left "Contents" sidebar was removed) -->
+                <div class="col-12">
                     <!-- Hero Image -->
                     <img src="/media/{{i.image}}" alt="{{i.title}}" class="church-merch-hero-image">
                     
@@ -324,6 +298,10 @@
                         </div>
                     </div> -->
                     
+                    {% if page_html %}
+                    <!-- Uploaded HTML (admin "Upload HTML") replaces the description + sections -->
+                    <div class="sm-uploaded-html">{{ page_html|safe }}</div>
+                    {% else %}
                     <!-- Introduction -->
                     <div class="church-merch-content-text">
                         {% autoescape off %}
@@ -358,6 +336,7 @@
                         {% endautoescape %}
                     </section>
                     {% endfor %}
+                    {% endif %}
                     
                     <!-- Boxy T-Shirts Section -->
                     <!-- <section id="boxy-tshirts" class="church-merch-content-section">
@@ -418,7 +397,13 @@
                         </div>
                     </section> -->
                     
-                    <!-- Call to Action Section -->
+                    <!-- Call to Action Section (same block as the blog) -->
+                    <div class="church-merch-cta-section">
+                        <h3 class="church-merch-cta-title">Every great shirt starts with "what if..."</h3>
+                        <p class="church-merch-cta-text">What if your logo looked that good on a hoodie? What if your inside joke became your team uniform? What if premium quality didn't mean premium hassle? Try our design studio and find out. Choose, customize, order. We handle the rest</p>
+                        <a href="/design-lab/" class="church-merch-cta-button">Start Your What If!</a>
+                    </div>
+
                     <!-- <div class="church-merch-cta-section">
                         <h3 class="church-merch-cta-title">Now that you've learned about some popular church apparel trends, are you inspired?</h3>
                         <p class="church-merch-cta-text">When designing and marketing church apparel, it's important to consider the values and mission of the church and ensure that the products align with them.</p>
@@ -509,59 +494,6 @@
     <script>
         // Register ScrollTrigger plugin
         gsap.registerPlugin(ScrollTrigger);
-        
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('.church-merch-nav-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
-                
-                if (targetElement) {
-                    gsap.to(window, {
-                        duration: 1,
-                        scrollTo: {
-                            y: targetElement,
-                            offsetY: 100
-                        },
-                        ease: "power2.inOut"
-                    });
-                }
-            });
-        });
-        
-        // Active section highlighting
-        const sections = document.querySelectorAll('.church-merch-content-section');
-        const navLinks = document.querySelectorAll('.church-merch-nav-link');
-        
-        sections.forEach((section, index) => {
-            ScrollTrigger.create({
-                trigger: section,
-                start: "top center",
-                end: "bottom center",
-                onEnter: () => {
-                    navLinks.forEach(link => link.classList.remove('active'));
-                    navLinks[index].classList.add('active');
-                },
-                onEnterBack: () => {
-                    navLinks.forEach(link => link.classList.remove('active'));
-                    navLinks[index].classList.add('active');
-                }
-            });
-        });
-        
-        // Sticky sidebar with GSAP ScrollTrigger
-        ScrollTrigger.matchMedia({
-  "(min-width: 768px)": function() {
-    ScrollTrigger.create({
-      trigger: ".church-merch-container",
-      start: "top top",
-      end: "bottom bottom",
-      pin: "#sidebar",
-      pinSpacing: false
-    });
-  }
-});
         
         // Smooth animations for article cards
         // gsap.from('.church-merch-article-card', {

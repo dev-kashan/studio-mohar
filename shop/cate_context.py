@@ -59,6 +59,8 @@ def category_context(request):
     # New header menus: "Shop designs" occasions + editable menu texts
     context['shop_settings'] = ShopSettings.load()
     context['shop_menu_occasions'] = Occasion.objects.filter(live=True, show_in_menu=True)
+    # All products page URL (custom URL from the admin, or /all_products/)
+    context['all_products_url'] = ProductPageSettings.load().all_products_url()
 
     # mockup = MockUp.objects.filter(Active='Yes')
     # for m in mockup

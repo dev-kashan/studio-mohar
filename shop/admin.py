@@ -717,9 +717,13 @@ admin.site.register(Province )
 admin.site.register(ContactSupport )
 admin.site.register(InstagramPost )
 admin.site.register(ContactSales )
-admin.site.register(TermsCondition)
-admin.site.register(PrivacyPolicy)
-admin.site.register(ShippingPolicy)
+# Policy pages: text + SEO title / description
+@admin.register(TermsCondition, PrivacyPolicy, ShippingPolicy)
+class PolicyPageAdmin(admin.ModelAdmin):
+    fieldsets = [
+        (None, {"fields": ('title', 'description')}),
+        ("SEO", {"fields": ('meta_title', 'meta_description')}),
+    ]
 
 class GetApparelForSectionInline(admin.StackedInline):  # you can also use admin.StackedInline
     model = GetApparelForSection
@@ -745,9 +749,11 @@ class GetApparelForAdmin(admin.ModelAdmin):
         ('meta_description'),
         ('title_for_dropdown'),
         ('title'),
+        ('slug'),
         ('subtitle',),
         ('description',),
         ('icon_class', 'image'),
+        ('html_file'),
     )
 
     inlines = [GetApparelForSectionInline]
@@ -776,6 +782,10 @@ class AboutUsAdmin(admin.ModelAdmin):
     list_display = ('title', 'short_desc', 'long_desc')
     search_fields = ('title', 'short_desc', 'long_desc')
     inlines = [AboutSectionsInline]
+    fieldsets = [
+        (None, {"fields": ('title', 'short_desc', 'long_desc')}),
+        ("SEO", {"fields": ('meta_title', 'meta_description')}),
+    ]
 
 
 class HeroFeatureInline(admin.TabularInline):
@@ -881,10 +891,12 @@ class ServiceAdmin(admin.ModelAdmin):
         ('meta_description'),
         ('title_for_dropdown'),
         ('title'),
+        ('slug'),
         ('subtitle',),
         ('icon_class', 'image'),
         ('setup_price', 'Per_Color_Price'),
         ('Per_Location_Price', 'Rush'),
+        ('html_file'),
     )
 
 
@@ -1105,7 +1117,7 @@ class ProductPageSettingsAdmin(admin.ModelAdmin):
     inlines = [ProductTrustItemInline]
     fieldsets = [
         ('All products page', {
-            "fields": ('all_title', 'all_intro', 'styles_label', 'all_meta_title', 'all_meta_description'),
+            "fields": ('all_title', 'all_url', 'all_intro', 'styles_label', 'all_meta_title', 'all_meta_description'),
         }),
         ('Upload inspo card + popup', {
             "fields": ('inspo_on', 'inspo_card_text', 'inspo_title1', 'inspo_help1', 'inspo_placeholder', 'inspo_error',

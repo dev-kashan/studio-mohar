@@ -1,4 +1,8 @@
 {% extends 'shop/base.html' %}
+{% block head %}
+    <title>{{ post.meta_title|default:post.title }}{% if not post.meta_title %} | Studio Mohar{% endif %}</title>
+    <meta name="description" content="{{ post.meta_description|default:post.excerpt|striptags|truncatechars:160 }}">
+{% endblock head %}
 {% block body %}
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -323,11 +327,16 @@
                         Hey there! Chances are, you work in church communications. Maybe you're a youth group leader. Perhaps you're in charge of ordering matching t-shirts for your bible study group, or you need to fundraise for a mission trip and are searching for the perfect apparel to spread your message.
                     </div> -->
                     
+                    {% if page_html %}
+                    <!-- Uploaded HTML (admin "Upload HTML") replaces the typed content -->
+                    <div class="sm-uploaded-html">{{ page_html|safe }}</div>
+                    {% else %}
                     <div class="church-merch-content-text">
                         {% autoescape off %}
                         {{post.content}}
                         {% endautoescape %}
                     </div>
+                    {% endif %}
                     
                     <!-- <div class="church-merch-content-text">
                         Real Thread has been in the custom apparel industry since 2009, and we've helped churches and organizations get custom apparel orders since from the beginning.
@@ -418,7 +427,7 @@
                         <h3 class="church-merch-cta-title">Every great shirt starts with "what if..."</h3>
                         <p class="church-merch-cta-text">What if your logo looked that good on a hoodie? What if your inside joke became your team uniform? What if premium quality didn't mean premium hassle? Try our design studio and find out. Choose, customize, order. We handle the rest</p>
                         <!-- <p class="church-merch-cta-text">Our team of printing pros and product specialists is here to help you determine what garments are best for you and your community's needs, and we know when you need it.</p> -->
-                        <a href="/customize-editor/{{first_mockup_product.customize_mockup_template.id}}/{{first_mockup_product.customize_mockup_template.MockUp_Name}}/{{first_mockup_product.product_id}}/?attr_id={{first_mockup_product.productattribute_set.first.id}}&color_id={{first_mockup_product.productattribute_set.first.color.id}}&color_code={{first_mockup_product.productattribute_set.first.color.color_code|urlencode}}&price={{first_mockup_product.productattribute_set.first.discount_price}}" class="church-merch-cta-button">Start Your What If!</a>
+                        <a href="/design-lab/" class="church-merch-cta-button">Start Your What If!</a>
                     </div>
                     
                     <!-- More Articles Section -->

@@ -1343,8 +1343,13 @@ ul.dropdown-ul li a:hover{
     .hero-section{
         height: auto;
     }
+    /* Hero photo/video was hidden on mobile; now it shows under the text, smaller and centred */
     .hero-image{
-        display: none;
+        margin-top: 32px;
+    }
+    .hero-image-container{
+        max-width: 360px;
+        margin: 0 auto;
     }
     .section_between_line1{
     position: absolute;

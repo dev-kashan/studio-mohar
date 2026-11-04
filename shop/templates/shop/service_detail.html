@@ -418,6 +418,10 @@
     </div>
 </section> -->
 
+<!-- Uploaded HTML (admin "Upload HTML") replaces the care sections -->
+{% if page_html %}
+<section class="foil-care-section"><div class="container"><div class="sm-uploaded-html">{{ page_html|safe }}</div></div></section>
+{% else %}
 <!-- Care Sections (loop over ServiceSection) -->
 {% for section in sections %}
 <section class="foil-care-section">
@@ -454,6 +458,7 @@
     </div>
 </section>
 {% endfor %}
+{% endif %}
 
     <!-- <section class="foil-info-section">
         <div class="container">
@@ -656,7 +661,7 @@
                                 {% endautoescape %}
                             
                             </p>
-                            <a href="/service_detail/{{i.id}}" class="foil-specialty-link">Learn More →</a>
+                            <a href="{{ i.get_absolute_url }}" class="foil-specialty-link">Learn More →</a>
                         </div>
                     </div>
                 </div>

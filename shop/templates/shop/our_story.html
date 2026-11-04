@@ -1,4 +1,8 @@
 {% extends 'shop/base.html' %}
+{% block head %}
+    <title>{{ story.meta_title|default:'Our story | Studio Mohar' }}</title>
+    {% if story.meta_description %}<meta name="description" content="{{ story.meta_description }}">{% endif %}
+{% endblock head %}
 {% block body %}
 <style>
         :root {

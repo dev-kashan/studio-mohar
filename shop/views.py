@@ -236,12 +236,22 @@ def products(request, id):
 
 
 def get_apparel_for(request, id):
-    apparel = GetApparelFor.objects.get(id=id)
+    # Old number URL -> permanent redirect to the custom URL /get-apparel-for/<slug>/
+    apparel = get_object_or_404(GetApparelFor, id=id)
+    if apparel.slug:
+        return redirect(apparel.get_absolute_url(), permanent=True)
+    return get_apparel_for_page(request, apparel=apparel)
+
+
+def get_apparel_for_page(request, slug=None, apparel=None):
+    apparel = apparel or get_object_or_404(GetApparelFor, slug=slug)
     params = {
-        'i':apparel
+        'i':apparel,
+        'page_html': apparel.uploaded_html(),   # "Upload HTML" from the admin replaces the article
     }
     return render(request, 'shop/get_apparel_for.html', params)
 
+@ensure_csrf_cookie  # Add to Cart posts to /add-to-cart-special/ with fetch; new visitors have no csrftoken cookie otherwise
 def product_detail(request, id):
 
     
@@ -278,7 +288,20 @@ def product_detail(request, id):
             Product.objects
             .filter(categories=product.categories, customize_mockup_template__isnull=True, live=True)
             .exclude(product_id=product.product_id)
+            .prefetch_related('productattribute_set__color')
         )
+        # One dot per colour (attributes repeat a colour once per size); the template used the
+        # colour NAME as a CSS colour, so "Cardinal Red" etc. showed no dot at all
+        related_prod = list(related_prod)
+        for rp in related_prod:
+            seen, dots = set(), []
+            for attr in rp.productattribute_set.all():
+                code = attr.color.color_code if attr.color else ''
+                if code and code not in seen:
+                    seen.add(code)
+                    dots.append(code)
+            rp.rp_dots = dots[:5]
+            rp.rp_more = max(0, len(dots) - 5)
     # else:
     #     related_prod = (
     #         Product.objects
@@ -306,13 +329,22 @@ def service_detail(request):
     return render(request, 'shop/service_detail.html')
 
 def service_detail(request, id):
+    # Old number URL -> permanent redirect to the custom URL /services/<slug>/
     service = get_object_or_404(Service, id=id)
+    if service.slug:
+        return redirect(service.get_absolute_url(), permanent=True)
+    return service_page(request, service=service)
+
+
+def service_page(request, slug=None, service=None):
+    service = service or get_object_or_404(Service, slug=slug)
     services = Service.objects.all().exclude(id=service.id)
     sections = service.servicesection_set.all()  # all related sections
     return render(request, 'shop/service_detail.html', {
         'service': service,
         'services': services,
-        'sections': sections
+        'sections': sections,
+        'page_html': service.uploaded_html(),   # "Upload HTML" from the admin replaces the sections
     })
 
 def contact_sales(request):
@@ -573,6 +605,7 @@ def contact_support(request):
     return render(request, 'shop/contact_support.html')
 
 
+@ensure_csrf_cookie  # first page most visitors see: set the csrftoken cookie so later fetch() posts work
 def index(request):
 
 
@@ -1990,7 +2023,8 @@ def blog(request):
 def blog_detail(request, slug):
     post = get_object_or_404(BlogPost, slug=slug)
     related_post = BlogPost.objects.filter(category__id=post.category.id).exclude(id=post.id)[:3]
-    return render(request, 'shop/blog_detail.html', {'post': post, 'related_post':related_post})
+    return render(request, 'shop/blog_detail.html', {'post': post, 'related_post':related_post,
+                                                     'page_html': post.uploaded_html()})
 
 
 
@@ -2629,6 +2663,9 @@ def _price_tiers():
 def all_products(request):
     """All product categories (coastalreign-style cards). Pinned ones first."""
     settings_ = ProductPageSettings.load()
+    # Custom URL set in the admin: the old /all_products/ address redirects to it
+    if settings_.all_url and request.path == '/all_products/':
+        return redirect(settings_.all_products_url(), permanent=True)
     categories = []
     for cat in Category.objects.filter(active=True).order_by('-is_pinned', 'display_order', 'category_name'):
         styles = cat.live_styles()
@@ -2651,6 +2688,8 @@ def all_products(request):
 
 def category_styles(request, cat_slug):
     """Every live style of one category, with a colour-family filter."""
+    if cat_slug == ProductPageSettings.load().all_url:   # custom URL of the All products page
+        return all_products(request)
     category = get_object_or_404(Category, slug=cat_slug, active=True)
     styles = list(category.live_styles().order_by('display_order', 'product_name'))
     family = request.GET.get('color', '')

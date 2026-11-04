@@ -1,19 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Start cookieyes banner --> 
-    <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/7c2794fa549cfcd173ec4d81/script.js"></script>
-
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-MR9BZ39V');</script>
-    <!-- End Google Tag Manager →
-
-
-      <!-- End cookieyes banner -->
+    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% block head %}
@@ -639,6 +633,29 @@ width: 100%;
 
 
 }
+        /* ---- Instant Quote: "Add Your Design" link-button ---- */
+        .quote-design-btn { display: block; text-align: center; text-decoration: none; color: #ffffff; }
+        .quote-design-btn:hover, .quote-design-btn:focus { color: #ffffff; text-decoration: none; }
+
+        /* ---- Instant Quote: - / + steppers (added by JS, shown on mobile only) ---- */
+        .quote-step { display: none; }
+        @media screen and (max-width: 767px) {
+            .quote-size-grid { grid-template-columns: 1fr; gap: 8px; }          /* sizes stacked, one per row */
+            .quote-size-item { gap: 10px; }
+            .quote-size-label { min-width: 44px; font-size: 16px; }
+            .quote-size-input { height: 44px; font-size: 16px; }                  /* 16px: no zoom-in on iOS */
+            .quote-step {
+                display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px;
+                width: 44px; height: 44px; border: 1px solid #ddd; border-radius: 8px; background: #ffffff;
+                font-size: 22px; font-weight: 600; line-height: 1; color: #222; cursor: pointer; touch-action: manipulation;
+            }
+            .quote-step:active { background: #f1f1f1; }
+            .quote-step[disabled] { opacity: .4; cursor: not-allowed; }
+            input.quote-size-input[type=number]::-webkit-inner-spin-button,
+            input.quote-size-input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none !important; margin: 0; }
+            input.quote-size-input[type=number] { -moz-appearance: textfield !important; }
+        }
+
         /* .quote-trigger-btn {
             background-color: #2c5aa0;
             color: white;
@@ -693,6 +710,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     {
                         "color_name": "{{ attr.color.color_name }}",
                         "color_code": "{{ attr.color.color_code }}",
+                        "color_id": "{{ attr.color.id }}",
                         "size": "{{ attr.size.Size_name|clean_sizes }}",
                         "price": {{ attr.discount_price }}
                     }{% if not forloop.last %},{% endif %}
@@ -834,6 +852,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <tbody id="bulkPricingTable"></tbody>
         </table>
     </div>
+    <!-- Opens the Design Lab with the same product, colour and quantities -->
+    <a href="/design-lab/" class="quote-get-btn quote-design-btn" id="quoteDesignBtn" onclick="return openQuoteInDesignLab()">Add Your Design</a>
 </div>
 </div>
         </div>
@@ -976,7 +996,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 {% for i in Cate %}
                                 <li><a href="/products/{{i.category_id}}">{{i.category_name}}</a></li>
                                 {% endfor %}
-                                <li><a href="/all_products/" class="smh-more">See all products &rarr;</a></li>
+                                <li><a href="{{ all_products_url }}" class="smh-more">See all products &rarr;</a></li>
                             </ul>
                         </div>
                     </div>
@@ -993,7 +1013,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 <span class="smh-eyebrow">Services</span>
                                 <ul class="smh-list">
                                     {% for i in all_services %}
-                                    <li><i class="{{i.icon_class}}"></i><a href="/service_detail/{{i.id}}">{{i.title_for_dropdown}}</a></li>
+                                    <li><i class="{{i.icon_class}}"></i><a href="{{ i.get_absolute_url }}">{{i.title_for_dropdown}}</a></li>
                                     {% endfor %}
                                 </ul>
                             </div>
@@ -1001,7 +1021,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 <span class="smh-eyebrow">Get apparel for</span>
                                 <ul class="smh-list">
                                     {% for i in all_apparel_for %}
-                                    <li><i class="{{i.icon_class}}"></i><a href="/get_apparel_for/{{i.id}}">{{i.title_for_dropdown}}</a></li>
+                                    <li><i class="{{i.icon_class}}"></i><a href="{{ i.get_absolute_url }}">{{i.title_for_dropdown}}</a></li>
                                     {% endfor %}
                                 </ul>
                             </div>
@@ -1114,7 +1134,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             {% for i in Cate %}
             <li><a href="/products/{{i.category_id}}">{{i.category_name}}</a></li>
             {% endfor %}
-            <li><a href="/all_products/">See all products &rarr;</a></li>
+            <li><a href="{{ all_products_url }}">See all products &rarr;</a></li>
           </ul>
         </div>
       </li>
@@ -1128,13 +1148,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <span class="smh-m-label">Services</span>
           <ul>
             {% for i in all_services %}
-            <li><a href="/service_detail/{{i.id}}">{{i.title_for_dropdown}}</a></li>
+            <li><a href="{{ i.get_absolute_url }}">{{i.title_for_dropdown}}</a></li>
             {% endfor %}
           </ul>
           <span class="smh-m-label">Get apparel for</span>
           <ul>
             {% for i in all_apparel_for %}
-            <li><a href="/get_apparel_for/{{i.id}}">{{i.title_for_dropdown}}</a></li>
+            <li><a href="{{ i.get_absolute_url }}">{{i.title_for_dropdown}}</a></li>
             {% endfor %}
           </ul>
           <span class="smh-m-label">Support</span>
@@ -1463,7 +1483,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // Find applicable discount
         let applicableDiscount = 0;
         for (const b of discountBrackets) {
-            if (totalQuantity >= b.min && totalQuantity < b.max) {
+            if (totalQuantity >= b.min && totalQuantity <= b.max) {   // max is inclusive, same as the Design Lab
                 applicableDiscount = b.discount;
                 break;
             }
@@ -1547,7 +1567,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         // Find current bracket
         const currentIndex = discountBrackets.findIndex(
-            b => totalQuantity >= b.min && totalQuantity < b.max
+            b => totalQuantity >= b.min && totalQuantity <= b.max   // max is inclusive
         );
 
         // Get next 3 brackets
@@ -1568,6 +1588,43 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             `;
             tableBody.appendChild(row);
         });
+    }
+
+    // Mobile: a - and + button around every size box (CSS hides them on desktop)
+    document.querySelectorAll('#sizeGrid .quote-size-input').forEach(function (input) {
+        function step(delta) {
+            if (input.disabled) return;
+            var v = Math.max(0, (parseInt(input.value, 10) || 0) + delta);
+            input.value = v;
+            input.dispatchEvent(new Event('input', { bubbles: true }));    // same events as typing
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        [['-', -1, 'beforebegin', 'Fewer'], ['+', 1, 'afterend', 'More']].forEach(function (b) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'quote-step';
+            btn.textContent = b[0];
+            btn.setAttribute('aria-label', b[3] + ' ' + (input.closest('.quote-size-item').dataset.size || ''));
+            btn.addEventListener('click', function () { step(b[1]); });
+            input.insertAdjacentElement(b[2], btn);
+        });
+    });
+
+    // "Add Your Design": Design Lab link with product, colour and sizes (S:2,M:3) of this quote
+    function openQuoteInDesignLab() {
+        const productId = document.getElementById('productSelect').value;
+        const attr = currentProductAttributes.find(a => a.color_code === selectedColor);
+        let url = '/design-lab/?product=' + encodeURIComponent(productId);
+        if (attr && attr.color_id) url += '&color=' + encodeURIComponent(attr.color_id);
+        const sizes = [];
+        ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'].forEach(size => {
+            const input = document.getElementById('size' + size);
+            const qty = input && !input.disabled ? parseInt(input.value) || 0 : 0;
+            if (qty > 0) sizes.push(size + ':' + qty);
+        });
+        if (sizes.length) url += '&sizes=' + encodeURIComponent(sizes.join(','));
+        window.location.href = url;
+        return false;
     }
 
     // Edit quote
@@ -1726,7 +1783,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <img src="/media/{{layout.logo}}" alt="">
                 </div>
                 <div class="footer-social">
-    <a href="https://www.facebook.com/studiomoharto" target="_blank"><i class="fab fa-facebook-f"></i></a>
+    <a href="https://www.facebook.com/studiomohar" target="_blank"><i class="fab fa-facebook-f"></i></a>
     <a href="https://www.instagram.com/studio_mohar/" target="_blank"><i class="fab fa-instagram"></i></a>
     <a href=" https://www.linkedin.com/company/studio-mohar" target="_blank"><i class="fab fa-linkedin"></i></a>
     <a href="mailto:support@studiomohar.ca"><i class="far fa-envelope"></i></a>
@@ -1746,7 +1803,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         {% for i in Cate %}
                         <li><a href="/products/{{i.category_id}}">{{i.category_name}}</a></li>
                         {% endfor %}
-                        <li><a href="/all_products/">All Products</a></li>
+                        <li><a href="{{ all_products_url }}">All Products</a></li>
                         <!-- <li><a href="/privacy-policy/">Privacy Policy</a></li>
                         <li><a href="/terms-conditions/">Terms & Conditions</a></li>
                         <li><a href="/shipping-policy/">Shipping Policy</a></li> -->
@@ -1757,7 +1814,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <h5>Services</h5>
                     <ul>
                         {% for i in all_services %}
-                        <li><a href="/service_detail/{{i.id}}">{{i.title_for_dropdown}}</a></li>
+                        <li><a href="{{ i.get_absolute_url }}">{{i.title_for_dropdown}}</a></li>
                         {% endfor %}
                         <!-- <li><a href="#">Ladies T- Shirts</a></li>
                         <li><a href="#">Hoodies & Sweatshirts</a></li>
