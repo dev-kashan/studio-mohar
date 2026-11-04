@@ -3868,9 +3868,10 @@ html, body { overflow-x: clip; }
     color: var(--dl-promo); font-size: 14px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
 }
 .dl-remove:hover { background: var(--dl-promo-bg); }
-.dl-methods { border: 0; margin: 0; padding: 0; display: flex; gap: 8px; min-width: 0; }
+/* Print / Embroidery: side by side, but each goes on its own row when the column is too narrow */
+.dl-methods { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
 .dl-method {
-    flex: 1 1 0; display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px;
+    flex: 1 1 0; white-space: nowrap; display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px;
     border-radius: 10px; border: 1.5px solid var(--dl-field); font-size: 14px; font-weight: 700; cursor: pointer; margin: 0;
 }
 .dl-method:has(input:checked) { border-color: var(--dl-accent); }
