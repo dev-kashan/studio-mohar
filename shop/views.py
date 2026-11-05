@@ -2851,7 +2851,6 @@ DL_SIDE_LABELS = {'front': 'Front', 'back': 'Back', 'left_sleeve': 'Left sleeve'
 DL_PHOTO_FIELDS = {'front': 'front_image', 'back': 'back_image', 'left_sleeve': 'left_image', 'right_sleeve': 'right_image'}
 DL_MOCKUP_FIELDS = {'front': 'MockUp_Fornt_Image', 'back': 'MockUp_Back_Image',
                     'left_sleeve': 'MockUp_Left_Image', 'right_sleeve': 'MockUp_Right_Image'}
-DL_AREA_KEYS = {'front': 'front', 'back': 'back', 'left_sleeve': 'left', 'right_sleeve': 'right'}
 DL_MAX_QTY = 9999           # pieces per size
 DL_MAX_ARTWORKS = 40        # images + texts over all sides
 DL_MAX_FILES = 20
@@ -2933,7 +2932,6 @@ def _dl_style(product, pricing):
         return None
     promo_on = bool(product.promo_percent and product.promo_percent > 0)
     lowest = min(s['price'] for c in colors for s in c['sizes']) + pricing['sides']['front']
-    areas = product.print_areas()
     return {
         'id': product.product_id,
         'name': product.product_name,
@@ -2943,7 +2941,6 @@ def _dl_style(product, pricing):
         'promoCount': sum(1 for c in colors if c['is_promo']) if promo_on else 0,
         'sizeChart': product.size_chart_img.url if product.size_chart_img else '',
         'photo': next(iter(colors[0]['sides'].values())),
-        'areas': {side: areas[DL_AREA_KEYS[side]] for side in DL_SIDES},
         'colors': colors,
     }
 

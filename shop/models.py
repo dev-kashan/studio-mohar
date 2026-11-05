@@ -397,29 +397,6 @@ class Product(models.Model):
     promo_percent = models.DecimalField(max_digits=5, decimal_places=2, default=0, help_text="Discount % for colours marked 'Promo' below (0 = no promo)")
     display_order = models.PositiveIntegerField(default=0, help_text="Lower numbers show first on the styles page")
 
-    # Design Lab: where the design may go on each colour photo, in % of the photo:
-    # "left, top, width, height" (e.g. 34,26,32,42 = a box starting 34% from the left)
-    PRINT_AREA_HELP = "Design area on this side's photo in % of the photo: left, top, width, height (e.g. 34,26,32,42)"
-    print_area_front = models.CharField(max_length=40, default='34,26,32,42', blank=True, help_text=PRINT_AREA_HELP)
-    print_area_back = models.CharField(max_length=40, default='34,22,32,46', blank=True, help_text=PRINT_AREA_HELP)
-    print_area_left = models.CharField(max_length=40, default='35,35,30,30', blank=True, verbose_name='Print area left sleeve', help_text=PRINT_AREA_HELP)
-    print_area_right = models.CharField(max_length=40, default='35,35,30,30', blank=True, verbose_name='Print area right sleeve', help_text=PRINT_AREA_HELP)
-
-    def print_areas(self):
-        """{'front': [left, top, width, height], ...} in % (bad values fall back to the defaults)."""
-        out = {}
-        for side in ('front', 'back', 'left', 'right'):
-            field = 'print_area_' + side
-            default = self._meta.get_field(field).default
-            try:
-                box = [float(v) for v in (getattr(self, field) or default).split(',')]
-                if len(box) != 4 or box[2] <= 0 or box[3] <= 0:
-                    raise ValueError
-            except ValueError:
-                box = [float(v) for v in default.split(',')]
-            out[side] = box
-        return out
-
     def save(self, *args, **kwargs):
         # Only fill the URL when empty, so a custom URL typed in the admin is kept
         if not self.Slug:

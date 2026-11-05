@@ -374,15 +374,6 @@ class ProductAdmin(admin.ModelAdmin):
         }),
         
        
-        ("Design Lab print areas", {
-            "classes": ("collapse",),
-            "description": "Where the customer's design may go on each colour photo, in % of the photo "
-                           "(left, top, width, height). Only sides that have a colour photo show in the Design Lab.",
-            "fields": (('print_area_front', 'print_area_back'),
-                       ('print_area_left', 'print_area_right'),
-                ),
-        }),
-
         ("Competition Details", {
             "classes": ("collapse"),
             "fields": (('fabric_composition', "softness") ,
