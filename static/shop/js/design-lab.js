@@ -537,12 +537,20 @@
         if (!state.style) return;
         var items = visibleItems();
         var list = $('dlArts'), priceList = $('dlPriceArts');
+        var keepTop = list.scrollTop, keepPriceTop = priceList.scrollTop;   // the lists scroll; keep the place
         list.innerHTML = '';
         priceList.innerHTML = '';
         items.forEach(function (i) {
             list.appendChild(artCard(i, true));
             priceList.appendChild(artCard(i, false));
         });
+        list.scrollTop = keepTop;
+        priceList.scrollTop = keepPriceTop;
+        // A new or selected layer scrolls into view inside the list (not the whole page)
+        var act = list.querySelector('.dl-art.is-active');
+        if (act && (act.offsetTop < list.scrollTop || act.offsetTop + act.offsetHeight > list.scrollTop + list.clientHeight)) {
+            list.scrollTop = act.offsetTop - 8;
+        }
         $('dlNoArts').hidden = items.length > 0;
         $('dlEmpty').hidden = itemsOn(state.side).length > 0 || state.step !== 'design';
         var av = availableSides();

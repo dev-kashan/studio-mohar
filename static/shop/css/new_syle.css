@@ -3841,7 +3841,14 @@ html, body { overflow-x: clip; }
 }
 .dl-h { font-size: 16px; font-weight: 800; }
 .dl-h-lg { font-size: 22px; font-weight: 800; }
-.dl-arts { display: flex; flex-direction: column; gap: 12px; }
+/* Artwork list scrolls inside itself once there are many layers, so the price below stays close */
+.dl-arts {
+    display: flex; flex-direction: column; gap: 12px;
+    position: relative;               /* cards' offsetTop is measured from the list (JS scrolls to the active one) */
+    max-height: 340px; overflow-y: auto; overscroll-behavior: contain;
+    padding-right: 4px; scrollbar-width: thin;
+}
+.dl-arts > .dl-art { flex: none; }   /* cards keep their height instead of shrinking */
 .dl-art { border: 1px solid var(--dl-line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
 .dl-art.is-active { border-color: var(--dl-accent); box-shadow: 0 0 0 1px var(--dl-accent); }
 .dl-art-top { display: flex; gap: 12px; align-items: center; }
