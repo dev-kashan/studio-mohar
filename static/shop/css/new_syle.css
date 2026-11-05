@@ -3473,45 +3473,27 @@ html, body { overflow-x: clip; }
 }
 @media (prefers-reduced-motion: reduce) { .home-see-all, .home-see-all-arrow { transition: none; } }
 
-/* Instant Quote: product list that expands into styles (replaces the dropdown;
-   the dropdown stays in the page, hidden, and still drives the price script) */
-.qp-picker { display: flex; flex-direction: column; gap: 8px; }
+/* Instant Quote: category dropdown + style dropdown below it (built by JS).
+   The hidden #productSelect stays in the page and still drives the price script. */
+.qp-picker { display: flex; flex-direction: column; gap: 10px; }
 .qp-picker:not(:empty) + .quote-product-select { display: none; }
-.qp-group { border: 1px solid #E2DED4; border-radius: 10px; background: #FFFFFF; overflow: hidden; }
-.qp-cat {
+.qp-select {
     width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    border: 0;
-    background: transparent;
-    font: inherit;
-    font-weight: 600;
-    color: #1D1D1B;
-    text-align: left;
-    cursor: pointer;
-}
-.qp-cat small { font-weight: 400; color: #4A4A45; }
-.qp-cat::after { content: '+'; font-weight: 400; font-size: 18px; margin-left: 6px; }
-.qp-cat[aria-expanded="true"]::after { content: '\2212'; }
-.qp-cat span { flex: 1; }
-.qp-styles { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 14px 14px; }
-.qp-styles[hidden] { display: none; }
-.qp-style {
-    height: 38px;
-    padding: 0 14px;
+    height: 44px;
+    padding: 0 12px;
     border: 1px solid #CFCABD;
-    border-radius: 999px;
+    border-radius: 10px;
     background: #FFFFFF;
     font: inherit;
-    font-size: 14px;
+    font-size: 15px;
     color: #1D1D1B;
     cursor: pointer;
 }
-.qp-style:hover { border-color: #5A6F52; }
-.qp-style.is-on { background: #5A6F52; border-color: #5A6F52; color: #FFFFFF; font-weight: 600; }
+.qp-select:hover { border-color: #5A6F52; }
+.qp-select:focus { outline: 2px solid #5A6F52; outline-offset: 1px; }
+.qp-select:disabled { opacity: .55; cursor: not-allowed; }
+/* One-size product: keep "One size" on one line in the quantity grid */
+.quote-size-item[data-size="OS"] .quote-size-label { white-space: nowrap; min-width: auto; }
 
 
 /* =====================================================================
@@ -3962,6 +3944,8 @@ html, body { overflow-x: clip; }
 .dl-drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .dl-drop.has-file { padding: 16px; flex-direction: row; text-align: left; }
 .dl-drop-preview { width: 72px; height: 72px; flex: none; border-radius: 10px; background: var(--dl-soft); object-fit: contain; }
+/* Upload icon on its own line, centred above "Drag your image here or browse" */
+.dl-drop-text svg { display: block; margin: 0 auto 10px; }
 .dl-check-row { display: flex; align-items: center; gap: 10px; font-size: 14px; min-height: 32px; cursor: pointer; }
 .dl-check-row input { width: 20px; height: 20px; margin: 0; accent-color: var(--dl-accent); flex: none; }
 .dl-legend { font-size: 15px; font-weight: 800; padding: 0; margin-bottom: 8px; }

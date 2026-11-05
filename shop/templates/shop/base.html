@@ -781,6 +781,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <input type="number" class="quote-size-input" id="size5XL" min="0" value="0">
                 <span class="quote-size-price" id="price5XL"></span>
             </div>
+            <!-- One-size products (e.g. Canvas Tote); shown only when the product has it -->
+            <div class="quote-size-item" data-size="OS" style="display:none;">
+                <span class="quote-size-label">One size</span>
+                <input type="number" class="quote-size-input" id="sizeOS" min="0" value="0">
+                <span class="quote-size-price" id="priceOS"></span>
+            </div>
         </div>
     </div>
 
@@ -1346,7 +1352,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // Update available sizes based on selected color
     function updateAvailableSizes() {
-        const sizes = ['XS','S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+        const sizes = ['XS','S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', 'OS'];
         
         // Get attributes for selected color
         const colorAttributes = currentProductAttributes.filter(
@@ -1400,7 +1406,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // Get total quantity
     function getTotalQuantity() {
-        const sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+        const sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', 'OS'];
         let total = 0;
         sizes.forEach(size => {
             const input = document.getElementById('size' + size);
@@ -1455,7 +1461,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         // Calculate subtotal by iterating through each size
         let subtotal = 0;
-        const sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+        const sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', 'OS'];
         
         sizes.forEach(size => {
             const input = document.getElementById('size' + size);
@@ -1537,7 +1543,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // Get average base price from current selection
         let totalBasePrice = 0;
         let itemCount = 0;
-        const sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+        const sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', 'OS'];
         
         sizes.forEach(size => {
             const input = document.getElementById('size' + size);
@@ -1617,10 +1623,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         let url = '/design-lab/?product=' + encodeURIComponent(productId);
         if (attr && attr.color_id) url += '&color=' + encodeURIComponent(attr.color_id);
         const sizes = [];
-        ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'].forEach(size => {
+        ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', 'OS'].forEach(size => {
             const input = document.getElementById('size' + size);
             const qty = input && !input.disabled ? parseInt(input.value) || 0 : 0;
-            if (qty > 0) sizes.push(size + ':' + qty);
+            // The Design Lab knows the one-size option by its full name, not "OS"
+            if (qty > 0) sizes.push((size === 'OS' ? 'One size' : size) + ':' + qty);
         });
         if (sizes.length) url += '&sizes=' + encodeURIComponent(sizes.join(','));
         window.location.href = url;
@@ -1640,67 +1647,69 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         initializePopup();
     }
 
-    // Instant Quote product picker: list of products (categories) that expand
-    // into their styles. Picking a style sets the hidden select as before.
+    // Instant Quote product picker: 1) a category dropdown (T-Shirts, Hoodies...),
+    // 2) a style dropdown under it (Signature Tee, Zip Hoodie...).
+    // Picking a style sets the hidden #productSelect, as before.
+    function fillQuoteStyles(cat, chosen) {
+        var select = document.getElementById('productSelect');
+        var styleSel = document.getElementById('quoteStyle');
+        if (!select || !styleSel) return;
+        styleSel.innerHTML = '';
+        styleSel.add(new Option('Select a style', ''));
+        [].forEach.call(select.options, function (o) {
+            if ((o.dataset.category || 'Other') === cat) {
+                styleSel.add(new Option(o.textContent.trim(), o.value));
+            }
+        });
+        styleSel.disabled = !cat;
+        styleSel.value = chosen || '';
+    }
     function buildQuotePicker() {
         var picker = document.getElementById('quotePicker');
         var select = document.getElementById('productSelect');
         if (!picker || !select || picker.dataset.built) return;
         picker.dataset.built = '1';
-        var groups = {}, order = [];
+
+        var catSel = document.createElement('select');
+        catSel.id = 'quoteCategory';
+        catSel.className = 'qp-select';
+        catSel.setAttribute('aria-label', 'Product category');
+        catSel.add(new Option('Select a product', ''));
+        var seen = {};
         [].forEach.call(select.options, function (o) {
             var cat = o.dataset.category || 'Other';
-            if (!groups[cat]) { groups[cat] = []; order.push(cat); }
-            groups[cat].push(o);
+            if (!seen[cat]) {
+                seen[cat] = true;
+                catSel.add(new Option(cat, cat));
+            }
         });
-        order.forEach(function (cat) {
-            var box = document.createElement('div');
-            box.className = 'qp-group';
-            var head = document.createElement('button');
-            head.type = 'button';
-            head.className = 'qp-cat';
-            head.setAttribute('aria-expanded', 'false');
-            head.innerHTML = '<span></span><small></small>';
-            head.querySelector('span').textContent = cat;
-            head.querySelector('small').textContent = groups[cat].length + (groups[cat].length === 1 ? ' style' : ' styles');
-            var list = document.createElement('div');
-            list.className = 'qp-styles';
-            list.hidden = true;
-            groups[cat].forEach(function (o) {
-                var b = document.createElement('button');
-                b.type = 'button';
-                b.className = 'qp-style';
-                b.dataset.value = o.value;
-                b.textContent = o.textContent.trim();
-                b.addEventListener('click', function () {
-                    select.value = o.value;
-                    handleProductChange();
-                    syncQuotePicker();
-                });
-                list.appendChild(b);
-            });
-            head.addEventListener('click', function () {
-                var open = list.hidden;
-                list.hidden = !open;
-                head.setAttribute('aria-expanded', open ? 'true' : 'false');
-            });
-            box.appendChild(head);
-            box.appendChild(list);
-            picker.appendChild(box);
+
+        var styleSel = document.createElement('select');
+        styleSel.id = 'quoteStyle';
+        styleSel.className = 'qp-select';
+        styleSel.setAttribute('aria-label', 'Product style');
+
+        catSel.addEventListener('change', function () {
+            fillQuoteStyles(catSel.value, '');   // product changes only once a style is picked
         });
+        styleSel.addEventListener('change', function () {
+            if (!styleSel.value) return;
+            select.value = styleSel.value;
+            handleProductChange();
+        });
+
+        picker.appendChild(catSel);
+        picker.appendChild(styleSel);
     }
     function syncQuotePicker() {
         var select = document.getElementById('productSelect');
-        if (!select) return;
-        document.querySelectorAll('#quotePicker .qp-style').forEach(function (b) {
-            var on = b.dataset.value === select.value;
-            b.classList.toggle('is-on', on);
-            if (on) {   // keep the chosen product's group open
-                var list = b.parentElement;
-                list.hidden = false;
-                list.previousElementSibling.setAttribute('aria-expanded', 'true');
-            }
-        });
+        var catSel = document.getElementById('quoteCategory');
+        if (!select || !catSel) return;
+        var o = select.options[select.selectedIndex];
+        if (!o) return;
+        var cat = o.dataset.category || 'Other';
+        catSel.value = cat;
+        fillQuoteStyles(cat, o.value);
     }
     document.addEventListener('DOMContentLoaded', function () {
         buildQuotePicker();

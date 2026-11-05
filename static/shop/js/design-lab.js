@@ -513,6 +513,7 @@
         el.querySelector('.dl-art-side').textContent = LABELS[i.side];
         el.querySelector('.dl-art-name').textContent = title;
         el.querySelector('legend').textContent = 'How to make the ' + LABELS[i.side] + ' artwork';
+        if (i.type !== 'image') el.querySelector('.dl-methods').remove();   // text: print only, no choice
         var group = 'dl-m-' + (withRemove ? 'd-' : 'p-') + i.id;   // one radio group per list
         all('input', el).forEach(function (inp) {
             inp.name = group;
@@ -563,7 +564,9 @@
         var bar = $('dlMbar');
         bar.hidden = !o || state.step !== 'design';
         if (o) {
-            $('dlMbarTitle').textContent = LABELS[state.side] + ' artwork · how should we make it?';
+            var isImage = o.type === 'image';   // text is print only: no Print / Embroidery choice
+            $('dlMbarTitle').textContent = LABELS[state.side] + (isImage ? ' artwork · how should we make it?' : ' text');
+            bar.querySelector('.dl-methods').style.display = isImage ? '' : 'none';
             all('input[name="dlMbarMethod"]').forEach(function (inp) { inp.checked = inp.value === (o.dlMethod || 'print'); });
         }
         all('.dl-art').forEach(function (el) { el.classList.remove('is-active'); });
@@ -609,7 +612,8 @@
         });
     }
 
-    function textMethod() { var r = document.querySelector('input[name="dlTextMethod"]:checked'); return r ? r.value : 'print'; }
+    // Text is always printed (no embroidery option for text)
+    function textMethod() { return 'print'; }
     function selectedText() { var o = canvas.getActiveObject(); return o && o.type === 'i-text' ? o : null; }
 
     // Changing font / colour / method updates the selected text right away
@@ -642,14 +646,14 @@
                 // New text goes in the middle, or under the artwork that is already there
                 var busy = canvas.getObjects().length > 0;
                 o = new fabric.IText(text, {
-                    left: W / 2, top: state.H * (busy ? 0.8 : 0.5), originX: 'center', originY: 'center',
+                    left: W / 2, top: state.H * (busy ? 0.65 : 0.5), originX: 'center', originY: 'center',
                     fontFamily: font, fontSize: 72, fill: state.textColor, textAlign: 'center', editable: false,
                     dlId: uid(), dlMethod: method, dlName: '', dlNotes: ''
                 });
                 canvas.add(o);
-                // Short words grow to a readable size, but never taller than a quarter of the area
-                var grow = Math.min((W * 0.5) / o.width, (state.H * 0.25) / o.height);
-                if (grow > 1) o.scale(grow);
+                // The design area is the whole photo, so new text starts small enough to sit on
+                // the product (max 30% of the photo wide, 12% tall); the customer can resize it
+                o.scale(Math.min((W * 0.3) / o.width, (state.H * 0.12) / o.height));
             }
             var shrinkBy = Math.min((W * 0.9) / o.getScaledWidth(), (state.H * 0.9) / o.getScaledHeight());
             if (shrinkBy < 1) o.scale(o.scaleX * shrinkBy);
@@ -756,7 +760,8 @@
         shrink(file).then(function (src) {
             fabric.Image.fromURL(src, function (img) {
                 var id = uid();
-                var k = Math.min((W * 0.7) / img.width, (state.H * 0.7) / img.height);
+                // Starts at most 30% of the photo, so it sits on the product (not over the edges)
+                var k = Math.min((W * 0.3) / img.width, (state.H * 0.3) / img.height);
                 img.set({
                     left: W / 2, top: state.H / 2, originX: 'center', originY: 'center', scaleX: k, scaleY: k,
                     dlId: id, dlMethod: method, dlName: file.name.slice(0, 120), dlNotes: notes
@@ -1296,6 +1301,8 @@
                 SIDES.forEach(function (side) {
                     var c = s.design.sides[side];
                     state.designs[side] = c && c.objects ? { objects: c.objects } : null;
+                    // Older saved designs may have embroidered text; text is print only now
+                    if (c && c.objects) c.objects.forEach(function (o) { if (o.type !== 'image') o.dlMethod = 'print'; });
                 });
             }
             state.side = firstSide();

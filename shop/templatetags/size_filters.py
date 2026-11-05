@@ -12,6 +12,7 @@ MAP = {
     "3XL": "3XL",
     "4XL": "4XL",
     "5XL": "5XL",
+    "One size": "OS",   # e.g. Canvas Tote: a single quantity box instead of XS-5XL
 }
 
 @register.filter
