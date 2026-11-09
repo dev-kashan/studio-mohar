@@ -627,7 +627,10 @@ class MockUpAdmin(admin.ModelAdmin):
     search_fields = ('MockUp_Name',)
     list_filter = ('MockUp_Name','date')
 
-admin.site.register(MockUp, MockUpAdmin)
+# Hidden from the admin menu: products use colour photos now, not mockups.
+# Old mockups stay in the database (saved designs / orders still point to them).
+# Remove the "#" below to show "07. MockUps" again.
+# admin.site.register(MockUp, MockUpAdmin)
 
 
 
