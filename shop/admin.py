@@ -365,7 +365,7 @@ class ProductAdmin(admin.ModelAdmin):
                        ('Slug', 'display_order'),
                        ('size_available'),
                         ('printed_image', 'blank_image', 'size_chart_img'),
-                        ('categories' , 'customize_mockup_template'),
+                        ('categories'),   # mockup template removed: colour photos are used instead
                         # ('min_qty' , 'max_qty' ,),
                         # ('price' , 'sprice'),
                         ('short_desc'),
@@ -412,8 +412,14 @@ class ProductAdmin(admin.ModelAdmin):
     class Meta:
        model = Product
 
-    
-        
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        # No mockup any more: a Custom product needs colour photos to show in the Design Lab
+        product = form.instance
+        if product.product_type == 'custom' and product.live and not product.customize_mockup_template_id:
+            if not product.color_photos.exclude(front_image='').exclude(front_image__isnull=True).exists():
+                messages.warning(request, f'"{product}" has no colour photos yet, so it will not show in the Design Lab. '
+                                          'Add them under "Colour photos" below.')
 
     def response_add(self, request ,obj, post_url_continue=None):
         _save = request.POST.get('_save','')
