@@ -271,7 +271,7 @@ class Category(models.Model):
 
     def live_styles(self):
         """Design Lab products (styles) of this category that are live."""
-        return self.product_set.filter(live=True, customize_mockup_template__isnull=False)
+        return self.product_set.filter(live=True, product_type='custom')
 
     class Meta:
         verbose_name_plural = '01. Category'
@@ -345,9 +345,19 @@ class MockUp(models.Model):
 
 
 
+# Product type: decides where a product shows on the site
+PRODUCT_TYPES = (
+    ('custom', 'Custom - customer designs it in the Design Lab'),
+    ('shop', 'Shop - blank garment used as base for Shop Designs'),
+)
+
+
 # All Product
 class Product(models.Model):
     product_id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    product_type = models.CharField(
+        max_length=10, choices=PRODUCT_TYPES, default='custom', db_index=True,
+        help_text="Custom = shows in the Design Lab and style pages. Shop = only used as the base product of Shop Designs.")
     user = models.ForeignKey(User, on_delete=models.CASCADE , default="" ,  blank=True, null=True)
     # brand = models.CharField(max_length=200, default="", blank=True, null=True)
     product_name = models.CharField(max_length=200, default="" , blank=True, null=True)

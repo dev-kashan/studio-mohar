@@ -215,7 +215,7 @@ def products(request, id):
     if category and category.slug:
         return redirect(category.get_absolute_url(), permanent=True)
 
-    mockup_products = Product.objects.filter(customize_mockup_template__isnull=False, live=True, categories__category_id=id)
+    mockup_products = Product.objects.filter(product_type='custom', live=True, categories__category_id=id)
     total_count = mockup_products.count()
 
     # Example: if you’re showing 16 per page (can adjust later)
@@ -258,7 +258,7 @@ def product_detail(request, id):
     product = get_object_or_404(Product, product_id=id)
 
     # Old Shop (specials) products now live as ShopDesigns -> permanent redirect
-    if not product.customize_mockup_template:
+    if product.product_type == 'shop':
         shop_design = ShopDesign.objects.filter(base_product=product, live=True, colors__isnull=False).first()
         if shop_design:
             return redirect('shop_design_detail', slug=shop_design.slug, permanent=True)
@@ -283,10 +283,10 @@ def product_detail(request, id):
         .order_by('color__color_name')
     )
     related_prod = {}
-    if not product.customize_mockup_template:
+    if product.product_type == 'shop':
         related_prod = (
             Product.objects
-            .filter(categories=product.categories, customize_mockup_template__isnull=True, live=True)
+            .filter(categories=product.categories, product_type='shop', live=True)
             .exclude(product_id=product.product_id)
             .prefetch_related('productattribute_set__color')
         )
@@ -305,7 +305,7 @@ def product_detail(request, id):
     # else:
     #     related_prod = (
     #         Product.objects
-    #         .filter(categories=product.categories, customize_mockup_template__isnull=False, live=True)
+    #         .filter(categories=product.categories, product_type='custom', live=True)
     #         .exclude(product_id=product.product_id)
     #     )
 
@@ -426,7 +426,7 @@ def our_story(request):
 def specials(request):
     # Dynamic filter options with counts
     products = (
-        Product.objects.filter(live=True, customize_mockup_template__isnull=True)
+        Product.objects.filter(live=True, product_type='shop')
         .prefetch_related("productattribute_set", "productattribute_set__color", "productattribute_set__size")
         .select_related("categories")
         .order_by("-pub_date")
@@ -476,7 +476,7 @@ def filter_products(request):
     # Start with all live products
     products = Product.objects.filter(
         live=True,
-        customize_mockup_template__isnull=True
+        product_type='shop'
     ).distinct().order_by('-pub_date')
 
     # Apply filters dynamically
@@ -613,7 +613,7 @@ def index(request):
 
 
     # Homepage "Our Products" shows the first 3: lowest style order first, mixed across categories
-    mockup_products = (Product.objects.filter(customize_mockup_template__isnull=False, live=True, categories__active=True)
+    mockup_products = (Product.objects.filter(product_type='custom', live=True, categories__active=True)
                        .order_by('display_order', 'categories__display_order', 'product_id'))
     # print(MyCategory,"cacaca")
 
@@ -1632,7 +1632,7 @@ def customizeEditor(request , id , slug , pid):
         lab_url += '&sizes=' + quote(request.GET['sizes'])
     return redirect(lab_url)
 
-    mockup_products = Product.objects.filter(customize_mockup_template__isnull=False, live=True).exclude(product_id=pid)
+    mockup_products = Product.objects.filter(product_type='custom', live=True).exclude(product_id=pid)
 
     attr_id = request.GET.get('attr_id')
 
@@ -2622,7 +2622,7 @@ def _size_label(name):
 
 
 def _design_lab_products():
-    return Product.objects.filter(live=True, customize_mockup_template__isnull=False)
+    return Product.objects.filter(live=True, product_type='custom')
 
 
 def _product_colors(product):
@@ -2747,7 +2747,6 @@ def style_page(request, cat_slug, style_slug):
     else:
         arrives = f'{first_day:%b} {first_day.day} – {last_day:%b} {last_day.day}'
 
-    mockup = product.customize_mockup_template
     promo_on = bool(product.promo_percent and product.promo_percent > 0)
     page_data = {
         'productId': product.product_id,
@@ -2758,7 +2757,8 @@ def style_page(request, cat_slug, style_slug):
         'startColor': start['id'],
         'colors': colors,
         'blank': f'/media/{product.blank_image}' if product.blank_image else '',
-        'editorBase': f'/design-lab/?product={product.product_id}' if mockup else '',
+        # Every custom product opens in the Design Lab (the mockup is optional now)
+        'editorBase': f'/design-lab/?product={product.product_id}',
     }
     return render(request, 'shop/product_page.html', {
         'product': product,

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Q
 from django.forms.models import BaseInlineFormSet
 
 from django.shortcuts import HttpResponseRedirect , redirect
@@ -359,7 +360,8 @@ class ProductAdmin(admin.ModelAdmin):
     fieldsets = [
         ("", {
             "classes": ("collapse"),
-            "fields": (('product_name') ,
+            "fields": (('product_type'),
+                       ('product_name') ,
                        ('Slug', 'display_order'),
                        ('size_available'),
                         ('printed_image', 'blank_image', 'size_chart_img'),
@@ -400,8 +402,8 @@ class ProductAdmin(admin.ModelAdmin):
     # )
     class Media:
         js = ('shop/js/Tinymceeditor.js',)
-    list_display =('preview' , 'product_name', 'categories', 'stock' , 'pub_date' , 'live')
-    list_filter =('product_id' , 'categories__category_name' ,   'Availibility' , 'live' , 'pub_date',)
+    list_display =('preview' , 'product_name', 'product_type', 'categories', 'stock' , 'pub_date' , 'live')
+    list_filter =('product_type', 'product_id' , 'categories__category_name' ,   'Availibility' , 'live' , 'pub_date',)
     list_editable = ('live', ) 
     search_fields = ('product_name' ,'categories__category_name'  , 'categories__category' , 'desc', 'pub_date')
     inlines = [ProductAttributeAdminInline, ProductColorInline, ProductPhotoInline, ProductCompareInline, ProductPreviewInline]
@@ -981,6 +983,19 @@ class ShopDesignForm(forms.ModelForm):
     class Meta:
         model = ShopDesign
         fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Base product dropdown: only "Shop" type products (plus the one already
+        # chosen, so an older design never loses its base product)
+        if 'base_product' in self.fields:
+            q = Q(product_type='shop')
+            if self.instance.pk and self.instance.base_product_id:
+                q |= Q(pk=self.instance.base_product_id)
+            self.fields['base_product'].queryset = Product.objects.filter(q).order_by('product_name')
+            self.fields['base_product'].help_text = (
+                'Only products with Product type = "Shop" are listed. '
+                'Sizes, stock, fabric and size chart come from it.')
 
     def clean(self):
         data = super().clean()

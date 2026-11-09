@@ -16,12 +16,12 @@ def category_context(request):
     delivery = 10
     text_print = 300
     free_delivery_amount = 4500
-    all_mockup_prod = Product.objects.filter(customize_mockup_template__isnull=False, live=True)
+    all_mockup_prod = Product.objects.filter(product_type='custom', live=True)
     all_services = Service.objects.all()
     all_apparel_for = GetApparelFor.objects.all()
-    mockup_products = Product.objects.filter(customize_mockup_template__isnull=False, live=True)
+    mockup_products = Product.objects.filter(product_type='custom', live=True)
     first_mockup_product = Product.objects.filter(
-    customize_mockup_template__isnull=False,
+    product_type='custom',
     live=True
 ).first()
 
