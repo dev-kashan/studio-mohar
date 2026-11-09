@@ -1,5 +1,6 @@
 
 from django.db import models
+from django.core.files.storage import default_storage
 from django.contrib.auth.models import User, update_last_login
 from django.db.models.signals import pre_save
 from django.utils.html import mark_safe
@@ -470,14 +471,20 @@ class Product(models.Model):
 
     
     def preview(self):
-        if self.blank_image:
-            return mark_safe(f'<img src="/media/{self.blank_image}" width="50" height="50"/>')
-        else:
-            attr = ProductAttribute.objects.filter(product__product_id=self.product_id).first()
-            if attr:
-                return mark_safe(f'<img src="/media/{attr.image}" width="50" height="50"/>')
-            else:
-                return mark_safe(f'<img src="/media/shop/images/noperview.jpg" width="50" height="50"/>')
+        """Admin list thumbnail. Order: blank image -> first colour photo
+        (Product Colours) -> first variation image -> "No image" box."""
+        img = '<img src="{}" width="50" height="50" style="object-fit:cover"/>'
+        if self.blank_image and default_storage.exists(self.blank_image.name):
+            return mark_safe(img.format(self.blank_image.url))
+        # Products added with real colour photos (Product Colours)
+        color = self.color_photos.exclude(front_image='').exclude(front_image__isnull=True).first()
+        if color:
+            return mark_safe(img.format(color.front_image.url))
+        attr = ProductAttribute.objects.filter(product__product_id=self.product_id).first()
+        if attr and attr.image and default_storage.exists(attr.image.name):
+            return mark_safe(img.format(attr.image.url))
+        return mark_safe('<span style="display:inline-flex;align-items:center;justify-content:center;'
+                         'width:50px;height:50px;border:1px dashed #bbb;font-size:10px;color:#888">No image</span>')
 
     class Meta:
         verbose_name_plural = '02. Products'
