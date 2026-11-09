@@ -93,6 +93,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800   # 50 MB
 
 
 MIDDLEWARE = [
+    'shop.middleware.RemoveWwwMiddleware',   # www.studiomohar.ca -> studiomohar.ca (301). Keep first.
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
