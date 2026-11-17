@@ -831,12 +831,14 @@
         });
     }
 
+    // Tiers can share a boundary (2-5 and 5-10): the bigger tier wins, so "5+ pieces"
+    // really starts at 5. Same rule as _tier_pct() in views.py.
     function tierFor(q) {
-        var t = DATA.pricing.tiers;
+        var t = DATA.pricing.tiers, best = null;
         for (var i = 0; i < t.length; i++) {
-            if (q >= t[i].min && (t[i].max === null || q <= t[i].max)) return t[i];
+            if (q >= t[i].min && (t[i].max === null || q <= t[i].max) && (!best || t[i].min > best.min)) best = t[i];
         }
-        return null;
+        return best;
     }
 
     function quote() {

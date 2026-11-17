@@ -252,12 +252,14 @@
         var u = s.price + data.frontPrice;
         return withPromo && isPromo(c) ? u * (1 - data.promoPct / 100) : u;
     }
+    // Tiers can share a boundary (2-5 and 5-10): the bigger tier wins (same as views._tier_pct)
     function tierFor(q) {
+        var best = null;
         for (var i = 0; i < data.tiers.length; i++) {
             var t = data.tiers[i];
-            if (q >= t.min && (t.max === null || q <= t.max)) return t;
+            if (q >= t.min && (t.max === null || q <= t.max) && (!best || t.min > best.min)) best = t;
         }
-        return null;
+        return best;
     }
     function nextTier(q) {
         var best = null;
@@ -284,8 +286,16 @@
             return;
         }
         var tier = tierFor(q), pct = tier ? tier.pct : 0;
-        var total = sub * (1 - pct / 100), each = total / q;
-        var regTotal = subReg * (1 - pct / 100);
+        // Round each piece's price first, then multiply - exactly like the Design Lab and the
+        // cart (views._dl_quote), so this total never differs by a cent
+        var total = 0, regTotal = 0;
+        current.sizes.forEach(function (s) {
+            var n = qty[s.name] || 0;
+            if (!n) return;
+            total += n * (Math.round(unit(s, current, true) * (1 - pct / 100) * 100) / 100);
+            regTotal += n * (Math.round(unit(s, current, false) * (1 - pct / 100) * 100) / 100);
+        });
+        var each = total / q;
         $('ppEach').textContent = money(each);
         $('ppEach').classList.toggle('is-promo', isPromo(current));
         $('ppReg').hidden = !isPromo(current);

@@ -1488,10 +1488,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         // Find applicable discount
         let applicableDiscount = 0;
+        // Tiers are sorted by min; on a shared boundary (2-5 and 5-10) the bigger tier wins,
+        // same as the Design Lab, so no break: the last match is kept
         for (const b of discountBrackets) {
             if (totalQuantity >= b.min && totalQuantity <= b.max) {   // max is inclusive, same as the Design Lab
                 applicableDiscount = b.discount;
-                break;
             }
         }
 
@@ -1571,10 +1572,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             {% endfor %}
         ];
 
-        // Find current bracket
-        const currentIndex = discountBrackets.findIndex(
-            b => totalQuantity >= b.min && totalQuantity <= b.max   // max is inclusive
-        );
+        // Find current bracket (last match = bigger tier on a shared boundary, see above)
+        let currentIndex = -1;
+        discountBrackets.forEach(function (b, i) {
+            if (totalQuantity >= b.min && totalQuantity <= b.max) currentIndex = i;   // max is inclusive
+        });
 
         // Get next 3 brackets
         const nextBrackets = discountBrackets.slice(currentIndex + 1, currentIndex + 4);

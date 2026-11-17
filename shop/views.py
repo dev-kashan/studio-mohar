@@ -8,6 +8,8 @@ from .models import *
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from math import ceil
+import math
+import re
 from django.http import HttpResponse
 import json
 from django.contrib import messages
@@ -631,6 +633,63 @@ def product(request, myid):
 #     return render(request, 'shop/checkout.html', context)
 
 
+CA_POSTAL_RE = re.compile(r'^[A-Z]\d[A-Z]\s?\d[A-Z]\d$')
+
+
+def _money(value):
+    """Round exactly like the checkout page JS toFixed(2) (half-up on the float's exact value)."""
+    return Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+
+def _checkout_totals(cart_items, province_id, zip_code, shipping_type):
+    """Order totals worked out on the SERVER from the cart - never trust the amounts the
+    browser sends. Same rules as calculateShipping() in checkout.html:
+      shipping = province charge (+ extra for the postal 2nd digit), free over the subtotal
+                 threshold or for the free postal letters, + rush fee for rush orders
+      wait & save (an item with 50+ pcs) = free shipping and a % off the subtotal
+      tax = subtotal x province tax %
+    Returns (totals dict, None) or (None, error message)."""
+    province = Province.objects.filter(id=province_id).first() if str(province_id).isdigit() else None
+    if province is None:
+        return None, 'Please choose your province.'
+    postal = (zip_code or '').strip().upper()
+    if not CA_POSTAL_RE.match(postal):
+        return None, 'Please enter a valid postal code (e.g. M5V 2T6).'
+    pricing = DesignPricing.objects.first()
+    threshold = float(pricing.free_shipping_subtotal_threshold) if pricing else 250.0
+    free_letters = [x.strip() for x in (pricing.free_shipping_postal_letters if pricing else '').split(',')]
+    extra_digit = str(pricing.extra_charge_second_digit if pricing else '').strip()
+    extra_charge = float(pricing.extra_charge_amount) if pricing else 0.0
+    rush_fee = float(pricing.rush_shipping_fee) if pricing else 0.0
+    waitsave_pct = float(pricing.waitsave_discount) if pricing else 0.0
+
+    items = list(cart_items)
+    subtotal = sum(float(i.total_price or 0) for i in items)
+    charge, tax_rate = float(province.delivery_charge), float(province.tax)
+
+    free = subtotal > threshold or postal[0] in free_letters
+    shipping = 0.0 if free else charge
+    if not free and extra_digit and postal.replace(' ', '')[1] == extra_digit:
+        shipping += extra_charge
+    if shipping_type == 'rush':
+        shipping += rush_fee
+    waitsave = 0.0
+    if shipping_type == 'waitsave':
+        if any((i.cart_items.aggregate(t=models.Sum('quantity'))['t'] or 0) >= 50 for i in items):
+            shipping = 0.0
+            waitsave = subtotal * (waitsave_pct / 100)
+        else:
+            shipping_type = 'standard'
+    elif shipping_type != 'rush':
+        shipping_type = 'standard'
+    tax = subtotal * (tax_rate / 100)
+    total = subtotal + shipping + tax - waitsave
+    return {
+        'subtotal': _money(subtotal), 'delivery_cost': _money(shipping), 'tax': _money(tax),
+        'discount': _money(waitsave), 'grand_total': _money(total), 'shipping_type': shipping_type,
+    }, None
+
+
 @transaction.atomic
 def checkout(request):
     session_id = request.session.session_key
@@ -665,11 +724,12 @@ def checkout(request):
         coupon_code = data.get('coupon', '')
         shipping_type = data.get('shipping_type', 'standard')
 
-        subtotal_inp = Decimal(data.get('subtotal_inp', '0'))
-        grand_total_inp = Decimal(data.get('grand_total_inp', '0'))
-        delivery_cost_inp = Decimal(data.get('delivery_cost_inp', '0'))
-        discount_amo = Decimal(data.get('discount_amo') or '0')
-        tax_amount_inp = Decimal(data.get('tax_amount_inp') or '0')
+        # Money is worked out here from the cart; the page's hidden *_inp fields are only a preview
+        totals, totals_error = _checkout_totals(cart_items, province_id, zip_code, shipping_type)
+        if totals_error:
+            messages.error(request, totals_error)
+            return redirect('/checkout/')
+        shipping_type = totals['shipping_type']
 
         # Create Stripe Checkout session
         try:
@@ -681,7 +741,7 @@ def checkout(request):
                         'price_data': {
                             'currency': 'cad',
                             'product_data': {'name': f'Order from {name}'},
-                            'unit_amount': int(grand_total_inp * 100),
+                            'unit_amount': int(totals['grand_total'] * 100),
                         },
                         'quantity': 1,
                     }
@@ -694,7 +754,7 @@ def checkout(request):
                         'name': name,
                     }
                 },
-                success_url=request.build_absolute_uri('/stripe/success/'),
+                success_url=request.build_absolute_uri('/stripe/success/') + '?session_id={CHECKOUT_SESSION_ID}',
                 cancel_url=request.build_absolute_uri('/stripe/cancel/'),
             )
 
@@ -714,11 +774,13 @@ def checkout(request):
                 'shipping_type': shipping_type,
 
                 # money → string
-                'subtotal': str(subtotal_inp),
-                'tax': str(tax_amount_inp),
-                'grand_total': str(grand_total_inp),
-                'delivery_cost': str(delivery_cost_inp),
-                'discount_amount': str(discount_amo),
+                'subtotal': str(totals['subtotal']),
+                'tax': str(totals['tax']),
+                'grand_total': str(totals['grand_total']),
+                'delivery_cost': str(totals['delivery_cost']),
+                'discount_amount': str(totals['discount']) if totals['discount'] else '0',
+                # stripe_success() checks the payment against this Stripe session
+                'stripe_session_id': checkout_session.id,
             }
             request.session.save()
 
@@ -748,7 +810,6 @@ def checkout(request):
         'coutries': coutries,
         'pricing': pricing,
         'province': province,
-        'stripe_public_key': settings.STRIPE_SECRET_KEY,
     }
     return render(request, 'shop/checkout.html', context)
 
@@ -770,6 +831,35 @@ def stripe_success(request):
     cart_items = GuestCart.objects.filter(session_id=session_id)
     if not cart_items.exists():
         return redirect('/cart/')
+
+    # ---- Payment check: only create the order when Stripe says the card was authorised ----
+    # (Opening /stripe/success/ by hand, or coming back without paying, must not place an order.)
+    stripe_sid = request.GET.get('session_id', '')
+    if not stripe_sid or stripe_sid != checkout_data.get('stripe_session_id'):
+        messages.error(request, 'We could not confirm your payment. Please try again.')
+        return redirect('/checkout/')
+    try:
+        stripe_session = stripe.checkout.Session.retrieve(stripe_sid, expand=['payment_intent'])
+    except stripe.error.StripeError as exc:
+        print(f'stripe_success: could not read session {stripe_sid}: {exc}')
+        messages.error(request, 'We could not confirm your payment. Please try again or contact us.')
+        return redirect('/checkout/')
+    intent = stripe_session.payment_intent
+    if stripe_session.status != 'complete' or not intent or intent.status not in ('requires_capture', 'succeeded'):
+        messages.error(request, 'Your payment was not completed, so no order was placed. Please try again.')
+        return redirect('/checkout/')
+    # The cart must still be what was paid for (it could change in another tab while paying)
+    totals, totals_error = _checkout_totals(cart_items, checkout_data.get('province'),
+                                     checkout_data.get('zip_code'), checkout_data.get('shipping_type'))
+    if totals_error or int(totals['grand_total'] * 100) != stripe_session.amount_total:
+        if intent.status == 'requires_capture':
+            try:
+                stripe.PaymentIntent.cancel(intent.id)   # release the hold on the card
+            except stripe.error.StripeError as exc:
+                print(f'stripe_success: could not cancel {intent.id}: {exc}')
+        messages.error(request, 'Your cart changed while you were paying, so the payment was cancelled '
+                                'and your card was not charged. Please check out again.')
+        return redirect('/checkout/')
 
     # ---- Base delivery days ----
     base_delivery_days = 7  # default
@@ -1913,6 +2003,11 @@ def add_to_cart(request):
 
 
 def add_to_cart_special(request):
+    # Retired: its page (old product_detail.html) is gone and it trusted the price sent by
+    # the browser, so anyone could add items at any price. Shop designs use
+    # /add-to-cart-shop-design/ (server price) and custom products use the Design Lab.
+    return JsonResponse({"success": False, "error": "This page is no longer available."}, status=410)
+
     if request.method != "POST":
         return JsonResponse({"success": False, "error": "Invalid request method"}, status=405)
 
@@ -2647,6 +2742,17 @@ def _dl_pricing():
     return {'sides': sides, 'emb': emb, 'tiers': tiers}
 
 
+def _tier_pct(q, tiers):
+    """Quantity discount % for q pieces. Admin tiers can share a boundary (2-5 and 5-10):
+    then the bigger tier wins, so "5+ pieces" really starts at 5. Same rule as tierFor() in
+    design-lab.js, product_page.html and the quote calculator in base.html."""
+    best = None
+    for t in tiers:
+        if q >= t['min'] and (t['max'] is None or q <= t['max']) and (best is None or t['min'] > best['min']):
+            best = t
+    return best['pct'] if best else 0
+
+
 def _dl_quote(color, qty_by_size, sides_used, emb_count, promo_pct, pricing):
     """Price of an order, the same formula as design-lab.js:
        piece = (size price + print price of every side with artwork) x promo x quantity tier
@@ -2660,15 +2766,13 @@ def _dl_quote(color, qty_by_size, sides_used, emb_count, promo_pct, pricing):
         return None
     print_cost = sum(pricing['sides'][s] for s in sides_used) if sides_used else pricing['sides']['front']
     promo = promo_pct if color['is_promo'] else 0
-    pct = 0
-    for t in pricing['tiers']:
-        if q >= t['min'] and (t['max'] is None or q <= t['max']):
-            pct = t['pct']
-            break
+    pct = _tier_pct(q, pricing['tiers'])
     out, total = [], Decimal('0')
     for name, qty in rows:
         unit = (sizes[name]['price'] + print_cost) * (1 - promo / 100) * (1 - pct / 100) + pricing['emb'] * emb_count
-        unit = Decimal(str(unit)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)   # same as Math.round in JS
+        # Exactly JS round2(): Math.round(n * 100) / 100 on the same float, so the cart
+        # never differs by a cent from the price the Design Lab showed
+        unit = Decimal(str(math.floor(unit * 100 + 0.5) / 100)).quantize(Decimal('0.01'))
         out.append((name, qty, unit))
         total += unit * qty
     return out, total, (total / q).quantize(Decimal('0.01'))
