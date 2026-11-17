@@ -843,7 +843,8 @@
         var p = DATA.pricing, s = state.style, c = state.color;
         var items = visibleItems();
         var used = SIDES.filter(function (side) { return items.some(function (i) { return i.side === side; }); });
-        var printCost = used.length ? used.reduce(function (a, side) { return a + p.sides[side]; }, 0) : p.sides.front;
+        // Print cost only for sides that actually have a design (no design yet = blank apparel price)
+        var printCost = used.reduce(function (a, side) { return a + p.sides[side]; }, 0);
         var embItems = items.filter(function (i) { return i.method === 'embroidery'; });
         var promo = c.is_promo ? s.promoPct : 0;
         var q = 0, sub = 0;
@@ -890,10 +891,10 @@
         }
         box.innerHTML = html;
         // Price step lines
-        var sides = r.used.length ? r.used.map(function (s) { return LABELS[s].toLowerCase(); }).join(' + ') : 'front';
+        var sides = r.used.map(function (s) { return LABELS[s].toLowerCase(); }).join(' + ');
         // Apparel + print line = total minus embroidery, so the lines always add up to the total
         var baseTotal = r.total - DATA.pricing.emb * r.embItems.length * r.q;
-        var lines = '<div class="dl-line"><span>' + esc(state.style.name) + ' + print (' + sides + ')<small>' +
+        var lines = '<div class="dl-line"><span>' + esc(state.style.name) + (sides ? ' + print (' + sides + ')' : '') + '<small>' +
                     money(r.q ? baseTotal / r.q : r.baseEach) + ' × ' + r.q + '</small></span><span>' + money(baseTotal) + '</span></div>';
         r.embItems.forEach(function (i) {
             lines += '<div class="dl-line"><span>Embroidery · ' + LABELS[i.side] + '<small>' + money(DATA.pricing.emb) + ' × ' + r.q +
