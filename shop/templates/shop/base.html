@@ -1000,7 +1000,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             <span class="smh-eyebrow">Start with a product</span>
                             <ul class="smh-list smh-list-2col">
                                 {% for i in Cate %}
-                                <li><a href="/products/{{i.category_id}}">{{i.category_name}}</a></li>
+                                <li><a href="{{ i.get_absolute_url }}">{{i.category_name}}</a></li>
                                 {% endfor %}
                                 <li><a href="{{ all_products_url }}" class="smh-more">See all products &rarr;</a></li>
                             </ul>
@@ -1138,7 +1138,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <span class="smh-m-label">Start with a product</span>
           <ul class="smh-m-products">
             {% for i in Cate %}
-            <li><a href="/products/{{i.category_id}}">{{i.category_name}}</a></li>
+            <li><a href="{{ i.get_absolute_url }}">{{i.category_name}}</a></li>
             {% endfor %}
             <li><a href="{{ all_products_url }}">See all products &rarr;</a></li>
           </ul>
@@ -1810,7 +1810,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <h5>Products</h5>
                     <ul>
                         {% for i in Cate %}
-                        <li><a href="/products/{{i.category_id}}">{{i.category_name}}</a></li>
+                        <li><a href="{{ i.get_absolute_url }}">{{i.category_name}}</a></li>
                         {% endfor %}
                         <li><a href="{{ all_products_url }}">All Products</a></li>
                         <!-- <li><a href="/privacy-policy/">Privacy Policy</a></li>

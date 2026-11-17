@@ -2904,7 +2904,7 @@ align-items: center;
           </div>
           {% else %}
           <div class="remove" bis_skin_checked="1">
-            <a href="/product_detail/{{i.product_attr.product.product_id}}"
+            <a href="{{ i.product_attr.product.get_absolute_url }}"
               class="btn text-white fa fa-edit edit_btn"
               
               data-cart-id="{{i.id}}"

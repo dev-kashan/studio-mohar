@@ -210,26 +210,12 @@ def verify_design_code(request):
 
 
 def products(request, id):
-    # Categories now have custom URLs: /<slug>/
-    category = Category.objects.filter(category_id=id).first()
-    if category and category.slug:
+    # Old URL /products/<id>/ -> permanent redirect to the category's custom URL /<slug>/
+    category = get_object_or_404(Category, category_id=id)
+    if category.slug and category.active:
         return redirect(category.get_absolute_url(), permanent=True)
-
-    mockup_products = Product.objects.filter(product_type='custom', live=True, categories__category_id=id)
-    total_count = mockup_products.count()
-
-    # Example: if you’re showing 16 per page (can adjust later)
-    showing_start = 1
-    showing_end = min(16, total_count)
-
-    context = {
-        'mockup_products': mockup_products[:16],  # optional slice
-        'total_count': total_count,
-        'showing_start': showing_start,
-        'showing_end': showing_end,
-    }
-
-    return render(request, 'shop/products.html', context)
+    # No custom URL yet, or category switched off -> All products page
+    return redirect(ProductPageSettings.load().all_products_url())
 
 # all_products() moved to the "PRODUCT PAGES" section at the end of this file
 # (best seller / sustainable filters removed as per the brief).
@@ -251,82 +237,19 @@ def get_apparel_for_page(request, slug=None, apparel=None):
     }
     return render(request, 'shop/get_apparel_for.html', params)
 
-@ensure_csrf_cookie  # Add to Cart posts to /add-to-cart-special/ with fetch; new visitors have no csrftoken cookie otherwise
 def product_detail(request, id):
-
-    
+    # Old URL /product_detail/<id>/ -> permanent redirect to the new product page
     product = get_object_or_404(Product, product_id=id)
-
-    # Old Shop (specials) products now live as ShopDesigns -> permanent redirect
+    # Old Shop (specials) products now live as ShopDesigns
     if product.product_type == 'shop':
         shop_design = ShopDesign.objects.filter(base_product=product, live=True, colors__isnull=False).first()
         if shop_design:
             return redirect('shop_design_detail', slug=shop_design.slug, permanent=True)
-    # Design Lab products now have custom URLs: /<category>/<style>/
+    # Design Lab products: /<category>/<style>/
     elif product.live and product.categories and product.categories.slug and product.Slug:
         return redirect(product.get_absolute_url(), permanent=True)
+    return redirect(ProductPageSettings.load().all_products_url())
 
-    competitors = CompetitorProduct.objects.filter(main_product=product)
-
-    # get distinct color options for this product
-    filter_color = (
-        ProductAttribute.objects
-        .filter(product=product)
-        .values('color__color_name', 'color__color_code', 'color__id')
-        .annotate(
-            Avalaible=Sum('Availibility'),
-            image=Min('image'),
-            attr_id=Min('id'),
-            discount_price=Min('discount_price'),
-            price=Min('price'),
-        )
-        .order_by('color__color_name')
-    )
-    related_prod = {}
-    if product.product_type == 'shop':
-        related_prod = (
-            Product.objects
-            .filter(categories=product.categories, product_type='shop', live=True)
-            .exclude(product_id=product.product_id)
-            .prefetch_related('productattribute_set__color')
-        )
-        # One dot per colour (attributes repeat a colour once per size); the template used the
-        # colour NAME as a CSS colour, so "Cardinal Red" etc. showed no dot at all
-        related_prod = list(related_prod)
-        for rp in related_prod:
-            seen, dots = set(), []
-            for attr in rp.productattribute_set.all():
-                code = attr.color.color_code if attr.color else ''
-                if code and code not in seen:
-                    seen.add(code)
-                    dots.append(code)
-            rp.rp_dots = dots[:5]
-            rp.rp_more = max(0, len(dots) - 5)
-    # else:
-    #     related_prod = (
-    #         Product.objects
-    #         .filter(categories=product.categories, product_type='custom', live=True)
-    #         .exclude(product_id=product.product_id)
-    #     )
-
-
-    context = {
-        'product': product,
-        'related_prod': related_prod,
-        'filter_color': filter_color,
-        'competitors':competitors
-    }
-
-    
-
-    
-
-
-    return render(request, 'shop/product_detail.html', context)
-
-
-def service_detail(request):
-    return render(request, 'shop/service_detail.html')
 
 def service_detail(request, id):
     # Old number URL -> permanent redirect to the custom URL /services/<slug>/
@@ -423,50 +346,7 @@ def our_story(request):
         'sections': sections
     })
 
-def specials(request):
-    # Dynamic filter options with counts
-    products = (
-        Product.objects.filter(live=True, product_type='shop')
-        .prefetch_related("productattribute_set", "productattribute_set__color", "productattribute_set__size")
-        .select_related("categories")
-        .order_by("-pub_date")
-    )
-    # Distinct categories with product count
-    categories = (
-        products.values('categories__category_id', 'categories__category_name')
-        .annotate(count=Count('product_id'))
-        .order_by('categories__category_name')
-    )
-
-    # Distinct colors with product count
-    colors = (
-        ProductAttribute.objects.filter(product__in=products)
-        .values('color__id', 'color__color_name', 'color__color_code')
-        .annotate(count=Count('id'))
-        .order_by('color__color_name')
-    )
-
-    # Distinct sizes with product count
-    sizes = (
-        ProductAttribute.objects.filter(product__in=products)
-        .values('size__id', 'size__Size_name')
-        .annotate(count=Count('id'))
-        .order_by('size__Size_name')
-    )
-
-    print('okkkk', len(products))
-
-    context = {
-        'products': products,
-        'products_cout': len(products),
-        'categories': categories,
-        'colors': colors,
-        'sizes': sizes,
-        'total_count': products.count(),
-    }
-
-    # Render your main templat
-    return render(request, 'shop/specials.html', context)
+# specials() removed: /specials/ is a permanent redirect to /shop/ (see urls.py)
 
 def filter_products(request):
     colors = request.GET.getlist('colors[]')
@@ -1631,110 +1511,6 @@ def customizeEditor(request , id , slug , pid):
         from urllib.parse import quote
         lab_url += '&sizes=' + quote(request.GET['sizes'])
     return redirect(lab_url)
-
-    mockup_products = Product.objects.filter(product_type='custom', live=True).exclude(product_id=pid)
-
-    attr_id = request.GET.get('attr_id')
-
-
-    try:
-
-        product = Product.objects.get(product_id=pid , live=True)
-        product_attr = ProductAttribute.objects.get(id=attr_id)
-        print('attr_id', attr_id, product_attr.discount_price)
-        # for i in product.productattribute_set.all():
-        previews = product.previews.all().order_by('order')
-    except:
-        product = []
-        product_attr = []
-        previews = []
-
-    try:
-        mockup = MockUp.objects.get(id=id)
-    except:
-        messages.error(request , 'Sorry mockup is Not Found')
-        return redirect('/')
-    
-    filter_size = ProductAttribute.objects.filter(product=product).values('size__Size_name' , 'size__id').annotate(Avalaible=Sum('Availibility')).distinct().order_by('-Avalaible')
-    filter_color = (
-    ProductAttribute.objects
-    .filter(product=product)
-    .values('color__color_name', 'color__color_code', 'color__id')
-    .annotate(
-        Avalaible=Sum('Availibility'),
-        image=Min('image'),
-        price=Min('price'),
-        dic_price=Min('discount_price'),
-        attr_id=Min('id')  # ✅ get one attribute id per color
-    )
-    
-)
- 
-    # print(filter_color)
-    # print(filter_color)
-    
-
-    all_mockup = MockUp.objects.all()
-
-    colors = Color.objects.filter(Available="Yes")
-    sizes = Size.objects.filter(Available="Yes")
-
-    sticker = UploadSticker.objects.all()
-    all_type = StickerType.objects.all()        
-
-    allcategory = []
-    velu = Category.objects.values('category')
-    catefilter = {itme['category'] for itme in velu}
-    for cat in catefilter:
-        prod = Category.objects.filter(category=cat , active=True)
-        n = len(prod)
-        nSlides = n//4 + ceil((n/4)-(n//4))
-        allcategory.append([prod, range(1, nSlides), nSlides])
-    
-    # all_sticker = UploadSticker
-    
-
-    params = {
-        'mockup':mockup,
-        'all_mockup':all_mockup,
-        'color':colors,
-        'size':sizes,
-        'sticker':sticker,
-        'code_id':id,
-        'all_type':all_type,
-        'i':product,
-        'pid':pid,
-        'allcategory':allcategory,
-        'filter_size':filter_size,
-        'mockup_products':mockup_products,
-        'previews':previews,
-        'filter_color':filter_color,
-        'product_attr':product_attr,
-        
-    }
-
-    pricing = DesignPricing.objects.first()
-
-    if pricing:
-        params['design_prices'] = {
-            'front': float(pricing.front_price),
-            'back': float(pricing.back_price),
-            'left_sleeve': float(pricing.left_sleeve_price),
-            'right_sleeve': float(pricing.right_sleeve_price),
-            'embroidery_extra': float(pricing.embroidery_extra),
-        }
-    else:
-        # fallback if pricing not set yet in admin
-        params['design_prices'] = {
-            'front': 10.0,
-            'back': 10.0,
-            'left_sleeve': 10.0,
-            'right_sleeve': 10.0,
-            'embroidery_extra': 5.0,
-        }
-        
-    
-    return render(request , 'shop/customizeEditor.html' , params)
 
 
 
