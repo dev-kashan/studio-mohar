@@ -16,13 +16,8 @@ from django.shortcuts import get_object_or_404
 
 # admin.site.register(Country)
 
-class ProductPreviewInline(admin.TabularInline):
-    model = ProductPreview
-    extra = 1
-
-class ProductCompareInline(admin.TabularInline):
-    model = CompetitorProduct
-    extra = 1
+# ProductPreview and CompetitorProduct inlines removed from the Product admin
+# (not used any more). Models and existing data are untouched.
 
 
 class OrderItemUploadedFileInline(admin.TabularInline):
@@ -374,19 +369,7 @@ class ProductAdmin(admin.ModelAdmin):
                         ('Meta_title', 'Meta_description'),
                 ),
         }),
-        
-       
-        ("Competition Details", {
-            "classes": ("collapse"),
-            "fields": (('fabric_composition', "softness") ,
-                       ('fabric_weight', 'fit'),
-                       ('construction_quality', 'price_range'),
-                       ('durability'),
-                       ('compare_product_img'),
-                ),
-        }),
-        
-       
+        # "Competition Details" fieldset removed (not used any more).
     ]
     # fields = (
     #     # ('product_code' , 'brand'),
@@ -406,7 +389,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter =('product_type', 'product_id' , 'categories__category_name' ,   'Availibility' , 'live' , 'pub_date',)
     list_editable = ('live', ) 
     search_fields = ('product_name' ,'categories__category_name'  , 'categories__category' , 'desc', 'pub_date')
-    inlines = [ProductAttributeAdminInline, ProductColorInline, ProductPhotoInline, ProductCompareInline, ProductPreviewInline]
+    inlines = [ProductAttributeAdminInline, ProductColorInline, ProductPhotoInline]
     # ordering = ['Availibility']
  
     class Meta:
