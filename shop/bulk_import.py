@@ -751,14 +751,14 @@ def _readme(cats, sizes, colors, occs, shop_bases):
     return f"""STUDIO MOHAR - BULK PRODUCT UPLOAD
 ==================================
 
-What to send back
------------------
-One ZIP file with:
+What's in this ZIP
+------------------
   products.csv       - products (custom + shop) with every colour + size
   shop_designs.csv   - ready-made shop designs (optional)
   images/            - all photos (JPG, PNG, WEBP or GIF)
 
-You can delete the demo rows and add your own. Open the CSV files in Excel or
+Replace the sample rows with your own products, then zip the folder and upload it
+in the admin (Products > Bulk import). Open the CSV files in Excel or
 Google Sheets and save them as "CSV UTF-8". Do not rename or remove the header row.
 Empty cells are fine for columns that are not required.
 
