@@ -26,6 +26,7 @@ from newecom.settings import DEFAULT_FROM_EMAIL , EMAIL_HOST_USER , DELIVERY_ORA
 from django.core import serializers
 from .cate_context import category_context
 from django.db.models import Count, Q
+from django.db.models import Case, When, F  # shop design price sorting (discount price)
 from django.db import transaction
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
@@ -2172,7 +2173,7 @@ def add_to_cart_shop_design(request):
     if not request.session.session_key:
         request.session.create()
 
-    unit_price = design.price
+    unit_price = design.selling_price  # discount price when one is set
     total_qty = sum(q for _, q, _ in clean_rows)
 
     with transaction.atomic():
@@ -2328,10 +2329,15 @@ def _with_card_data(designs):
 def _sort_designs(qs, sort):
     if sort == 'new':
         return qs.order_by('-created')
+    # Price sorts use the price customers pay (discount price when it's valid)
+    effective = Case(
+        When(discount_price__gt=0, discount_price__lt=F('price'), then=F('discount_price')),
+        default=F('price'),
+    )
     if sort == 'price_asc':
-        return qs.order_by('price', 'order')
+        return qs.annotate(sell_price=effective).order_by('sell_price', 'order')
     if sort == 'price_desc':
-        return qs.order_by('-price', 'order')
+        return qs.annotate(sell_price=effective).order_by('-sell_price', 'order')
     return qs.order_by('-is_best_seller', 'order', '-created')
 
 
@@ -2439,7 +2445,7 @@ def shop_design_detail(request, slug):
 
     page_data = {
         'designId': design.id,
-        'price': float(design.price),
+        'price': float(design.selling_price),  # discount price when one is set
         'wantsImage': design.wants_image,
         'colors': [{
             'id': c.color_id,

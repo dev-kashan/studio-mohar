@@ -27,7 +27,7 @@
             <div class="sm-pdp-head">
                 <h1 class="sm-serif">{{ design.name }}</h1>
                 {% if design.short_description %}<p class="sm-pdp-short">{{ design.short_description }}</p>{% endif %}
-                <div class="sm-price">{{ currency }}{{ design.price }} <small>each</small></div>
+                <div class="sm-price">{% if design.has_discount %}<del class="sm-price-old">{{ currency }}{{ design.price }}</del> <span class="sm-price-sale">{{ currency }}{{ design.discount_price }}</span>{% else %}{{ currency }}{{ design.price }}{% endif %} <small>each</small></div>
             </div>
 
             <form id="smDesignForm" novalidate>
@@ -86,7 +86,7 @@
                 <div class="sm-buy">
                     <div class="sm-buy-total">
                         <small id="smPieces">1 piece</small>
-                        <strong id="smTotal">{{ currency }}{{ design.price }}</strong>
+                        <strong id="smTotal">{% if design.has_discount %}{{ currency }}{{ design.discount_price }}{% else %}{{ currency }}{{ design.price }}{% endif %}</strong>
                     </div>
                     <button type="submit" class="sm-btn sm-btn-primary" id="smAddBtn">Add to cart</button>
                 </div>

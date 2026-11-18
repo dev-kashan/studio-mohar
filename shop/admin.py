@@ -993,13 +993,16 @@ class ShopDesignForm(forms.ModelForm):
         data = super().clean()
         if data.get('is_personalizable') and not (data.get('allow_image_upload') or data.get('allow_text')):
             raise forms.ValidationError('A personalizable design needs "Allow image upload", "Allow text", or both.')
+        discount, price = data.get('discount_price'), data.get('price')
+        if discount is not None and price is not None and not (0 < discount < price):
+            self.add_error('discount_price', 'Discount price must be above 0 and lower than Price (or leave it empty).')
         return data
 
 
 @admin.register(ShopDesign)
 class ShopDesignAdmin(admin.ModelAdmin):
     form = ShopDesignForm
-    list_display = ('preview', 'name', 'base_product', 'price', 'is_personalizable', 'is_best_seller', 'order', 'live', 'created')
+    list_display = ('preview', 'name', 'base_product', 'price', 'discount_price', 'is_personalizable', 'is_best_seller', 'order', 'live', 'created')
     list_display_links = ('preview', 'name')
     list_editable = ('is_best_seller', 'order', 'live')
     list_filter = ('live', 'is_best_seller', 'is_personalizable', 'occasions', 'base_product')
@@ -1010,7 +1013,7 @@ class ShopDesignAdmin(admin.ModelAdmin):
     fieldsets = [
         ("Design", {
             "fields": (('name', 'slug'),
-                       ('base_product', 'price'),
+                       ('base_product', 'price', 'discount_price'),
                        'occasions',
                        'short_description',
                        'description',

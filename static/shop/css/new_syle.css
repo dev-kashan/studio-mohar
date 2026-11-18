@@ -2973,6 +2973,10 @@ input[type=number] {
 .sm-pdp-short { margin: 0; font-size: 16px; color: var(--sm-muted); line-height: 1.55; }
 .sm-price { font-size: 22px; font-weight: 600; }
 .sm-price small { font-size: 15px; font-weight: 400; color: var(--sm-muted); }
+/* Shop design discount: old price crossed out next to the sale price (detail page + cards) */
+.sm-price-old { color: var(--sm-muted); font-weight: 400; text-decoration: line-through; margin-right: 4px; }
+.sm-price .sm-price-old { font-size: 0.8em; }
+.sm-price-sale { color: #B42318; font-weight: 600; }
 #smDesignForm { display: flex; flex-direction: column; gap: 24px; }
 .sm-fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .sm-legend { font-size: 15px; font-weight: 600; padding: 0 0 10px; margin: 0; float: none; width: auto; line-height: normal; }

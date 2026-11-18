@@ -5,5 +5,5 @@
         {% if design.card_alt %}<img class="sm-alt" src="{{ design.card_alt }}" alt="" loading="lazy" aria-hidden="true">{% endif %}
     </div>
     <span class="sm-design-name">{{ design.name }}</span>
-    <span class="sm-design-meta">{{ currency }}{{ design.price }}{% if not hide_colours and design.color_count > 1 %} &middot; {{ design.color_count }} colours{% endif %}</span>
+    <span class="sm-design-meta">{% if design.has_discount %}<del class="sm-price-old">{{ currency }}{{ design.price }}</del> <span class="sm-price-sale">{{ currency }}{{ design.discount_price }}</span>{% else %}{{ currency }}{{ design.price }}{% endif %}{% if not hide_colours and design.color_count > 1 %} &middot; {{ design.color_count }} colours{% endif %}</span>
 </a>

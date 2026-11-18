@@ -1718,6 +1718,10 @@ class ShopDesign(models.Model):
     short_description = models.CharField(max_length=255, default='', blank=True, help_text="One line under the title on the design page")
     description = RichTextField(default='', blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text="Fixed price per piece")
+    discount_price = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True,
+        help_text="Optional sale price per piece (must be lower than Price). Customers pay this and see Price crossed out. Leave empty for no discount.",
+    )
 
     is_best_seller = models.BooleanField(default=False)
     live = models.BooleanField(default=False)
@@ -1749,6 +1753,16 @@ class ShopDesign(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+    @property
+    def has_discount(self):
+        """True when a valid sale price is set (above 0 and below the normal price)."""
+        return self.discount_price is not None and 0 < self.discount_price < self.price
+
+    @property
+    def selling_price(self):
+        """The price the customer actually pays per piece."""
+        return self.discount_price if self.has_discount else self.price
 
     @property
     def wants_image(self):
