@@ -2058,6 +2058,31 @@ class ProductTrustItem(models.Model):
         return self.text
 
 
+class MediaLibraryFile(models.Model):
+    """Media library: upload any image/video/file in the admin and copy its full URL
+    to use it anywhere (HTML, blog posts, CKEditor, emails...)."""
+    title = models.CharField(max_length=200, blank=True, default='', help_text="Optional name so you can find it later")
+    file = models.FileField(upload_to='app/library/%Y/%m/', max_length=1000, help_text="Image, video, PDF, SVG... any file")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-uploaded_at']
+        verbose_name = 'Media file'
+        verbose_name_plural = '31. Media Library (upload & copy URL)'
+
+    def __str__(self):
+        return self.title or os.path.basename(self.file.name)
+
+    @property
+    def kind(self):
+        ext = os.path.splitext(self.file.name)[1].lower()
+        if ext in ('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif', '.bmp', '.ico'):
+            return 'image'
+        if ext in ('.mp4', '.webm', '.mov', '.ogg', '.m4v'):
+            return 'video'
+        return 'file'
+
+
 def personalization_as_html(raw):
     """Render the stored personalization JSON ([{label, value}, ...]) for admin/emails.
     Values are typed by customers, so they are always escaped."""

@@ -1,3 +1,4 @@
+import os
 from django.contrib import admin
 from django.db.models import Q
 from django.forms.models import BaseInlineFormSet
@@ -1172,3 +1173,80 @@ class InspoRequestAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+
+# ---------------- Media Library (upload a file, copy its full URL) ----------------
+_COPY_JS = ("var i=this.parentNode.querySelector('input');i.select();"
+            "try{navigator.clipboard.writeText(i.value)}catch(e){}document.execCommand('copy');"
+            "var b=this,t=b.textContent;b.textContent='Copied!';setTimeout(function(){b.textContent=t},1500);return false;")
+
+
+def _copy_box(value, label='Copy URL', width='100%'):
+    return format_html(
+        '<span style="display:flex;gap:6px;align-items:center;max-width:560px">'
+        '<input type="text" readonly value="{}" onclick="this.select()" '
+        'style="width:{};font-family:monospace;font-size:12px;padding:5px 7px">'
+        '<button type="button" onclick="{}" style="all:unset;cursor:pointer;flex-shrink:0;white-space:nowrap;'
+        'background:#47bac1;color:#fff;font-size:12px;font-weight:600;padding:7px 12px;border-radius:4px">{}</button></span>',
+        value, width, _COPY_JS, label)
+
+
+@admin.register(MediaLibraryFile)
+class MediaLibraryFileAdmin(admin.ModelAdmin):
+    list_display = ('preview', 'name', 'copy_url', 'uploaded_at')
+    list_display_links = ('preview', 'name')
+    search_fields = ('title', 'file')
+    list_per_page = 50
+    fields = ('title', 'file', 'preview_large', 'copy_url', 'copy_html', 'uploaded_at')
+    readonly_fields = ('preview_large', 'copy_url', 'copy_html', 'uploaded_at')
+
+    # remember the request so we can build the full https://domain/media/... URL
+    def get_queryset(self, request):
+        self._request = request
+        return super().get_queryset(request)
+
+    def full_url(self, obj):
+        if not obj or not obj.file:
+            return ''
+        req = getattr(self, '_request', None)
+        return req.build_absolute_uri(obj.file.url) if req else obj.file.url
+
+    def name(self, obj):
+        return str(obj)
+    name.short_description = 'Name'
+
+    def preview(self, obj):
+        if obj.kind == 'image':
+            return format_html('<img src="{}" style="width:60px;height:60px;object-fit:cover;border-radius:6px">', obj.file.url)
+        if obj.kind == 'video':
+            return format_html('<video src="{}" muted preload="metadata" style="width:60px;height:60px;object-fit:cover;border-radius:6px"></video>', obj.file.url)
+        return format_html('<span style="font-size:11px">{}</span>', os.path.splitext(obj.file.name)[1].upper() or 'FILE')
+    preview.short_description = 'Preview'
+
+    def preview_large(self, obj):
+        if not obj or not obj.file:
+            return 'Save first - the preview and URL appear here.'
+        if obj.kind == 'image':
+            return format_html('<img src="{}" style="max-width:360px;max-height:360px;border-radius:8px">', obj.file.url)
+        if obj.kind == 'video':
+            return format_html('<video src="{}" controls style="max-width:420px;border-radius:8px"></video>', obj.file.url)
+        return format_html('<a href="{}" target="_blank" rel="noopener">Open file</a>', obj.file.url)
+    preview_large.short_description = 'Preview'
+
+    def copy_url(self, obj):
+        url = self.full_url(obj)
+        return _copy_box(url) if url else '-'
+    copy_url.short_description = 'URL (copy & use anywhere)'
+
+    def copy_html(self, obj):
+        url = self.full_url(obj)
+        if not url:
+            return '-'
+        if obj.kind == 'image':
+            tag = f'<img src="{url}" alt="{obj.title}" loading="lazy">'
+        elif obj.kind == 'video':
+            tag = f'<video src="{url}" autoplay muted loop playsinline></video>'
+        else:
+            tag = f'<a href="{url}" target="_blank">{obj}</a>'
+        return _copy_box(tag, 'Copy HTML')
+    copy_html.short_description = 'Ready-made HTML tag'
