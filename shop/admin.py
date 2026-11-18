@@ -634,10 +634,10 @@ admin.site.register(Color , ColorAdmin)
 
 class SizeAdmin(admin.ModelAdmin):
     fields = (
-        ('Size_name' , 'Available')
+        ('Size_name' , 'Available', 'order')
     )
-    list_display = ('Size_name' , 'Available' , 'date')
-    list_editable = ('Available' ,)
+    list_display = ('Size_name' , 'order' , 'Available' , 'date')
+    list_editable = ('order' , 'Available')  # change the order right from the list
     search_fields  = ('Size_name' , 'Available' , 'date')
 
 admin.site.register(Size , SizeAdmin)

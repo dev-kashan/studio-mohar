@@ -62,6 +62,15 @@ def category_context(request):
     # All products page URL (custom URL from the admin, or /all_products/)
     context['all_products_url'] = ProductPageSettings.load().all_products_url()
 
+    # Instant Quote: size boxes follow the admin Size order (short labels like the grid: Small -> S)
+    from .templatetags.size_filters import clean_sizes
+    quote_sizes = []
+    for name in Size.objects.values_list('Size_name', flat=True):  # Size Meta ordering = admin order
+        label = clean_sizes(name)
+        if label and label not in quote_sizes:
+            quote_sizes.append(label)
+    context['quote_size_order'] = quote_sizes
+
     # mockup = MockUp.objects.filter(Active='Yes')
     # for m in mockup
     return context

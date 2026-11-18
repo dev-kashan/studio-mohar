@@ -177,6 +177,7 @@ class Color(models.Model):
 class Size(models.Model):
     Size_name = models.CharField(max_length=255 , default='')
     Available = models.CharField(choices=YES_OR_NO , default="Yes" , max_length=255)
+    order = models.PositiveIntegerField(default=0, help_text="Sizes show in this order everywhere on the site (lower first, e.g. XS=1, S=2, M=3 ...)")
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -185,6 +186,7 @@ class Size(models.Model):
         else:
             return '----'
     class Meta:
+        ordering = ['order', 'id']
         verbose_name_plural = '09. Size'
 
 

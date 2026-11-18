@@ -788,6 +788,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <span class="quote-size-price" id="priceOS"></span>
             </div>
         </div>
+        <!-- Size boxes follow the admin Size order (sizes not in the list keep their place at the end) -->
+        {{ quote_size_order|json_script:"quoteSizeOrder" }}
+        <script>
+        (function () {
+            var grid = document.getElementById('sizeGrid');
+            var dataEl = document.getElementById('quoteSizeOrder');
+            if (!grid || !dataEl) return;
+            var order;
+            try { order = JSON.parse(dataEl.textContent) || []; } catch (e) { return; }
+            var items = Array.prototype.slice.call(grid.querySelectorAll('.quote-size-item'));
+            // A box whose size isn't in the admin list stays right after the box before it (e.g. 4XL after 3XL)
+            var last = -1;
+            items.map(function (el, i) {
+                     var r = order.indexOf(el.dataset.size);
+                     r = r === -1 ? last + 0.5 : r; last = Math.floor(r);
+                     return { el: el, r: r, i: i };
+                 })
+                 .sort(function (a, b) { return a.r - b.r || a.i - b.i; })
+                 .forEach(function (x) { grid.appendChild(x.el); });
+        })();
+        </script>
     </div>
 
     <!-- Customizations -->

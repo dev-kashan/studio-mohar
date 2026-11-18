@@ -521,7 +521,7 @@ def product(request, myid):
     except:
         return redirect('/')
     
-    filter_size = ProductAttribute.objects.filter(product=product).values('size__Size_name' , 'size__id').annotate(Avalaible=Sum('Availibility')).distinct().order_by('-Avalaible')
+    filter_size = ProductAttribute.objects.filter(product=product).values('size__Size_name' , 'size__id').annotate(Avalaible=Sum('Availibility')).distinct().order_by('size__order', 'size__id')  # admin Size order
     filter_color = ProductAttribute.objects.filter(product=product).values('color__color_name' , 'color__color_code' , 'color__id').annotate(Avalaible=Sum('Availibility')).distinct().order_by('Avalaible')
    
 
@@ -1143,7 +1143,7 @@ def category(request):
     
     
     colors=ProductAttribute.objects.filter(product__categories__category_id=categoryID).distinct().values('color__color_name')
-    sizes=ProductAttribute.objects.filter(product__categories__category_id=categoryID).distinct().values('size__Size_name')
+    sizes=_sizes_in_order(ProductAttribute.objects.filter(product__categories__category_id=categoryID))  # admin Size order
     brands=Product.objects.filter(categories__category_id=categoryID).distinct().values('brand')
     product_name=Product.objects.filter(categories__category_id=categoryID).distinct().values('product_name')
     minMaxPrice=Product.objects.filter(categories__category_id=categoryID).values('productattribute__price').aggregate(Min('productattribute__price'),Max('productattribute__price'))
@@ -1408,7 +1408,7 @@ def search(request):
     
     colors=ProductAttribute.objects.filter(Q(product__brand__icontains=query) | Q(product__product_name__icontains=query) | Q(product__product_model__icontains=query) | Q(product__product_code__icontains=query) | Q(product__categories__category_name__icontains=query) | Q(product__categories__category__icontains=query) | Q(product__desc__icontains=query) | Q(product__product_id__icontains=query)).distinct().values('color__color_name')
 
-    sizes=ProductAttribute.objects.filter(Q(product__brand__icontains=query) | Q(product__product_name__icontains=query) | Q(product__product_model__icontains=query) | Q(product__product_code__icontains=query) | Q(product__categories__category_name__icontains=query) | Q(product__categories__category__icontains=query) | Q(product__desc__icontains=query) | Q(product__product_id__icontains=query)).distinct().values('size__Size_name')
+    sizes=_sizes_in_order(ProductAttribute.objects.filter(Q(product__brand__icontains=query) | Q(product__product_name__icontains=query) | Q(product__product_model__icontains=query) | Q(product__product_code__icontains=query) | Q(product__categories__category_name__icontains=query) | Q(product__categories__category__icontains=query) | Q(product__desc__icontains=query) | Q(product__product_id__icontains=query)))  # admin Size order
 
     brands=Product.objects.filter(Q(brand__icontains=query) | Q(product_name__icontains=query) | Q(product_model__icontains=query) | Q(product_code__icontains=query) | Q(categories__category_name__icontains=query) | Q(categories__category__icontains=query) | Q(desc__icontains=query) | Q(product_id__icontains=query)).distinct().values('brand')
 
@@ -1498,7 +1498,7 @@ def flash_sale(request):
     
        
     colors=ProductAttribute.objects.filter(product__live=True , product__show_in_slider=False , product__flash_sale=True).distinct().values('color__color_name')
-    sizes=ProductAttribute.objects.filter(product__live=True , product__show_in_slider=False , product__flash_sale=True).distinct().values('size__Size_name')
+    sizes=_sizes_in_order(ProductAttribute.objects.filter(product__live=True , product__show_in_slider=False , product__flash_sale=True))  # admin Size order
     brands=Product.objects.filter(live=True , show_in_slider=False ,flash_sale=True).distinct().values('brand')
     product_name=Product.objects.filter(live=True , show_in_slider=False ,flash_sale=True).distinct().values('product_name')
     minMaxPrice=Product.objects.filter(live=True , show_in_slider=False ,flash_sale=True).values('productattribute__price').aggregate(Min('productattribute__price'),Max('productattribute__price'))
@@ -1841,7 +1841,7 @@ def load_design(request, uid):
 
     filter_size = ProductAttribute.objects.filter(product=product).values(
         'size__Size_name', 'size__id'
-    ).annotate(Avalaible=Sum('Availibility')).distinct().order_by('-Avalaible')
+    ).annotate(Avalaible=Sum('Availibility')).distinct().order_by('size__order', 'size__id')  # admin Size order
 
     filter_color = ProductAttribute.objects.filter(product=product).values(
         'color__color_name', 'color__color_code', 'color__id', 'image'
@@ -2223,14 +2223,14 @@ def get_sizes_for_color(request, product_id):
         attributes = ProductAttribute.objects.filter(
             product_id=product_id,
             color_id=color_id
-        ).select_related('size')
+        ).select_related('size').order_by('size__order', 'size__id')
 
     # 🟡 Fallback: color_code (only if color_id missing)
     elif color_code:
         attributes = ProductAttribute.objects.filter(
             product_id=product_id,
             color__color_code__iexact=color_code.strip()
-        ).select_related('size')
+        ).select_related('size').order_by('size__order', 'size__id')
 
     # ❌ Neither provided
     else:
@@ -2383,7 +2383,7 @@ def _shop_listing(request, occasion=None):
     )
     size_options = list(
         ProductAttribute.objects.filter(product__shop_designs__in=base, size__isnull=False)
-        .values_list('size__Size_name', flat=True).distinct().order_by('size__id')
+        .values_list('size__Size_name', flat=True).distinct().order_by('size__order', 'size__id')
     )
     size_options = list(dict.fromkeys(size_options))  # keep order, drop repeats
 
@@ -2431,7 +2431,7 @@ def shop_design_detail(request, slug):
 
     # Sizes per colour, from the base product's variations
     sizes_by_color = {}
-    for a in ProductAttribute.objects.filter(product=design.base_product, size__isnull=False).select_related('size').order_by('size__id'):
+    for a in ProductAttribute.objects.filter(product=design.base_product, size__isnull=False).select_related('size').order_by('size__order', 'size__id'):
         sizes = sizes_by_color.setdefault(a.color_id, [])
         if a.size.Size_name not in sizes:
             sizes.append(a.size.Size_name)
@@ -2487,9 +2487,30 @@ SIZE_ORDER = ['XXS', '2XS', 'XS', 'S', 'SMALL', 'M', 'MEDIUM', 'L', 'LARGE', 'XL
 SIZE_SHORT = {'SMALL': 'S', 'MEDIUM': 'M', 'LARGE': 'L', 'XXL': '2XL', 'XXXL': '3XL'}
 
 
-def _size_key(name):
+def _size_order_map():
+    """{'SMALL': 20, 'XS': 10, ...} from the admin Size 'order' field (one query)."""
+    out = {}
+    for name, order in Size.objects.values_list('Size_name', 'order'):
+        n = (name or '').strip().upper()
+        out[n] = min(order, out.get(n, order))
+    return out
+
+
+def _size_key(name, order_map=None):
+    """Sort key for a size name: admin Size order first, built-in list as fallback."""
     n = (name or '').strip().upper()
-    return (SIZE_ORDER.index(n) if n in SIZE_ORDER else len(SIZE_ORDER), n)
+    if order_map and n in order_map:
+        return (0, order_map[n], n)
+    return (1, SIZE_ORDER.index(n) if n in SIZE_ORDER else len(SIZE_ORDER), n)
+
+
+def _sizes_in_order(attr_qs):
+    """Distinct sizes of some ProductAttributes as [{'size__Size_name': name}], in admin Size order."""
+    names = []
+    for name in attr_qs.order_by('size__order', 'size__id').values_list('size__Size_name', flat=True):
+        if name not in names:
+            names.append(name)
+    return [{'size__Size_name': n} for n in names]
 
 
 def _size_label(name):
@@ -2524,8 +2545,9 @@ def _product_colors(product):
             price = a.discount_price if a.discount_price and a.discount_price > 0 else a.price
             c['sizes'].setdefault(a.size.Size_name, {'attr_id': a.id, 'price': float(price or 0), 'max': a.Max_Qty or 0})
     out = sorted(colors.values(), key=lambda c: c['order'])
+    size_order = _size_order_map()  # admin Size order
     for c in out:
-        c['sizes'] = [dict(name=k, label=_size_label(k), **v) for k, v in sorted(c['sizes'].items(), key=lambda kv: _size_key(kv[0]))]
+        c['sizes'] = [dict(name=k, label=_size_label(k), **v) for k, v in sorted(c['sizes'].items(), key=lambda kv: _size_key(kv[0], size_order))]
         del c['order']
     return out
 
