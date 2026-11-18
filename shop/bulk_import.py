@@ -755,7 +755,13 @@ What's in this ZIP
 ------------------
   products.csv       - products (custom + shop) with every colour + size
   shop_designs.csv   - ready-made shop designs (optional)
-  images/            - all photos (JPG, PNG, WEBP or GIF)
+  images/            - photos (JPG, PNG, WEBP or GIF) - optional if you use image links
+
+Photos: two ways, use whichever is easier (you can mix them):
+  1. Put the photo in the images/ folder and write its file name, e.g. tee-black-front.jpg
+  2. Paste a direct image link, e.g. https://example.com/photos/tee-black-front.jpg
+     (the link must open the image itself, not a web page). The photo is copied
+     to the site during import. If you only use links, a single CSV file can be uploaded.
 
 Replace the sample rows with your own products, then zip the folder and upload it
 in the admin (Products > Bulk import). Open the CSV files in Excel or
@@ -774,8 +780,6 @@ shop_designs.csv: ONE ROW PER COLOUR of the design.
   that is already on the site, or one that is in products.csv of the same ZIP.
   The design colours must be colours of that base product.
 
-Images: write the file name (e.g. tee-black-front.jpg) and put that file in the
-images/ folder. You can also paste a full link (https://...) instead.
 Lists (occasions, extra photos, gallery, text fields) are separated with |
 
 yes / no columns accept: yes, no, true, false, 1, 0.
