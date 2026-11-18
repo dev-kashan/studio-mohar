@@ -928,7 +928,6 @@ def stripe_success(request):
     for item in cart_items:
         product_attr = item.product_attr
         product = product_attr.product
-        mockup = product.customize_mockup_template
 
         front_design_file = base64_to_image_file(item.front_image, f"front_{product.product_id}")
         back_design_file = base64_to_image_file(item.back_image, f"back_{product.product_id}")
@@ -941,10 +940,11 @@ def stripe_success(request):
         right_design_image = base64_to_image_file(item.right_design_image, f"back_design_{product.product_id}")
 
         shop_design = item.shop_design  # set only for Shop page designs
-        if mockup:
-            order_type = 'Customize'
-        elif shop_design:
+        # Order type comes from the product, not from a mockup (mockups are not used any more)
+        if shop_design:
             order_type = 'Shop Design'
+        elif product.product_type == 'custom':
+            order_type = 'Customize'
         else:
             order_type = 'Normal'
 
@@ -956,7 +956,7 @@ def stripe_success(request):
             unity_price=float(item.price_of_each),
             item_total=float(item.total_price),
             image=item.front_image or '',
-            Mockup=mockup,
+            Mockup=None,  # not used any more (old orders keep theirs)
             Order_Type=order_type,
             shop_design=shop_design,
             personal_image=item.personal_image or None,  # same physical file as the cart upload

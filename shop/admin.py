@@ -52,7 +52,7 @@ class OrderItemInline(admin.StackedInline):
 
         ('Order_Type', 'unity_price', 'item_total'),
 
-        ('Mockup', 'order_item'),
+        ('order_item',),  # Mockup field removed: orders no longer use mockups
         ('shop_design', 'personal_image'),
         ('Front_Image', 'Back_Image', 'Left_Image', 'Right_Image'),
         ('Front_Desgin_Image', 'Back_Desgin_Image', 'Left_Desgin_Image', 'Right_Desgin_Image'),
