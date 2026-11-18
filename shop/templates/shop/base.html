@@ -1265,7 +1265,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         
         // Parse product attributes
         try {
-            currentProductAttributes = JSON.parse(selectedOption.dataset.attributes);
+            // A variant with an empty discount price renders as Python `None`, which is
+            // not valid JSON and used to break the whole colour list. Turn it into null,
+            // then drop un-priced variants so they don't show as C$0 / C$NaN.
+            const rawAttrs = (selectedOption.dataset.attributes || '[]')
+                .replace(/:\s*None\b/g, ': null');
+            currentProductAttributes = JSON.parse(rawAttrs).filter(function (a) {
+                return a.price !== null && a.price !== '' && !isNaN(parseFloat(a.price));
+            });
         } catch (e) {
             console.error('Error parsing product attributes:', e);
             currentProductAttributes = [];
