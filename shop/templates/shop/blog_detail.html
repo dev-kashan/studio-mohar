@@ -282,7 +282,8 @@
             <p class="church-merch-subtitle">{{post.excerpt}}</p>
             
             <div class="row">
-                <!-- Sidebar -->
+                {% if not page_html %}
+                <!-- Sidebar (hidden when the post uses an uploaded HTML file) -->
                 <div class="col-lg-3 col-md-4">
                     <div class="church-merch-sidebar" id="sidebar">
                         <h5>Related Blogs</h5>
@@ -307,9 +308,10 @@
                         </ul>
                     </div>
                 </div>
-                
-                <!-- Main Content -->
-                <div class="col-lg-9 col-md-8">
+                {% endif %}
+
+                <!-- Main Content (full width when there is no sidebar) -->
+                <div class="{% if page_html %}col-12{% else %}col-lg-9 col-md-8{% endif %}">
                     <!-- Hero Image -->
                     <img src="{{post.image.url}}" alt="Person wearing white t-shirt with religious text" class="church-merch-hero-image">
                     
@@ -554,7 +556,8 @@
         });
         
         // Sticky sidebar with GSAP ScrollTrigger
-        ScrollTrigger.matchMedia({
+        // (skipped when the sidebar isn't on the page, e.g. uploaded-HTML posts)
+        if (document.getElementById('sidebar')) ScrollTrigger.matchMedia({
   "(min-width: 768px)": function() {
     ScrollTrigger.create({
       trigger: ".church-merch-container",
@@ -592,6 +595,10 @@
                 toggleActions: 'play none none reverse'
             }
         });
+
+        // Images (hero + uploaded HTML) change the page height after load,
+        // so re-measure the scroll triggers once everything has loaded.
+        window.addEventListener('load', function () { ScrollTrigger.refresh(); });
     </script>
 </body>
 {% endblock %}
