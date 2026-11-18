@@ -2385,7 +2385,7 @@ input[type=number] {
     align-items: center;
     gap: 24px;
 }
-.smh-logo img { height: 44px; width: auto; display: block; }
+.smh-logo img { height: 56px; width: auto; display: block; } /* header logo (was 44px) */
 .smh-menu { display: flex; align-items: center; gap: 4px; list-style: none; margin: 0; padding: 0; flex: 1 1 auto; }
 .smh-item { position: relative; }
 .smh-link {
@@ -2574,7 +2574,7 @@ input[type=number] {
 @media (max-width: 1180px) {
     .smh-inner { gap: 12px; padding: 12px 16px; }
     .smh-link { padding: 0 9px; }
-    .smh-logo img { height: 38px; }
+    .smh-logo img { height: 48px; }
 }
 @media (max-width: 1060px) {
     .smh-actions > .smh-link { display: none; } /* My designs is in the mobile menu */
@@ -2590,7 +2590,7 @@ input[type=number] {
     z-index: 999;
 }
 .smh-mobile .mobile-navbar-header { padding: 8px 8px 8px 16px !important; }
-.smh-mobile .mobile-logo img { height: 36px; width: auto; }
+.smh-mobile .mobile-logo img { height: 44px; width: auto; } /* mobile menu logo (was 36px) */
 .smh-mobile .smh-m-actions { display: flex; align-items: center; }
 .smh-mobile .smh-m-actions .cart_count {
     position: absolute;
