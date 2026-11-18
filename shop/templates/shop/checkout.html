@@ -3317,7 +3317,8 @@ $(document).ready(function () {
 document.getElementById('pay').addEventListener('click', function (e) {
   e.preventDefault();
 
-  const form = document.querySelector('form');
+  // By id: the header search form is the first <form> on the page now
+  const form = document.getElementById('checkoutForm');
 
   // --- Step 1: Let browser validate all required fields ---
   if (!form.checkValidity()) {
