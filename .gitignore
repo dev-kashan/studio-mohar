@@ -9,3 +9,4 @@ access.txt
 *.psd
 .vscode/
 .claude/settings.local.json
+bulk_import_tmp/

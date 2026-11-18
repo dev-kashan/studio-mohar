@@ -391,6 +391,14 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ('live', ) 
     search_fields = ('product_name' ,'categories__category_name'  , 'categories__category' , 'desc', 'pub_date')
     inlines = [ProductAttributeAdminInline, ProductColorInline, ProductPhotoInline]
+    change_list_template = 'admin/shop/bulk_change_list.html'  # adds the "Bulk import" button
+
+    def get_urls(self):
+        custom = [
+            path('bulk-import/', self.admin_site.admin_view(bulk_import_view), name='shop_bulk_import'),
+            path('bulk-import/template.zip', self.admin_site.admin_view(bulk_template_view), name='shop_bulk_template'),
+        ]
+        return custom + super().get_urls()
     # ordering = ['Availibility']
  
     class Meta:
@@ -1011,6 +1019,7 @@ class ShopDesignAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     filter_horizontal = ('occasions',)
     inlines = [ShopDesignColorInline, ShopDesignImageInline, ShopDesignTextFieldInline]
+    change_list_template = 'admin/shop/bulk_change_list.html'  # adds the "Bulk import" button
     fieldsets = [
         ("Design", {
             "fields": (('name', 'slug'),
@@ -1250,3 +1259,79 @@ class MediaLibraryFileAdmin(admin.ModelAdmin):
             tag = f'<a href="{url}" target="_blank">{obj}</a>'
         return _copy_box(tag, 'Copy HTML')
     copy_html.short_description = 'Ready-made HTML tag'
+
+
+# ---------------- Bulk import: products (custom + shop) and shop designs ----------------
+# Page: /admin/shop/product/bulk-import/  (button on the Products and Shop Designs lists)
+# Step 1 "Check file" runs everything and rolls back; step 2 "Import now" saves it.
+import re as _re
+import time as _time
+import uuid as _uuid
+from django.conf import settings as _settings
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
+from django.template.response import TemplateResponse
+from .bulk_import import BulkImporter, build_template_zip
+
+BULK_TMP = os.path.join(_settings.BASE_DIR, 'bulk_import_tmp')  # kept out of git and /media
+
+
+def _bulk_tmp_path(token):
+    if not _re.fullmatch(r'[0-9a-f]{32}\.(zip|csv)', token or ''):
+        return None
+    path = os.path.join(BULK_TMP, token)
+    return path if os.path.exists(path) else None
+
+
+def bulk_template_view(request):
+    if not request.user.has_perm('shop.add_product'):
+        raise PermissionDenied
+    resp = HttpResponse(build_template_zip(), content_type='application/zip')
+    resp['Content-Disposition'] = 'attachment; filename="studio-mohar-bulk-upload-template.zip"'
+    return resp
+
+
+def bulk_import_view(request):
+    if not (request.user.has_perm('shop.add_product') and request.user.has_perm('shop.add_shopdesign')):
+        raise PermissionDenied
+    os.makedirs(BULK_TMP, exist_ok=True)
+    for old in os.listdir(BULK_TMP):  # forget uploads older than one day
+        p = os.path.join(BULK_TMP, old)
+        if os.path.isfile(p) and _time.time() - os.path.getmtime(p) > 86400:
+            os.remove(p)
+
+    ctx = dict(admin.site.each_context(request), title='Bulk import - products & shop designs', report=None)
+    if request.method == 'POST':
+        upload = request.FILES.get('file')
+        if upload:
+            ext = os.path.splitext(upload.name)[1].lower()
+            if ext not in ('.zip', '.csv'):
+                messages.error(request, 'Please upload a .zip (CSV files + images folder) or a .csv file.')
+                return redirect('admin:shop_bulk_import')
+            token = _uuid.uuid4().hex + ext
+            with open(os.path.join(BULK_TMP, token), 'wb') as fh:
+                for chunk in upload.chunks():
+                    fh.write(chunk)
+            dry_run = True
+        else:
+            token = request.POST.get('token', '')
+            dry_run = False
+        path = _bulk_tmp_path(token)
+        if not path:
+            messages.error(request, 'Upload expired or missing - please choose the file again.')
+            return redirect('admin:shop_bulk_import')
+
+        report = BulkImporter(path, dry_run=dry_run).run()
+        if not dry_run:
+            os.remove(path)
+        items = []
+        for kind, obj, created in report.items:
+            url = None
+            if not dry_run and report.ok:
+                url = reverse('admin:shop_product_change' if kind == 'Product' else 'admin:shop_shopdesign_change', args=[obj.pk])
+            items.append({'kind': kind, 'name': str(obj), 'created': created, 'url': url})
+        ctx.update(report=report, items=items, dry_run=dry_run, token=token if dry_run and report.ok else '',
+                   file_name=upload.name if upload else request.POST.get('file_name', ''))
+        if not dry_run and report.ok:
+            messages.success(request, 'Import finished - everything below is saved.')
+    return TemplateResponse(request, 'admin/shop/bulk_import.html', ctx)

@@ -1,0 +1,111 @@
+{% extends "admin/base_site.html" %}
+{# Bulk import page for Products (custom + shop) and Shop Designs - view: shop/admin.py bulk_import_view #}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
+  <a href="{% url 'admin:shop_product_changelist' %}">Products</a> &rsaquo;
+  Bulk import
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+  .bi-wrap{max-width:980px}
+  .bi-card{background:#fff;border:1px solid #dfe5ec;border-radius:8px;padding:20px 22px;margin:0 0 18px}
+  .bi-card h2{margin:0 0 10px;font-size:16px}
+  .bi-card ol{margin:6px 0 0 18px;padding:0;line-height:1.7}
+  .bi-btn{all:unset;cursor:pointer;display:inline-block;background:#47bac1;color:#fff;font-weight:600;font-size:13px;padding:9px 16px;border-radius:5px}
+  .bi-btn.green{background:#32b16c}
+  .bi-btn.ghost{background:#eef3f6;color:#355}
+  .bi-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+  .bi-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:10px 0}
+  .bi-stat{background:#f6f9fb;border-radius:6px;padding:10px 12px}
+  .bi-stat b{display:block;font-size:20px}
+  .bi-stat span{font-size:11px;color:#678;text-transform:uppercase}
+  .bi-table{width:100%;border-collapse:collapse;font-size:13px}
+  .bi-table td,.bi-table th{border-bottom:1px solid #eef1f4;padding:6px 8px;text-align:left;vertical-align:top}
+  .bi-bad{border-left:4px solid #e0475a}
+  .bi-warn{border-left:4px solid #f0ad4e}
+  .bi-good{border-left:4px solid #32b16c}
+  .bi-tag{font-size:11px;padding:2px 7px;border-radius:10px;background:#e7f6ee;color:#1d7a46}
+  .bi-tag.upd{background:#e8f1fb;color:#2a5d8f}
+</style>
+
+<div class="bi-wrap">
+
+{% if report %}
+  {% if not report.ok %}
+    <div class="bi-card bi-bad">
+      <h2>{{ report.errors|length }} problem{{ report.errors|length|pluralize }} found - nothing was saved</h2>
+      <p>Fix these rows in the file and upload it again.</p>
+      <table class="bi-table">
+        <tr><th>File</th><th>Row</th><th>Problem</th></tr>
+        {% for f, row, msg in report.errors %}<tr><td>{{ f }}</td><td>{{ row }}</td><td>{{ msg }}</td></tr>{% endfor %}
+      </table>
+    </div>
+  {% else %}
+    <div class="bi-card bi-good">
+      {% if dry_run %}
+        <h2>File checked - no problems. Nothing is saved yet.</h2>
+        <p>This is what will happen when you press <b>Import now</b>{% if file_name %} ({{ file_name }}){% endif %}:</p>
+      {% else %}
+        <h2>Imported successfully</h2>
+      {% endif %}
+      <div class="bi-stats">
+        {% for label, value in report.count_list %}
+          <div class="bi-stat"><b>{{ value }}</b><span>{{ label }}</span></div>
+        {% endfor %}
+      </div>
+      <table class="bi-table">
+        {% for it in items %}
+          <tr>
+            <td>{{ it.kind }}</td>
+            <td>{% if it.url %}<a href="{{ it.url }}" target="_blank">{{ it.name }}</a>{% else %}{{ it.name }}{% endif %}</td>
+            <td>{% if it.created %}<span class="bi-tag">new</span>{% else %}<span class="bi-tag upd">update</span>{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </table>
+      {% if dry_run %}
+        <form method="post" class="bi-row">
+          {% csrf_token %}
+          <input type="hidden" name="token" value="{{ token }}">
+          <input type="hidden" name="file_name" value="{{ file_name }}">
+          <button type="submit" class="bi-btn green">Import now</button>
+          <a class="bi-btn ghost" href="{% url 'admin:shop_bulk_import' %}">Cancel</a>
+        </form>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if report.warnings %}
+    <div class="bi-card bi-warn">
+      <h2>Notes ({{ report.warnings|length }})</h2>
+      <table class="bi-table">
+        {% for f, row, msg in report.warnings %}<tr><td>{{ f }}</td><td>{{ row }}</td><td>{{ msg }}</td></tr>{% endfor %}
+      </table>
+    </div>
+  {% endif %}
+{% endif %}
+
+  <div class="bi-card">
+    <h2>Upload products in bulk</h2>
+    <ol>
+      <li>Download the template ZIP and give it to the client.</li>
+      <li>They fill <b>products.csv</b> (custom + shop products, one row per colour + size) and,
+          if needed, <b>shop_designs.csv</b>, and put all photos in the <b>images/</b> folder.</li>
+      <li>Upload the ZIP here and press <b>Check file</b>. Nothing is saved until you press <b>Import now</b>.</li>
+    </ol>
+    <p style="margin-top:10px;color:#678">The README inside the ZIP explains every column and lists the categories,
+      sizes, colours and occasions that exist on this site. Existing products/designs with the same slug are updated.</p>
+    <div class="bi-row">
+      <a class="bi-btn ghost" href="{% url 'admin:shop_bulk_template' %}">Download template ZIP</a>
+    </div>
+    <form method="post" enctype="multipart/form-data" class="bi-row">
+      {% csrf_token %}
+      <input type="file" name="file" accept=".zip,.csv" required>
+      <button type="submit" class="bi-btn">Check file</button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}
